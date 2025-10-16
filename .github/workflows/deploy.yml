@@ -21,13 +21,8 @@ jobs:
             cd ${{ secrets.REMOTE_PATH }}
             git pull origin develop
             /opt/php84/bin/php /usr/local/bin/composer install --no-dev --optimize-autoloader
-            /opt/php84/bin/php artisan cache:clear
-            /opt/php84/bin/php artisan config:clear
-            /opt/php84/bin/php artisan route:trans:cache
-            /opt/php84/bin/php artisan view:clear
-            /opt/php84/bin/php artisan config:cache
-            /opt/php84/bin/php artisan route:trans:clear
-            /opt/php84/bin/php artisan view:cache
+            /opt/php84/bin/php artisan optimize:clear
+            /opt/php84/bin/php artisan optimize
             /opt/php84/bin/php artisan migrate --force
             npm install
             npm run build
