@@ -19,7 +19,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ${{ secrets.REMOTE_PATH }}
-            git pull origin develop
+            git pull origin main
             /opt/php84/bin/php /usr/local/bin/composer install --no-dev --optimize-autoloader
             /opt/php84/bin/php artisan optimize:clear
             /opt/php84/bin/php artisan optimize
