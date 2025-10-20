@@ -32,7 +32,7 @@
             @endif
         </main>
 
-        @include('partials.footer')fbfn
+        @include('partials.footer')
     </body>
 </html>
 
