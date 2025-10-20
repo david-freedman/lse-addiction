@@ -3,62 +3,55 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use App\Models\User;
 
 class CustomerController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Обработка формы регистрации данных (шаг 1)
      */
-    public function index()
+    public function register(Request $request)
     {
-        //
+        // Валидация данных формы
+        $validated = $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        // Создание пользователя
+        $user = User::create([
+            'name'     => $validated['name'],
+            'email'    => $validated['email'],
+            'password' => bcrypt($validated['password']),
+        ]);
+
+        // Логируем действие
+        Log::channel('user')->info("Пользователь {$user->email} зарегистрировался.");
+        Log::channel('system')->info("Создана новая запись пользователя: {$user->id}");
+
+        return response()->json(['status' => 'success', 'user' => $user]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Обработка формы добавления данных (шаг 2)
      */
-    public function create()
+    public function updateProfile(Request $request, $id)
     {
-        //
-    }
+        $user = User::findOrFail($id);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $validated = $request->validate([
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:100',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        $user->update($validated);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        Log::channel('user')->info("Пользователь {$user->email} обновил профиль.");
+        Log::channel('system')->info("Обновлены данные пользователя: {$user->id}");
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return response()->json(['status' => 'updated', 'user' => $user]);
     }
 }

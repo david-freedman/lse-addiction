@@ -54,10 +54,16 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard')
     ->middleware('auth');
 
-// Добавляем управление профилем клиента
+// Управление профилем клиента (CRUD)
 Route::resource('customers', CustomerController::class)
     ->middleware('auth');
 
+// 👇 Добавляем маршруты для форм (регистрация и обновление данных)
+Route::post('/customer/register', [CustomerController::class, 'register'])
+    ->name('customer.register');
+
+Route::post('/customer/update/{id}', [CustomerController::class, 'updateProfile'])
+    ->name('customer.update');
 
 /* ==============================
    Авторизация и регистрация
