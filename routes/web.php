@@ -10,6 +10,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerValidationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -58,7 +59,11 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 Route::resource('customers', CustomerController::class)
     ->middleware('auth');
 
-// 👇 Добавляем маршруты для форм (регистрация и обновление данных)
+//  Добавляем маршрут валидации клиента
+Route::post('/customer/validate', [CustomerValidationController::class, 'validateCustomer'])
+    ->name('customer.validate');
+
+//  Добавляем маршруты для форм (регистрация и обновление данных)
 Route::post('/customer/register', [CustomerController::class, 'register'])
     ->name('customer.register');
 
