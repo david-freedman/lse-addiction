@@ -7,7 +7,7 @@
             <a href="/">Главная</a>
         </div>
 
-        <!-- Средняя часть: Поиск с иконкой -->
+        <!-- Средняя часть: Поиск -->
 {{--        <div class="search-form">--}}
 {{--            <form--}}
 {{--                action="{{ route('product.search') }}"--}}
@@ -21,17 +21,17 @@
 {{--        </div>--}}
 
         <!-- Правая часть: Аутентификация -->
-{{--        <div class="header-right">--}}
-{{--            @guest--}}
-{{--                <a href="{{ route('login') }}" class="auth-btn btn-login">Вход</a>--}}
-{{--                <a href="{{ route('register') }}" class="auth-btn btn-register">Регистрация</a>--}}
-{{--            @else--}}
-{{--                <a href="{{ route('dashboard') }}" class="auth-btn btn-account">Личный кабинет</a>--}}
-{{--                <form action="{{ route('logout') }}" method="POST" style="display: inline;">--}}
-{{--                    @csrf--}}
-{{--                    <button type="submit" class="auth-btn btn-logout">Выход</button>--}}
-{{--                </form>--}}
-{{--            @endguest--}}
-{{--        </div>--}}
+        <div class="header-right">
+            @guest
+                <a href="{{ route('login') }}" class="auth-btn btn-login">Вход</a>
+                <a href="{{ route('register') }}" class="auth-btn btn-register">Регистрация</a>
+            @else
+                <a href="{{ route('dashboard') }}" class="auth-btn btn-account">Личный кабинет</a>
+                <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="auth-btn btn-logout">Выход</button>
+                </form>
+            @endguest
+        </div>
     </nav>
 </header>
