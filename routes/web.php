@@ -46,6 +46,8 @@ Route::resource('categories', CategoryController::class);
 Route::get('/contact', [ContactController::class, 'showForm'])->name('contact.form');
 Route::post('/contact', [ContactController::class, 'submitForm'])->name('contact.submit');
 
+// Поиск товаров
+Route::get('/products/search', [ProductController::class, 'search'])->name('product.search');
 
 /* ==============================
    Пользовательская часть (личный кабинет)
