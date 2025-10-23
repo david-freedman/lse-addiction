@@ -91,16 +91,35 @@ Route::post('/register', [RegisterController::class, 'register']);
 // Выход
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 
+// ===============================
+// Маршруты верификации email
+// ===============================
 Route::middleware(['auth'])->group(function () {
+
+    //  Страница уведомления о необходимости подтвердить email
+    //  Сообщение пользователю: "Проверьте почту, подтвердите email"
     Route::get('verify-email', EmailVerificationPromptController::class)->name('verification.notice');
+
+    // Ссылка из письма подтверждения
+    // Laravel автоматически генерирует URL с {id} и {hash}, защищённый подписью
+    // После перехода пользователь считается верифицированным
     Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+
+    // Повторная отправка письма
+    // Нажатие кнопки “Отправить письмо ещё раз” на /verify-email
     Route::post('verify-email', SendVerifyEmailController::class)->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 });
 
+// ===============================
+// Маршруты профиля пользователя
+// ===============================
 
+// Страница редактирования профиля (текущий email, и другие данные)
 Route::get('/profile/edit', [ProfileController::class, 'edit'])
     ->middleware('auth')
     ->name('profile.edit');
+
+// Обновление профиля — сохраняет изменения и отправляет письмо для подтверждения
 Route::post('/profile/update', [ProfileController::class, 'update'])
     ->middleware('auth')
     ->name('profile.update');
