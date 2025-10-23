@@ -1,19 +1,23 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-// Подключение контроллеров
+use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\SendVerifyEmailController;
+use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerValidationController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\CustomerValidationController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Auth\LogoutController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+
+// Подключение контроллеров
 
 
 /*
@@ -46,6 +50,8 @@ Route::resource('categories', CategoryController::class);
 Route::get('/contact', [ContactController::class, 'showForm'])->name('contact.form');
 Route::post('/contact', [ContactController::class, 'submitForm'])->name('contact.submit');
 
+// Поиск товаров
+Route::get('/products/search', [ProductController::class, 'search'])->name('product.search');
 
 /* ==============================
    Пользовательская часть (личный кабинет)
@@ -53,7 +59,7 @@ Route::post('/contact', [ContactController::class, 'submitForm'])->name('contact
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard')
-    ->middleware('auth');
+    ->middleware(['auth', 'verified']);
 
 // Управление профилем клиента (CRUD)
 Route::resource('customers', CustomerController::class)
@@ -84,3 +90,36 @@ Route::post('/register', [RegisterController::class, 'register']);
 
 // Выход
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
+
+// ===============================
+// Маршруты верификации email
+// ===============================
+Route::middleware(['auth'])->group(function () {
+
+    //  Страница уведомления о необходимости подтвердить email
+    //  Сообщение пользователю: "Проверьте почту, подтвердите email"
+    Route::get('verify-email', EmailVerificationPromptController::class)->name('verification.notice');
+
+    // Ссылка из письма подтверждения
+    // Laravel автоматически генерирует URL с {id} и {hash}, защищённый подписью
+    // После перехода пользователь считается верифицированным
+    Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+
+    // Повторная отправка письма
+    // Нажатие кнопки “Отправить письмо ещё раз” на /verify-email
+    Route::post('verify-email', SendVerifyEmailController::class)->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+});
+
+// ===============================
+// Маршруты профиля пользователя
+// ===============================
+
+// Страница редактирования профиля (текущий email, и другие данные)
+Route::get('/profile/edit', [ProfileController::class, 'edit'])
+    ->middleware('auth')
+    ->name('profile.edit');
+
+// Обновление профиля — сохраняет изменения и отправляет письмо для подтверждения
+Route::post('/profile/update', [ProfileController::class, 'update'])
+    ->middleware('auth')
+    ->name('profile.update');

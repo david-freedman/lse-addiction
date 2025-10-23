@@ -3,9 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Product;
 
 class ProductController extends Controller
 {
+    // Метод поиска товаров
+    public function search(Request $request)
+    {
+        $query = $request->input('query'); // Получаем строку поиска
+
+        // Ищем товары по названию или описанию
+        $products = Product::query()
+            ->where('name', 'like', "%{$query}%")
+            ->orWhere('description', 'like', "%{$query}%")
+            ->get();
+
+        // Возвращаем шаблон со списком найденных товаров
+        return view('products.search_results', compact('products', 'query'));
+    }
     /**
      * Display a listing of the resource.
      */
