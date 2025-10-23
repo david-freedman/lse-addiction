@@ -1,19 +1,23 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-// Подключение контроллеров
+use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\SendVerifyEmailController;
+use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerValidationController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\CustomerValidationController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Auth\LogoutController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+
+// Подключение контроллеров
 
 
 /*
@@ -55,7 +59,7 @@ Route::get('/products/search', [ProductController::class, 'search'])->name('prod
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard')
-    ->middleware('auth');
+    ->middleware(['auth', 'verified']);
 
 // Управление профилем клиента (CRUD)
 Route::resource('customers', CustomerController::class)
@@ -86,3 +90,17 @@ Route::post('/register', [RegisterController::class, 'register']);
 
 // Выход
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('verify-email', EmailVerificationPromptController::class)->name('verification.notice');
+    Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+    Route::post('verify-email', SendVerifyEmailController::class)->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+});
+
+
+Route::get('/profile/edit', [ProfileController::class, 'edit'])
+    ->middleware('auth')
+    ->name('profile.edit');
+Route::post('/profile/update', [ProfileController::class, 'update'])
+    ->middleware('auth')
+    ->name('profile.update');
