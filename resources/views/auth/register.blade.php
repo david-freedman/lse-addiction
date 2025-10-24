@@ -4,9 +4,11 @@
     <div class="container max-w-md mx-auto mt-10">
         <h1 class="text-2xl font-bold mb-4">Регистрация</h1>
 
+        {{-- === Форма регистрации без пароля === --}}
         <form method="POST" action="{{ route('register') }}">
             @csrf
 
+            {{-- Имя --}}
             <div class="mb-4">
                 <label class="block mb-1">Имя:</label>
                 <input type="text" name="name" class="border rounded w-full p-2" value="{{ old('name') }}" required>
@@ -15,6 +17,7 @@
                 @enderror
             </div>
 
+            {{-- Email --}}
             <div class="mb-4">
                 <label class="block mb-1">Email:</label>
                 <input type="email" name="email" class="border rounded w-full p-2" value="{{ old('email') }}" required>
@@ -23,20 +26,7 @@
                 @enderror
             </div>
 
-            <div class="mb-4">
-                <label class="block mb-1">Пароль:</label>
-                <input type="password" name="password" class="border rounded w-full p-2" required>
-                @error('password')
-                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="mb-4">
-                <label class="block mb-1">Подтверждение пароля:</label>
-                <input type="password" name="password_confirmation" class="border rounded w-full p-2" required>
-            </div>
-
-            <!-- Телефон -->
+            {{-- Телефон --}}
             <div class="mb-4">
                 <label for="telephone" class="block mb-1">Телефон:</label>
                 <input
@@ -53,7 +43,7 @@
                 @enderror
             </div>
 
-            <!-- Скрытое поле -->
+            {{-- Скрытое поле для фиксации подтверждения телефона --}}
             <input type="hidden" name="phone_verified" id="phone_verified" value="0">
 
             <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">
@@ -62,23 +52,18 @@
 
             <p class="mt-4 text-sm text-center text-gray-600">
                 Уже есть аккаунт?
-                <a href="{{ route('login') }}" class="text-blue-600 hover:underline">
-                    Войдите
-                </a>
+                <a href="{{ route('login') }}" class="text-blue-600 hover:underline">Войдите</a>
             </p>
         </form>
     </div>
 
-    {{-- ====== МОДАЛКА ПОДТВЕРЖДЕНИЯ ТЕЛЕФОНА (эмуляция) ====== --}}
-    <div id="phoneModal"
-         class="fixed inset-0 z-50 hidden items-center justify-center">
-        {{-- задний фон --}}
+    {{-- ===== Модалка подтверждения телефона (эмуляция) ===== --}}
+    <div id="phoneModal" class="fixed inset-0 z-50 hidden items-center justify-center">
         <div class="absolute inset-0 bg-black/50"></div>
 
-        {{-- окно --}}
         <div class="relative bg-white w-[95%] max-w-md mx-auto rounded-xl shadow-xl p-6">
             <h2 class="text-xl font-semibold mb-2">
-                Мы отправили код на номер <span id="maskedPhone">+3 (XXX) XXX-XX-XX</span>
+                Мы отправили код на номер <span id="maskedPhone">+38 (0XX) XXX-XX-XX</span>
             </h2>
             <p class="text-gray-600 mb-4">Введите код из SMS</p>
 
@@ -86,22 +71,14 @@
                 type="text"
                 id="smsCode"
                 inputmode="numeric"
-                pattern="[0-9]*"
                 maxlength="6"
                 class="border rounded w-full p-3 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Код (введите 1111)"
-                autocomplete="one-time-code"
             />
 
             <div class="flex gap-2">
-                <button id="confirmCodeBtn"
-                        class="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                    Подтвердить
-                </button>
-                <button id="cancelModalBtn"
-                        class="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">
-                    Отмена
-                </button>
+                <button id="confirmCodeBtn" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Подтвердить</button>
+                <button id="cancelModalBtn" class="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">Отмена</button>
             </div>
 
             <p id="codeError" class="text-red-600 text-sm mt-3 hidden">
@@ -110,13 +87,12 @@
         </div>
     </div>
 
-    {{-- ====== JS-логика модалки ====== --}}
+    {{-- ===== JS логика модалки ===== --}}
     <script>
         (function () {
             const form = document.querySelector('form[action="{{ route('register') }}"]');
             const phoneInput = document.getElementById('telephone');
             const phoneVerifiedField = document.getElementById('phone_verified');
-
             const modal = document.getElementById('phoneModal');
             const confirmBtn = document.getElementById('confirmCodeBtn');
             const cancelBtn = document.getElementById('cancelModalBtn');
@@ -124,12 +100,10 @@
             const codeError = document.getElementById('codeError');
             const maskedPhoneEl = document.getElementById('maskedPhone');
 
+            // Формат +38 (067) 776-59-81
             function maskPhone(raw) {
-                const digits = (raw || '').replace(/\D/g, '');
-                // ожидаем формат: +380671234567 или 380671234567
-                if (digits.length >= 12) {
-                    return `+${digits.slice(0,2)} (${digits.slice(2,5)}) ${digits.slice(5,8)}-${digits.slice(8,10)}-${digits.slice(10,12)}`;
-                }
+                const d = (raw || '').replace(/\D/g, '');
+                if (d.length >= 12) return `+${d.slice(0,2)} (${d.slice(2,5)}) ${d.slice(5,8)}-${d.slice(8,10)}-${d.slice(10,12)}`;
                 return '+38 (0XX) XXX-XX-XX';
             }
 
@@ -147,6 +121,7 @@
                 modal.classList.remove('flex');
             }
 
+            // Показываем модалку при сабмите
             form.addEventListener('submit', function (e) {
                 if (phoneVerifiedField.value === '1') return;
                 e.preventDefault();
@@ -166,7 +141,6 @@
 
             cancelBtn.addEventListener('click', closeModal);
             modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-            codeInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); confirmBtn.click(); } });
         })();
     </script>
 @endsection
