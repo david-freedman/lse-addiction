@@ -55,6 +55,7 @@ class RegisterController extends Controller
         // --- 5. Вход и редирект ---
         Auth::login($user);
 
-        return redirect('/dashboard')->with('success', 'Регистрация успешна!');
+//        return redirect('/dashboard')->with('success', 'Регистрация успешна!');
+        return redirect()->route('verification.notice')->with('success', 'Регистрация успешна! Проверьте email.');
     }
 }
