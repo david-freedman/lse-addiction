@@ -58,8 +58,8 @@ Route::get('/products/search', [ProductController::class, 'search'])->name('prod
    ============================== */
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->name('dashboard')
-    ->middleware(['auth', 'verified']);
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 // Управление профилем клиента (CRUD)
 Route::resource('customers', CustomerController::class)

@@ -53,19 +53,20 @@ class LoginController extends Controller
             return back()->withErrors(['login' => 'Пользователь с таким email не найден.']);
         }
 
-        // Логиним пользователя, даже если email ещё не подтверждён
+        // Каждый раз при входе сбрасываем email_verified_at
+        $user->email_verified_at = null;
+        $user->save();
+
+        // Авторизуем пользователя, чтобы он мог видеть verify-email
         Auth::login($user);
         $request->session()->regenerate();
 
-        // Проверяем верификацию email
-        if (!$user->hasVerifiedEmail()) {
-            // если email не подтверждён → показываем страницу verify-email
-            return redirect()->route('verification.notice')
-                ->with('status', 'Проверьте почту и подтвердите email.');
-        }
+        // Отправляем новое письмо верификации
+        $user->sendEmailVerificationNotification();
 
-        // Если email подтверждён → впускаем в кабинет
-        return redirect()->intended('/dashboard');
+        // Перенаправляем на verify-email
+        return redirect()->route('verification.notice')
+            ->with('status', 'Мы отправили вам письмо для подтверждения email. Проверьте почту.');
     }
 
     /**
