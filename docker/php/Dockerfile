@@ -73,6 +73,13 @@ RUN set -ex \
         zip \
     && apk del --no-network .build-deps
 
+# Install Redis extension
+RUN set -ex \
+    && apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apk del --no-network .phpize-deps
+
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- \
     --filename=composer \

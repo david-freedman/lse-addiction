@@ -56,6 +56,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Verification Backdoor Code
+    |--------------------------------------------------------------------------
+    |
+    | This is a backdoor verification code for local development only.
+    |
+    */
+
+    'verification_backdoor_code' => env('VERIFICATION_BACKDOOR_CODE'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

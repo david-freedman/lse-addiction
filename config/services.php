@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'sendpulse' => [
+        'event_url' => env('SENDPULSE_EVENT_URL', 'https://events.sendpulse.com/events/id/f01bde8af10944ffd2227377cfa782bd/9258227'),
+    ],
+
 ];
