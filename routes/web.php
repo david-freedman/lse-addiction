@@ -1,9 +1,9 @@
 <?php
 
-use App\Applications\Http\Controllers\CustomerAuthController;
-use App\Applications\Http\Controllers\CustomerProfileController;
-use App\Applications\Http\Controllers\CustomerRegistrationController;
-use App\Applications\Http\Controllers\HomeController;
+use App\Applications\Http\Customer\Controllers\CustomerAuthController;
+use App\Applications\Http\Customer\Controllers\CustomerProfileController;
+use App\Applications\Http\Customer\Controllers\CustomerRegistrationController;
+use App\Applications\Http\Shared\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -19,6 +19,8 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::get('verify-email', [CustomerRegistrationController::class, 'showVerifyEmail'])->name('verify-email.show');
         Route::post('verify-email', [CustomerRegistrationController::class, 'verifyEmail'])->name('verify-email');
 
+        Route::post('resend-code', [CustomerRegistrationController::class, 'resendCode'])->name('resend-code');
+
         Route::get('login', [CustomerAuthController::class, 'showLoginForm'])->name('login');
         Route::post('login', [CustomerAuthController::class, 'sendLoginCode'])->name('login.send');
 
@@ -27,6 +29,12 @@ Route::prefix('customer')->name('customer.')->group(function () {
     });
 
     Route::middleware('auth')->group(function () {
+        Route::get('complete-verification', [CustomerAuthController::class, 'showCompleteVerification'])->name('complete-verification');
+        Route::post('complete-verification', [CustomerAuthController::class, 'verifyCompleteVerification'])->name('complete-verification.verify');
+        Route::post('complete-verification/resend', [CustomerAuthController::class, 'resendVerificationCode'])->name('complete-verification.resend');
+    });
+
+    Route::middleware(['auth', 'verified.customer'])->group(function () {
         Route::get('profile', [CustomerProfileController::class, 'show'])->name('profile.show');
         Route::get('profile/edit', [CustomerProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('profile', [CustomerProfileController::class, 'update'])->name('profile.update');

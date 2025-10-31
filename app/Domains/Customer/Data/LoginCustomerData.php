@@ -2,6 +2,9 @@
 
 namespace App\Domains\Customer\Data;
 
+use App\Domains\Shared\Rules\EmailOrPhone;
+use App\Domains\Shared\ValueObjects\Email;
+use App\Domains\Shared\ValueObjects\Phone;
 use Spatie\LaravelData\Data;
 
 class LoginCustomerData extends Data
@@ -13,7 +16,7 @@ class LoginCustomerData extends Data
     public static function rules(): array
     {
         return [
-            'contact' => ['required', 'string'],
+            'contact' => ['required', 'string', new EmailOrPhone],
         ];
     }
 
@@ -25,5 +28,15 @@ class LoginCustomerData extends Data
     public function isPhone(): bool
     {
         return !$this->isEmail();
+    }
+
+    public function getEmail(): Email
+    {
+        return Email::from($this->contact);
+    }
+
+    public function getPhone(): Phone
+    {
+        return Phone::from($this->contact);
     }
 }

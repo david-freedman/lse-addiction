@@ -2,6 +2,10 @@
 
 namespace App\Domains\Customer\Actions;
 
+use App\Domains\ActivityLog\Actions\LogActivityAction;
+use App\Domains\ActivityLog\Data\ActivityLogData;
+use App\Domains\ActivityLog\Enums\ActivitySubject;
+use App\Domains\ActivityLog\Enums\ActivityType;
 use App\Domains\Customer\Data\VerifyCodeData;
 use App\Domains\Customer\Models\Customer;
 use App\Domains\Customer\Models\CustomerVerification;
@@ -12,7 +16,20 @@ class VerifyCodeAction
     {
         $verification = self::findVerification($data);
 
-        if (!$verification) {
+        if (! $verification) {
+            LogActivityAction::execute(ActivityLogData::from([
+                'subject_type' => ActivitySubject::Customer,
+                'subject_id' => null,
+                'activity_type' => ActivityType::CustomerVerificationFailed,
+                'description' => 'Verification code validation failed',
+                'properties' => [
+                    'type' => $data->type,
+                    'contact' => $data->contact,
+                ],
+                'ip_address' => null,
+                'user_agent' => null,
+            ]));
+
             return null;
         }
 
@@ -26,6 +43,19 @@ class VerifyCodeAction
             } else {
                 $customer->markPhoneAsVerified();
             }
+
+            LogActivityAction::execute(ActivityLogData::from([
+                'subject_type' => ActivitySubject::Customer,
+                'subject_id' => $customer->id,
+                'activity_type' => ActivityType::CustomerVerificationVerified,
+                'description' => 'Verification code validated successfully',
+                'properties' => [
+                    'type' => $data->type,
+                    'contact' => $data->contact,
+                ],
+                'ip_address' => null,
+                'user_agent' => null,
+            ]));
         }
 
         return $customer;

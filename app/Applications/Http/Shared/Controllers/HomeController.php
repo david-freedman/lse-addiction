@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Applications\Http\Controllers;
+namespace App\Applications\Http\Shared\Controllers;
 
 use Illuminate\View\View;
 

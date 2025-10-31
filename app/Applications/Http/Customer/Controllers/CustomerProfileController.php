@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Applications\Http\Controllers;
+namespace App\Applications\Http\Customer\Controllers;
 
 use App\Domains\Customer\Actions\SendVerificationCodeAction;
 use App\Domains\Customer\Actions\UpdateCustomerContactAction;
@@ -57,7 +57,7 @@ class CustomerProfileController
             return redirect()->route('customer.verify-change.show', ['type' => 'phone']);
         }
 
-        return back()->withErrors(['error' => 'No changes detected']);
+        return back()->withErrors(['error' => __('messages.profile.no_changes')]);
     }
 
     public function showVerifyChange(Request $request): View
@@ -65,7 +65,7 @@ class CustomerProfileController
         $type = $request->query('type');
         $contact = $type === 'email' ? session('pending_email') : session('pending_phone');
 
-        if (!$contact || !in_array($type, ['email', 'phone'])) {
+        if (! $contact || ! in_array($type, ['email', 'phone'])) {
             return redirect()->route('customer.profile.show');
         }
 
@@ -90,6 +90,6 @@ class CustomerProfileController
         session()->forget(['pending_email', 'pending_phone']);
 
         return redirect()->route('customer.profile.show')
-            ->with('success', 'Contact updated successfully');
+            ->with('success', __('messages.profile.contact_updated'));
     }
 }

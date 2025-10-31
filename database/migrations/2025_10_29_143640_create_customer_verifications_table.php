@@ -19,11 +19,15 @@ return new class extends Migration
             $table->string('code');
             $table->timestamp('expires_at');
             $table->timestamp('verified_at')->nullable();
-            $table->enum('purpose', ['registration', 'login', 'change_email', 'change_phone']);
+            $table->string('purpose');
             $table->timestamp('created_at');
+            $table->timestamp('last_sent_at')->nullable();
+            $table->integer('send_count')->default(1);
+            $table->timestamp('hourly_reset_at')->nullable();
 
             $table->index(['contact', 'code']);
             $table->index('expires_at');
+            $table->index('last_sent_at');
         });
     }
 

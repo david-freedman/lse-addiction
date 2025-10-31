@@ -53,11 +53,7 @@
             </div>
 
             <div class="pt-4">
-                @if($viewModel->isFullyVerified())
-                    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-                        Ваш акаунт повністю підтверджено
-                    </div>
-                @else
+                @unless($viewModel->isFullyVerified())
                     <div class="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded">
                         Будь ласка, підтвердіть всі контактні дані
                     </div>
