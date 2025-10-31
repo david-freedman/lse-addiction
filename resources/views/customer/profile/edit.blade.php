@@ -23,7 +23,7 @@
 
             <div class="mb-6">
                 <label for="phone" class="block text-gray-700 text-sm font-bold mb-2">Новий Телефон</label>
-                <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
+                <input type="text" name="phone" id="phone" value="{{ old('phone') }}" placeholder="+380XXXXXXXXX"
                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('phone') border-red-500 @enderror">
                 <p class="text-xs text-gray-500 mt-1">Поточний: {{ $customer->phone }}</p>
                 @error('phone')

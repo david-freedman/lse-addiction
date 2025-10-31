@@ -19,12 +19,17 @@ class CustomerVerification extends Model
         'expires_at',
         'verified_at',
         'purpose',
+        'last_sent_at',
+        'send_count',
+        'hourly_reset_at',
     ];
 
     protected $casts = [
         'expires_at' => 'datetime',
         'verified_at' => 'datetime',
         'created_at' => 'datetime',
+        'last_sent_at' => 'datetime',
+        'hourly_reset_at' => 'datetime',
     ];
 
     public function customer(): BelongsTo
@@ -67,5 +72,52 @@ class CustomerVerification extends Model
     public function scopeNotExpired(Builder $query): Builder
     {
         return $query->where('expires_at', '>', now());
+    }
+
+    public function canResend(): bool
+    {
+        if ($this->last_sent_at === null) {
+            return true;
+        }
+
+        $intervalSeconds = (int) config('verification.resend_interval', 120);
+
+        return $this->last_sent_at->addSeconds($intervalSeconds)->isPast();
+    }
+
+    public function isHourlyLimitReached(): bool
+    {
+        if ($this->hourly_reset_at === null || $this->hourly_reset_at->isPast()) {
+            return false;
+        }
+
+        $hourlyLimit = config('verification.hourly_limit', 5);
+
+        return $this->send_count >= $hourlyLimit;
+    }
+
+    public function getSecondsUntilResend(): int
+    {
+        if ($this->last_sent_at === null) {
+            return 0;
+        }
+
+        $intervalSeconds = (int) config('verification.resend_interval', 120);
+        $nextAllowedAt = $this->last_sent_at->addSeconds($intervalSeconds);
+
+        return max(0, $nextAllowedAt->diffInSeconds(now(), false) * -1);
+    }
+
+    public function incrementSendCount(): void
+    {
+        if ($this->hourly_reset_at === null || $this->hourly_reset_at->isPast()) {
+            $this->hourly_reset_at = now()->addHour();
+            $this->send_count = 1;
+        } else {
+            $this->send_count++;
+        }
+
+        $this->last_sent_at = now();
+        $this->save();
     }
 }

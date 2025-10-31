@@ -2,6 +2,8 @@
 
 namespace App\Domains\Customer\Models;
 
+use App\Domains\Shared\Casts\EmailCast;
+use App\Domains\Shared\Casts\PhoneCast;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -15,6 +17,8 @@ class Customer extends Authenticatable
     ];
 
     protected $casts = [
+        'email' => EmailCast::class,
+        'phone' => PhoneCast::class,
         'email_verified_at' => 'datetime',
         'phone_verified_at' => 'datetime',
     ];

@@ -4,20 +4,20 @@ namespace App\Domains\Customer\ViewModels;
 
 use App\Domains\Customer\Models\Customer;
 
-class CustomerProfileViewModel
+readonly class CustomerProfileViewModel
 {
     public function __construct(
-        private readonly Customer $customer
+        private Customer $customer
     ) {}
 
     public function email(): string
     {
-        return $this->customer->email;
+        return $this->customer->email->value;
     }
 
     public function phone(): string
     {
-        return $this->customer->phone;
+        return $this->customer->phone->value;
     }
 
     public function isEmailVerified(): bool
