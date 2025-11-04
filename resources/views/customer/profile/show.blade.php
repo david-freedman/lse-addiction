@@ -15,6 +15,26 @@
 
         <div class="space-y-4">
             <div class="border-b pb-4">
+                <label class="block text-gray-600 text-sm font-bold mb-2">Прізвище</label>
+                <span class="text-gray-900">{{ $viewModel->surname() ?? 'Не вказано' }}</span>
+            </div>
+
+            <div class="border-b pb-4">
+                <label class="block text-gray-600 text-sm font-bold mb-2">Ім'я</label>
+                <span class="text-gray-900">{{ $viewModel->name() ?? 'Не вказано' }}</span>
+            </div>
+
+            <div class="border-b pb-4">
+                <label class="block text-gray-600 text-sm font-bold mb-2">Дата народження</label>
+                <span class="text-gray-900">{{ $viewModel->birthday() ?? 'Не вказано' }}</span>
+            </div>
+
+            <div class="border-b pb-4">
+                <label class="block text-gray-600 text-sm font-bold mb-2">Місто</label>
+                <span class="text-gray-900">{{ $viewModel->city() ?? 'Не вказано' }}</span>
+            </div>
+
+            <div class="border-b pb-4">
                 <label class="block text-gray-600 text-sm font-bold mb-2">Email</label>
                 <div class="flex items-center justify-between">
                     <span class="text-gray-900">{{ $viewModel->email() }}</span>
@@ -52,12 +72,31 @@
                 @endif
             </div>
 
+            @if(count($viewModel->profileFields()) > 0)
+                <div class="pt-4 mt-4">
+                    <h3 class="text-lg font-bold mb-4 text-gray-900">Додаткова інформація</h3>
+
+                    @foreach($viewModel->profileFields() as $label => $value)
+                        <div class="border-b pb-4 mb-4">
+                            <label class="block text-gray-600 text-sm font-bold mb-2">{{ $label }}</label>
+                            <span class="text-gray-900">{{ $value }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
             <div class="pt-4">
                 @unless($viewModel->isFullyVerified())
                     <div class="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded">
                         Будь ласка, підтвердіть всі контактні дані
                     </div>
-                @endif
+                @endunless
+
+                @unless($viewModel->hasContactDetails())
+                    <div class="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded mt-2">
+                        Будь ласка, заповніть всі особисті дані
+                    </div>
+                @endunless
             </div>
         </div>
     </div>

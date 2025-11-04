@@ -3,11 +3,16 @@
 namespace App\Applications\Http\Customer\Controllers;
 
 use App\Domains\Customer\Actions\AuthenticateCustomerAction;
+use App\Domains\Customer\Actions\GetActiveProfileFieldsAction;
 use App\Domains\Customer\Actions\RegisterCustomerAction;
+use App\Domains\Customer\Actions\SaveContactDetailsAction;
+use App\Domains\Customer\Actions\SaveCustomerProfileFieldValuesAction;
 use App\Domains\Customer\Actions\SendVerificationCodeAction;
 use App\Domains\Customer\Actions\VerifyCodeAction;
+use App\Domains\Customer\Data\ContactDetailsData;
 use App\Domains\Customer\Data\RegisterCustomerData;
 use App\Domains\Customer\Data\VerifyCodeData;
+use App\Domains\Customer\Models\Customer;
 use App\Domains\Customer\Exceptions\VerificationRateLimitException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -83,11 +88,110 @@ class CustomerRegistrationController
             return back()->withErrors(['code' => __('messages.verification.invalid_code')]);
         }
 
+        return redirect()->route('customer.contact-details.show')->with('success', __('messages.verification.email_verified'));
+    }
+
+    public function showContactDetails(): View|RedirectResponse
+    {
+        $customerId = session('customer_id');
+
+        if (!$customerId) {
+            return redirect()->route('customer.register');
+        }
+
+        $customer = Customer::find($customerId);
+
+        if (!$customer || !$customer->isFullyVerified()) {
+            return redirect()->route('customer.register');
+        }
+
+        return view('customer.auth.contact-details');
+    }
+
+    public function saveContactDetails(Request $request): RedirectResponse
+    {
+        $customerId = session('customer_id');
+
+        if (!$customerId) {
+            return redirect()->route('customer.register');
+        }
+
+        $customer = Customer::find($customerId);
+
+        if (!$customer || !$customer->isFullyVerified()) {
+            return redirect()->route('customer.register');
+        }
+
+        $data = ContactDetailsData::validateAndCreate($request->all());
+
+        SaveContactDetailsAction::execute($customer, $data);
+
+        return redirect()->route('customer.profile-fields.show')->with('success', __('messages.contact_details.saved'));
+    }
+
+    public function showProfileFields(): View|RedirectResponse
+    {
+        $customerId = session('customer_id');
+
+        if (!$customerId) {
+            return redirect()->route('customer.register');
+        }
+
+        $customer = Customer::find($customerId);
+
+        if (!$customer || !$customer->isFullyVerified() || !$customer->hasContactDetails()) {
+            return redirect()->route('customer.register');
+        }
+
+        $fields = GetActiveProfileFieldsAction::execute();
+
+        return view('customer.auth.profile-fields', compact('fields'));
+    }
+
+    public function saveProfileFields(Request $request): RedirectResponse
+    {
+        $customerId = session('customer_id');
+
+        if (!$customerId) {
+            return redirect()->route('customer.register');
+        }
+
+        $customer = Customer::find($customerId);
+
+        if (!$customer || !$customer->isFullyVerified() || !$customer->hasContactDetails()) {
+            return redirect()->route('customer.register');
+        }
+
+        $fieldValues = $request->input('profile_fields', []);
+
+        SaveCustomerProfileFieldValuesAction::execute($customer, $fieldValues);
+
         AuthenticateCustomerAction::execute($customer);
 
         session()->forget(['customer_id', 'customer_email', 'customer_phone', 'phone_code_expires_at', 'email_code_expires_at']);
 
-        return redirect()->route('customer.profile.show')->with('success', __('messages.verification.email_verified'));
+        return redirect()->route('customer.profile.show')->with('success', __('messages.profile_fields.saved'));
+    }
+
+    public function skipProfileFields(): RedirectResponse
+    {
+        $customerId = session('customer_id');
+
+        if (!$customerId) {
+            return redirect()->route('customer.register');
+        }
+
+        $customer = Customer::find($customerId);
+
+        if (!$customer) {
+            return redirect()->route('customer.register');
+        }
+
+        AuthenticateCustomerAction::execute($customer);
+
+        session()->forget(['customer_id', 'customer_email', 'customer_phone', 'phone_code_expires_at', 'email_code_expires_at']);
+
+        return redirect()->route('customer.profile.show')->with('info', __('messages.profile_fields.skipped'));
     }
 
     public function resendCode(Request $request): RedirectResponse

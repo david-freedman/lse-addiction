@@ -15,7 +15,12 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     @auth
+                        <a href="{{ route('customer.courses.browse') }}" class="text-gray-700 hover:text-gray-900">Курси</a>
+                        <a href="{{ route('customer.my-courses') }}" class="text-gray-700 hover:text-gray-900">Мої курси</a>
                         <a href="{{ route('customer.profile.show') }}" class="text-gray-700 hover:text-gray-900">Профіль</a>
+                        @if(auth()->guard('web')->check() && auth()->guard('web')->user()->id === 1)
+                            <a href="{{ route('admin.courses.index') }}" class="text-blue-600 hover:text-blue-800 font-semibold">Адмін</a>
+                        @endif
                         <form action="{{ route('customer.logout') }}" method="POST" class="inline">
                             @csrf
                             <button type="submit" class="text-gray-700 hover:text-gray-900">Вихід</button>

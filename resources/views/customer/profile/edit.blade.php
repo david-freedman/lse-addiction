@@ -12,6 +12,51 @@
             @method('PATCH')
 
             <div class="mb-4">
+                <label for="surname" class="block text-gray-700 text-sm font-bold mb-2">Прізвище</label>
+                <input type="text" name="surname" id="surname" value="{{ old('surname', $customer->surname) }}"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('surname') border-red-500 @enderror"
+                    required>
+                @error('surname')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="mb-4">
+                <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Ім'я</label>
+                <input type="text" name="name" id="name" value="{{ old('name', $customer->name) }}"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') border-red-500 @enderror"
+                    required>
+                @error('name')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="mb-4">
+                <label for="birthday" class="block text-gray-700 text-sm font-bold mb-2">Дата народження</label>
+                <input type="date" name="birthday" id="birthday" value="{{ old('birthday', $customer->birthday?->format('Y-m-d')) }}"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('birthday') border-red-500 @enderror"
+                    required>
+                @error('birthday')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
+                <p class="text-xs text-gray-500 mt-1">Вам повинно бути не менше 18 років</p>
+            </div>
+
+            <div class="mb-6">
+                <label for="city" class="block text-gray-700 text-sm font-bold mb-2">Місто</label>
+                <input type="text" name="city" id="city" value="{{ old('city', $customer->city) }}"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('city') border-red-500 @enderror"
+                    required>
+                @error('city')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="border-t pt-6 mb-4">
+                <h3 class="text-lg font-bold mb-4 text-gray-900">Зміна контактів</h3>
+            </div>
+
+            <div class="mb-4">
                 <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Новий Email</label>
                 <input type="email" name="email" id="email" value="{{ old('email') }}"
                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('email') border-red-500 @enderror">
