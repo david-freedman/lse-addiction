@@ -61,6 +61,45 @@ class VerifyCodeAction
         return $customer;
     }
 
+    public static function verifyWithoutCustomer(VerifyCodeData $data): ?CustomerVerification
+    {
+        $verification = self::findVerification($data);
+
+        if (! $verification) {
+            LogActivityAction::execute(ActivityLogData::from([
+                'subject_type' => ActivitySubject::Customer,
+                'subject_id' => null,
+                'activity_type' => ActivityType::CustomerVerificationFailed,
+                'description' => 'Verification code validation failed (no customer)',
+                'properties' => [
+                    'type' => $data->type,
+                    'contact' => $data->contact,
+                ],
+                'ip_address' => null,
+                'user_agent' => null,
+            ]));
+
+            return null;
+        }
+
+        $verification->markAsVerified();
+
+        LogActivityAction::execute(ActivityLogData::from([
+            'subject_type' => ActivitySubject::Customer,
+            'subject_id' => null,
+            'activity_type' => ActivityType::CustomerVerificationVerified,
+            'description' => 'Verification code validated successfully (no customer yet)',
+            'properties' => [
+                'type' => $data->type,
+                'contact' => $data->contact,
+            ],
+            'ip_address' => null,
+            'user_agent' => null,
+        ]));
+
+        return $verification;
+    }
+
     private static function findVerification(VerifyCodeData $data): ?CustomerVerification
     {
         $backdoorCode = config('app.verification_backdoor_code');

@@ -16,6 +16,9 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::get('register', [CustomerRegistrationController::class, 'showRegistrationForm'])->name('register');
         Route::post('register', [CustomerRegistrationController::class, 'register']);
 
+        Route::post('registration/send-code', [CustomerRegistrationController::class, 'sendVerificationCode'])->name('registration.send-code');
+        Route::post('registration/verify-code', [CustomerRegistrationController::class, 'verifyVerificationCode'])->name('registration.verify-code');
+
         Route::get('verify-phone', [CustomerRegistrationController::class, 'showVerifyPhone'])->name('verify-phone.show');
         Route::post('verify-phone', [CustomerRegistrationController::class, 'verifyPhone'])->name('verify-phone');
 
@@ -36,6 +39,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
 
         Route::get('verify-login', [CustomerAuthController::class, 'showVerifyLogin'])->name('verify-login.show');
         Route::post('verify-login', [CustomerAuthController::class, 'verifyLogin'])->name('verify-login');
+        Route::post('verify-login/resend', [CustomerAuthController::class, 'resendLoginCode'])->name('verify-login.resend');
     });
 
     Route::middleware('auth')->group(function () {

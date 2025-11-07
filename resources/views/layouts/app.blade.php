@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'LSE Addiction')</title>
+    <title>@yield('title', 'LifeScanEducation')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-50 antialiased">
@@ -11,7 +11,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <a href="{{ route('home') }}" class="text-xl font-semibold text-gray-900 hover:text-blue-600 transition">LSE Addiction</a>
+                    <a href="{{ route('home') }}" class="text-xl font-semibold text-gray-900 hover:text-blue-600 transition">LifeScanEducation</a>
                 </div>
                 <div class="flex items-center space-x-4">
                     @auth

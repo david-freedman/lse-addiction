@@ -15,6 +15,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'photo',
+        'position',
     ];
 
     protected $hidden = [
@@ -35,5 +37,10 @@ class User extends Authenticatable
     public function authoredCourses(): HasMany
     {
         return $this->hasMany(Course::class, 'author_id');
+    }
+
+    public function scopeCoaches($query)
+    {
+        return $query->whereNotNull('photo');
     }
 }

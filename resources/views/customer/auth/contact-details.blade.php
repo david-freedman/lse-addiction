@@ -1,64 +1,87 @@
-@extends('layouts.app')
+@extends('layouts.auth')
 
 @section('title', 'Контактні дані')
 
 @section('content')
-<div class="max-w-md mx-auto">
-    <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8">
-        <h2 class="text-2xl font-bold mb-2 text-gray-900">Контактні дані</h2>
-        <p class="text-gray-600 mb-6">Заповніть, будь ласка, додаткову інформацію про себе</p>
-
-
-        <form action="{{ route('customer.contact-details') }}" method="POST">
-            @csrf
-
-            <div class="mb-4">
-                <label for="surname" class="block text-gray-700 text-sm font-bold mb-2">Прізвище</label>
-                <input type="text" name="surname" id="surname" value="{{ old('surname') }}"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('surname') border-red-500 @enderror"
-                    required>
-                @error('surname')
-                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
-                @enderror
+<div class="main-page__auth auth">
+    <div class="auth__main">
+        <div class="auth__logo">
+            <a href="{{ route('home') }}">
+                <img src="{{ asset('img/logo.svg') }}" alt="LifeScanEducation" class="ibg ibg--contain">
+            </a>
+        </div>
+        <div class="auth__body">
+            <div class="auth__header header-auth">
+                <div class="header-auth__icon">
+                    <img src="{{ asset('img/lock.svg') }}" alt="Image">
+                </div>
+                <div class="header-auth__body">
+                    <h1 class="header-auth__title">
+                        Контактні дані
+                    </h1>
+                </div>
+                <div class="header-auth__label">
+                    крок 2/3
+                </div>
             </div>
-
-            <div class="mb-4">
-                <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Ім'я</label>
-                <input type="text" name="name" id="name" value="{{ old('name') }}"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') border-red-500 @enderror"
-                    required>
-                @error('name')
-                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="mb-4">
-                <label for="birthday" class="block text-gray-700 text-sm font-bold mb-2">Дата народження</label>
-                <input type="date" name="birthday" id="birthday" value="{{ old('birthday') }}"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('birthday') border-red-500 @enderror"
-                    required>
-                @error('birthday')
-                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="mb-6">
-                <label for="city" class="block text-gray-700 text-sm font-bold mb-2">Місто</label>
-                <input type="text" name="city" id="city" value="{{ old('city') }}"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('city') border-red-500 @enderror"
-                    required>
-                @error('city')
-                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="flex items-center justify-between">
-                <button type="submit"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    Продовжити
-                </button>
-            </div>
-        </form>
+            <form action="{{ route('customer.contact-details') }}" method="POST" class="auth__content">
+                @csrf
+                <div class="auth__wrapper">
+                    <div class="auth__fields">
+                        <div class="auth__field field">
+                            <div class="field__label">
+                                Прізвище
+                            </div>
+                            <div class="field__input">
+                                <input type="text" name="surname" id="surname" placeholder="Введіть своє прізвище" value="{{ old('surname') }}" required>
+                            </div>
+                            @error('surname')
+                                <div class="field__error">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="auth__field field">
+                            <div class="field__label">
+                                І'мя
+                            </div>
+                            <div class="field__input">
+                                <input type="text" name="name" id="name" placeholder="Введіть свое І'мя" value="{{ old('name') }}" required>
+                            </div>
+                            @error('name')
+                                <div class="field__error">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="auth__field field">
+                            <div class="field__label">
+                                Дата народження
+                            </div>
+                            <div class="field__input">
+                                <input type="date" name="birthday" id="birthday" placeholder="17.10.2025" value="{{ old('birthday') }}" required>
+                            </div>
+                            @error('birthday')
+                                <div class="field__error">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="auth__field field">
+                            <div class="field__label">
+                                Місто
+                            </div>
+                            <div class="field__input">
+                                <input type="text" name="city" id="city" placeholder="Введіть свое місто" value="{{ old('city') }}" required>
+                            </div>
+                            @error('city')
+                                <div class="field__error">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <button type="submit" class="auth__button button button--fill">
+                        Продовжити
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="auth__image">
+        <img src="{{ asset('img/form-bg.webp') }}" alt="Image" class="ibg">
     </div>
 </div>
 @endsection

@@ -20,9 +20,15 @@ return new class extends Migration
             $table->string('banner')->nullable();
             $table->foreignId('author_id')->constrained('users')->onDelete('cascade');
             $table->string('status')->default('draft');
+            $table->string('type')->nullable();
+            $table->timestamp('starts_at')->nullable();
+            $table->string('label')->nullable();
+            $table->string('image')->nullable();
             $table->timestamps();
 
             $table->index('status');
+            $table->index('type');
+            $table->index('starts_at');
             $table->index('coach_id');
             $table->index('author_id');
         });

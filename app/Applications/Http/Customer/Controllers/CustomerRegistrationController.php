@@ -12,8 +12,11 @@ use App\Domains\Customer\Actions\VerifyCodeAction;
 use App\Domains\Customer\Data\ContactDetailsData;
 use App\Domains\Customer\Data\RegisterCustomerData;
 use App\Domains\Customer\Data\VerifyCodeData;
-use App\Domains\Customer\Models\Customer;
 use App\Domains\Customer\Exceptions\VerificationRateLimitException;
+use App\Domains\Customer\Models\Customer;
+use App\Domains\Shared\Rules\ValidEmail;
+use App\Domains\Shared\Rules\ValidPhone;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -27,20 +30,51 @@ class CustomerRegistrationController
 
     public function register(Request $request): RedirectResponse
     {
-        $data = RegisterCustomerData::validateAndCreate($request->all());
+        $emailVerified = session('email_verified');
+        $phoneVerified = session('phone_verified');
+        $verifiedEmail = session('verified_email');
+        $verifiedPhone = session('verified_phone');
+
+        if (! $emailVerified || ! $phoneVerified) {
+            return redirect()->route('customer.register')->withErrors([
+                'error' => 'Будь ласка, підтвердіть email і телефон перед реєстрацією.',
+            ]);
+        }
+
+        if (! $verifiedEmail || ! $verifiedPhone) {
+            return redirect()->route('customer.register')->withErrors([
+                'error' => 'Помилка реєстрації. Спробуйте ще раз.',
+            ]);
+        }
+
+        $data = RegisterCustomerData::validateAndCreate([
+            'email' => $verifiedEmail,
+            'phone' => $verifiedPhone,
+        ]);
+
         $customer = RegisterCustomerAction::execute($data);
 
-        $expiresAt = now()->addMinutes(15)->timestamp;
+        $customer->markEmailAsVerified();
+        $customer->markPhoneAsVerified();
 
         session([
             'customer_id' => $customer->id,
             'customer_email' => $customer->email->value,
             'customer_phone' => $customer->phone->value,
-            'phone_code_expires_at' => $expiresAt,
-            'email_code_expires_at' => $expiresAt,
         ]);
 
-        return redirect()->route('customer.verify-phone.show');
+        session()->forget([
+            'email_verified',
+            'phone_verified',
+            'verified_email',
+            'verified_phone',
+            'registration_email',
+            'registration_phone',
+            'email_code_expires_at',
+            'phone_code_expires_at',
+        ]);
+
+        return redirect()->route('customer.contact-details.show');
     }
 
     public function showVerifyPhone(): View|RedirectResponse
@@ -60,7 +94,7 @@ class CustomerRegistrationController
 
         $customer = VerifyCodeAction::execute($data);
 
-        if (!$customer) {
+        if (! $customer) {
             return back()->withErrors(['code' => __('messages.verification.invalid_code')]);
         }
 
@@ -71,7 +105,7 @@ class CustomerRegistrationController
     {
         $customerId = session('customer_id');
 
-        if (!$customerId) {
+        if (! $customerId) {
             return redirect()->route('customer.register');
         }
 
@@ -84,7 +118,7 @@ class CustomerRegistrationController
 
         $customer = VerifyCodeAction::execute($data);
 
-        if (!$customer) {
+        if (! $customer) {
             return back()->withErrors(['code' => __('messages.verification.invalid_code')]);
         }
 
@@ -95,13 +129,13 @@ class CustomerRegistrationController
     {
         $customerId = session('customer_id');
 
-        if (!$customerId) {
+        if (! $customerId) {
             return redirect()->route('customer.register');
         }
 
         $customer = Customer::find($customerId);
 
-        if (!$customer || !$customer->isFullyVerified()) {
+        if (! $customer || ! $customer->isFullyVerified()) {
             return redirect()->route('customer.register');
         }
 
@@ -112,13 +146,13 @@ class CustomerRegistrationController
     {
         $customerId = session('customer_id');
 
-        if (!$customerId) {
+        if (! $customerId) {
             return redirect()->route('customer.register');
         }
 
         $customer = Customer::find($customerId);
 
-        if (!$customer || !$customer->isFullyVerified()) {
+        if (! $customer || ! $customer->isFullyVerified()) {
             return redirect()->route('customer.register');
         }
 
@@ -133,13 +167,13 @@ class CustomerRegistrationController
     {
         $customerId = session('customer_id');
 
-        if (!$customerId) {
+        if (! $customerId) {
             return redirect()->route('customer.register');
         }
 
         $customer = Customer::find($customerId);
 
-        if (!$customer || !$customer->isFullyVerified() || !$customer->hasContactDetails()) {
+        if (! $customer || ! $customer->isFullyVerified() || ! $customer->hasContactDetails()) {
             return redirect()->route('customer.register');
         }
 
@@ -152,13 +186,13 @@ class CustomerRegistrationController
     {
         $customerId = session('customer_id');
 
-        if (!$customerId) {
+        if (! $customerId) {
             return redirect()->route('customer.register');
         }
 
         $customer = Customer::find($customerId);
 
-        if (!$customer || !$customer->isFullyVerified() || !$customer->hasContactDetails()) {
+        if (! $customer || ! $customer->isFullyVerified() || ! $customer->hasContactDetails()) {
             return redirect()->route('customer.register');
         }
 
@@ -177,13 +211,13 @@ class CustomerRegistrationController
     {
         $customerId = session('customer_id');
 
-        if (!$customerId) {
+        if (! $customerId) {
             return redirect()->route('customer.register');
         }
 
         $customer = Customer::find($customerId);
 
-        if (!$customer) {
+        if (! $customer) {
             return redirect()->route('customer.register');
         }
 
@@ -203,13 +237,13 @@ class CustomerRegistrationController
         $type = $request->input('type');
         $customerId = session('customer_id');
 
-        if (!$customerId) {
+        if (! $customerId) {
             return redirect()->route('customer.register');
         }
 
         $contact = $type === 'email' ? session('customer_email') : session('customer_phone');
 
-        if (!$contact) {
+        if (! $contact) {
             return back()->withErrors(['type' => __('messages.errors.contact_not_found')]);
         }
 
@@ -235,5 +269,123 @@ class CustomerRegistrationController
 
             return back()->withErrors(['resend' => $e->getMessage()]);
         }
+    }
+
+    public function sendVerificationCode(Request $request): JsonResponse
+    {
+        $type = $request->input('type');
+
+        $rules = [
+            'type' => ['required', 'in:email,phone'],
+        ];
+
+        if ($type === 'email') {
+            $rules['email'] = ['required', 'email', new ValidEmail];
+        } else {
+            $rules['phone'] = ['required', 'string', new ValidPhone];
+        }
+
+        $validated = $request->validate($rules);
+
+        $contact = $type === 'email' ? $validated['email'] : $validated['phone'];
+
+        if ($type === 'email') {
+            $exists = Customer::where('email', $contact)->exists();
+            if ($exists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('validation.custom.email.unique'),
+                ], 422);
+            }
+        } else {
+            $exists = Customer::where('phone', $contact)->exists();
+            if ($exists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('validation.custom.phone.unique'),
+                ], 422);
+            }
+        }
+
+        try {
+            SendVerificationCodeAction::execute(
+                type: $type,
+                contact: $contact,
+                purpose: 'registration',
+                customerId: null
+            );
+
+            $expiresAt = now()->addMinutes(15)->timestamp;
+            $sessionKey = $type === 'email' ? 'email_code_expires_at' : 'phone_code_expires_at';
+            $contactKey = $type === 'email' ? 'registration_email' : 'registration_phone';
+
+            session([
+                $sessionKey => $expiresAt,
+                $contactKey => $contact,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Код верифікації відправлено',
+            ]);
+        } catch (VerificationRateLimitException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 429);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Помилка відправки коду',
+            ], 500);
+        }
+    }
+
+    public function verifyVerificationCode(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'code' => ['required', 'string', 'size:6'],
+            'type' => ['required', 'in:email,phone'],
+        ]);
+
+        $type = $validated['type'];
+        $contactKey = $type === 'email' ? 'registration_email' : 'registration_phone';
+        $contact = session($contactKey);
+
+        if (! $contact) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Спочатку відправте код верифікації',
+            ], 422);
+        }
+
+        $data = VerifyCodeData::validateAndCreate([
+            'code' => $validated['code'],
+            'type' => $type,
+            'contact' => $contact,
+        ]);
+
+        $verification = VerifyCodeAction::verifyWithoutCustomer($data);
+
+        if (! $verification) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Невірний код верифікації',
+            ], 422);
+        }
+
+        $verifiedKey = $type === 'email' ? 'email_verified' : 'phone_verified';
+        $verifiedContactKey = $type === 'email' ? 'verified_email' : 'verified_phone';
+
+        session([
+            $verifiedKey => true,
+            $verifiedContactKey => $contact,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => $type === 'email' ? 'Email верифіковано' : 'Телефон верифіковано',
+            'verified' => true,
+        ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Domains\Customer\Models;
 
 use App\Domains\Course\Models\Course;
+use App\Domains\Course\Models\CourseCustomer;
 use App\Domains\Shared\Casts\EmailCast;
 use App\Domains\Shared\Casts\PhoneCast;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -43,6 +44,7 @@ class Customer extends Authenticatable
     public function courses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class)
+            ->using(CourseCustomer::class)
             ->withPivot(['enrolled_at', 'status']);
     }
 
