@@ -47,7 +47,7 @@ class CustomerVerification extends Model
             'customer_id' => $customerId,
             'type' => $type,
             'contact' => $contact,
-            'code' => Str::upper(Str::random(6)),
+            'code' => collect(range(1, 6))->map(fn() => random_int(1, 9))->implode(''),
             'expires_at' => now()->addMinutes(15),
             'purpose' => $purpose,
         ]);

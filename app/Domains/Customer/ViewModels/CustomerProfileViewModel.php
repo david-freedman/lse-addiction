@@ -44,4 +44,54 @@ readonly class CustomerProfileViewModel
     {
         return $this->customer->phone_verified_at?->format('Y-m-d H:i');
     }
+
+    public function surname(): ?string
+    {
+        return $this->customer->surname;
+    }
+
+    public function name(): ?string
+    {
+        return $this->customer->name;
+    }
+
+    public function birthday(): ?string
+    {
+        return $this->customer->birthday?->format('d.m.Y');
+    }
+
+    public function birthdayForInput(): ?string
+    {
+        return $this->customer->birthday?->format('Y-m-d');
+    }
+
+    public function city(): ?string
+    {
+        return $this->customer->city;
+    }
+
+    public function hasContactDetails(): bool
+    {
+        return $this->customer->hasContactDetails();
+    }
+
+    public function profileFields(): array
+    {
+        $values = $this->customer->profileFieldValues()->with('profileField')->get();
+
+        $result = [];
+        foreach ($values as $value) {
+            if ($value->profileField && $value->value) {
+                $displayValue = $value->value;
+
+                if ($value->profileField->type->value === 'select' && $value->profileField->options) {
+                    $displayValue = $value->profileField->options[$value->value] ?? $value->value;
+                }
+
+                $result[$value->profileField->label] = $displayValue;
+            }
+        }
+
+        return $result;
+    }
 }

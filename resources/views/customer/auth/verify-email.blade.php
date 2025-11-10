@@ -8,12 +8,6 @@
         <h2 class="text-2xl font-bold mb-2 text-gray-900">Підтвердження email</h2>
         <p class="text-gray-600 mb-6">Введіть код, який ми відправили на ваш email</p>
 
-        @if(session('success'))
-            <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                {{ session('success') }}
-            </div>
-        @endif
-
         <form action="{{ route('customer.verify-email') }}" method="POST">
             @csrf
             @include('customer.auth._partials.verification-form', [

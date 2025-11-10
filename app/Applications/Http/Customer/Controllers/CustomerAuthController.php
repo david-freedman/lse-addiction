@@ -51,17 +51,25 @@ class CustomerAuthController
             return back()->withErrors(['contact' => __('messages.errors.customer_not_found')]);
         }
 
-        SendVerificationCodeAction::execute(
-            type: $data->isEmail() ? 'email' : 'phone',
-            contact: $data->contact,
-            purpose: 'login',
-            customerId: $customer->id
-        );
+        try {
+            SendVerificationCodeAction::execute(
+                type: $data->isEmail() ? 'email' : 'phone',
+                contact: $data->contact,
+                purpose: 'login',
+                customerId: $customer->id
+            );
 
-        session(['login_contact' => $data->contact]);
-        session(['login_type' => $data->isEmail() ? 'email' : 'phone']);
+            session(['login_contact' => $data->contact]);
+            session(['login_type' => $data->isEmail() ? 'email' : 'phone']);
+            session()->forget('next_resend_at');
 
-        return redirect()->route('customer.verify-login.show');
+            return redirect()->route('customer.verify-login.show');
+        } catch (VerificationRateLimitException $e) {
+            $nextResendAt = now()->addSeconds($e->secondsUntilResend)->timestamp;
+            session(['next_resend_at' => $nextResendAt]);
+
+            return back()->withErrors(['rate_limit' => $e->getMessage()]);
+        }
     }
 
     public function showVerifyLogin(): View
@@ -98,6 +106,42 @@ class CustomerAuthController
         session()->forget(['login_contact', 'login_type']);
 
         return redirect()->route('customer.profile.show');
+    }
+
+    public function resendLoginCode(): RedirectResponse
+    {
+        $contact = session('login_contact');
+        $type = session('login_type');
+
+        if (! $contact || ! $type) {
+            return redirect()->route('customer.login');
+        }
+
+        $customer = Customer::query()
+            ->where($type === 'email' ? 'email' : 'phone', $contact)
+            ->first();
+
+        if (! $customer) {
+            return redirect()->route('customer.login');
+        }
+
+        try {
+            SendVerificationCodeAction::execute(
+                type: $type,
+                contact: $contact,
+                purpose: 'login',
+                customerId: $customer->id
+            );
+
+            session()->forget('next_resend_at');
+
+            return back()->with('status', 'Код відправлено повторно');
+        } catch (VerificationRateLimitException $e) {
+            $nextResendAt = now()->addSeconds($e->secondsUntilResend)->timestamp;
+            session(['next_resend_at' => $nextResendAt]);
+
+            return back()->withErrors(['resend' => $e->getMessage()]);
+        }
     }
 
     public function showCompleteVerification(): View|RedirectResponse

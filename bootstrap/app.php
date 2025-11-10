@@ -1,5 +1,6 @@
 <?php
 
+use App\Applications\Http\Middleware\CheckIsAdmin;
 use App\Applications\Http\Middleware\EnsureCustomerIsVerified;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn () => route('customer.login'));
         $middleware->alias([
             'verified.customer' => EnsureCustomerIsVerified::class,
+            'admin' => CheckIsAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

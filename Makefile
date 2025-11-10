@@ -1,7 +1,7 @@
 .PHONY: help up down restart logs shell env-reload composer artisan db-restart db-logs db-shell
 
 help:
-	@echo "LSE Addiction - Makefile commands"
+	@echo "LSE - Makefile commands"
 	@echo ""
 	@echo "Docker управління (app):"
 	@echo "  make up              - Запуск app і db контейнерів"

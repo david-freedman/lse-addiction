@@ -12,6 +12,18 @@ enum ActivityType: string
     case CustomerVerificationVerified = 'customer.verification.verified';
     case CustomerVerificationFailed = 'customer.verification.failed';
     case CustomerContactChanged = 'customer.contact.changed';
+    case CustomerContactDetailsAdded = 'customer.contact.details.added';
+    case CustomerPersonalDetailsUpdated = 'customer.personal.details.updated';
+    case ProfileFieldsCompleted = 'profile.fields.completed';
+    case ProfileFieldCreated = 'admin.profile.field.created';
+    case ProfileFieldUpdated = 'admin.profile.field.updated';
+    case ProfileFieldDeleted = 'admin.profile.field.deleted';
+
+    case CourseCreated = 'course.created';
+    case CourseUpdated = 'course.updated';
+    case CourseDeleted = 'course.deleted';
+    case CustomerEnrolled = 'course.customer.enrolled';
+    case CustomerUnenrolled = 'course.customer.unenrolled';
 
     case SystemError = 'system.error';
 }
