@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('type')->nullable();
             $table->timestamp('starts_at')->nullable();
             $table->string('label')->nullable();
-            $table->string('image')->nullable();
             $table->timestamps();
 
             $table->index('status');

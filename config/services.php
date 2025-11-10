@@ -39,4 +39,18 @@ return [
         'event_url' => env('SENDPULSE_EVENT_URL', 'https://events.sendpulse.com/events/id/f01bde8af10944ffd2227377cfa782bd/9258227'),
     ],
 
+    'alphasms' => [
+        'api_key' => env('ALPHASMS_API_KEY'),
+        'base_url' => env('ALPHASMS_BASE_URL', 'https://alphasms.ua/api/'),
+    ],
+
+    'verification' => [
+        'email' => [
+            'provider' => env('VERIFICATION_EMAIL_PROVIDER', 'sendpulse'),
+        ],
+        'phone' => [
+            'provider' => env('VERIFICATION_PHONE_PROVIDER', 'alphasms'),
+        ],
+    ],
+
 ];

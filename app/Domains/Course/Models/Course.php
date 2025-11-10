@@ -23,7 +23,6 @@ class Course extends Model
         'type',
         'starts_at',
         'label',
-        'image',
     ];
 
     protected $casts = [

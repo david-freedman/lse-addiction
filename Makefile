@@ -51,7 +51,7 @@ shell:
 	docker compose exec app bash
 
 env-reload:
-	docker compose restart app
+	docker compose up -d app
 	docker compose exec app php artisan config:clear
 	docker compose exec app php artisan cache:clear
 	@echo "✓ Оточення перезавантажено"

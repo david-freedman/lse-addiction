@@ -35,12 +35,6 @@
         <div class="card-course__logo">
             <img src="{{ asset('img/logo-white.svg') }}" alt="image" class="ibg ibg-contain">
         </div>
-
-        @if($course->image)
-            <div class="card-course__decor">
-                <img src="{{ asset('img/' . $course->image) }}" alt="{{ $course->name }}">
-            </div>
-        @endif
     </a>
 
     <div class="card-course__content">

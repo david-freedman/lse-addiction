@@ -1,24 +1,9 @@
-@extends('layouts.new-app')
+@extends('layouts.auth')
 
 @section('title', 'Редагувати профіль')
 
-@push('styles')
-<style>
-.auth--centered {
-    justify-content: center !important;
-}
-.auth--centered .auth__main {
-    max-width: 600px;
-    width: 100%;
-}
-.auth--centered .auth__image {
-    display: none;
-}
-</style>
-@endpush
-
 @section('content')
-<div class="main-page__auth auth auth--centered">
+<div class="main-page__auth auth">
     <div class="auth__main">
         <div class="auth__body">
             <div class="auth__header header-auth">
@@ -136,6 +121,9 @@
                 </div>
             </form>
         </div>
+    </div>
+    <div class="auth__image">
+        <img src="{{ asset('img/form-bg.webp') }}" alt="Image" class="ibg">
     </div>
 </div>
 @endsection

@@ -69,6 +69,10 @@
                 <a href="#" class="header__search-btn _icon-search">Пошук</a>
                 @auth
                     <a href="{{ route('customer.profile.show') }}" class="header__button button">Особистий кабінет</a>
+                    <form action="{{ route('customer.logout') }}" method="POST" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="header__button button button--outline">Вихід</button>
+                    </form>
                 @else
                     <a href="{{ route('customer.login') }}" class="header__button button">Особистий кабінет</a>
                 @endauth

@@ -27,6 +27,9 @@ class CreateCourseAction
             'banner' => $bannerPath,
             'author_id' => $data->author_id,
             'status' => $data->status,
+            'type' => $data->type,
+            'starts_at' => $data->starts_at,
+            'label' => $data->label,
         ]);
 
         if ($data->tags) {

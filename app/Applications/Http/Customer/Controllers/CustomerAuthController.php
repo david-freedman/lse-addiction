@@ -72,7 +72,7 @@ class CustomerAuthController
         }
     }
 
-    public function showVerifyLogin(): View
+    public function showVerifyLogin(): View|RedirectResponse
     {
         $contact = session('login_contact');
         $type = session('login_type');

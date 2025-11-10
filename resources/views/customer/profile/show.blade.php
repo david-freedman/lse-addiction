@@ -1,24 +1,9 @@
-@extends('layouts.new-app')
+@extends('layouts.auth')
 
 @section('title', 'Профіль')
 
-@push('styles')
-<style>
-.auth--centered {
-    justify-content: center !important;
-}
-.auth--centered .auth__main {
-    max-width: 600px;
-    width: 100%;
-}
-.auth--centered .auth__image {
-    display: none;
-}
-</style>
-@endpush
-
 @section('content')
-<div class="main-page__auth auth auth--centered">
+<div class="main-page__auth auth">
     <div class="auth__main">
         <div class="auth__body">
             <div class="auth__header header-auth">
@@ -77,45 +62,35 @@
                             <div class="field__label">
                                 Email
                             </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0;">
-                                <span style="font-size: 16px; color: #333;">{{ $viewModel->email() }}</span>
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0;">
+                                <span style="font-size: 16px; color: #333; flex: 1;">{{ $viewModel->email() }}</span>
                                 @if($viewModel->isEmailVerified())
-                                    <span style="background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px;">
+                                    <span style="background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px; flex-shrink: 0;">
                                         Підтверджено
                                     </span>
                                 @else
-                                    <span style="background-color: #fef3c7; color: #92400e; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px;">
+                                    <span style="background-color: #fef3c7; color: #92400e; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px; flex-shrink: 0;">
                                         Не підтверджено
                                     </span>
                                 @endif
                             </div>
-                            @if($viewModel->emailVerifiedAt())
-                                <div style="font-size: 12px; color: #666; margin-top: 4px;">
-                                    Підтверджено: {{ $viewModel->emailVerifiedAt() }}
-                                </div>
-                            @endif
                         </div>
                         <div class="auth__field field">
                             <div class="field__label">
                                 Телефон
                             </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0;">
-                                <span style="font-size: 16px; color: #333;">{{ $viewModel->phone() }}</span>
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0;">
+                                <span style="font-size: 16px; color: #333; flex: 1;">{{ $viewModel->phone() }}</span>
                                 @if($viewModel->isPhoneVerified())
-                                    <span style="background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px;">
+                                    <span style="background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px; flex-shrink: 0;">
                                         Підтверджено
                                     </span>
                                 @else
-                                    <span style="background-color: #fef3c7; color: #92400e; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px;">
+                                    <span style="background-color: #fef3c7; color: #92400e; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px; flex-shrink: 0;">
                                         Не підтверджено
                                     </span>
                                 @endif
                             </div>
-                            @if($viewModel->phoneVerifiedAt())
-                                <div style="font-size: 12px; color: #666; margin-top: 4px;">
-                                    Підтверджено: {{ $viewModel->phoneVerifiedAt() }}
-                                </div>
-                            @endif
                         </div>
 
                         @if(count($viewModel->profileFields()) > 0)
@@ -153,12 +128,23 @@
                             </div>
                         @endunless
                     </div>
-                    <a href="{{ route('customer.profile.edit') }}" class="auth__button button button--fill">
-                        Редагувати профіль
-                    </a>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <a href="{{ route('customer.profile.edit') }}" class="auth__button button button--fill">
+                            Редагувати профіль
+                        </a>
+                        <form action="{{ route('customer.logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="auth__button button button--outline" style="width: 100%;">
+                                Вийти з профілю
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="auth__image">
+        <img src="{{ asset('img/form-bg.webp') }}" alt="Image" class="ibg">
     </div>
 </div>
 @endsection
