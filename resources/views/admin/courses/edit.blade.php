@@ -69,10 +69,50 @@
                 @enderror
             </div>
 
-            <div class="mb-6">
+            <div class="mb-4">
                 <label for="tags" class="block text-gray-700 text-sm font-bold mb-2">Теги (через кому)</label>
                 <input type="text" name="tags_input" id="tags_input" value="{{ old('tags_input', $course->tags->pluck('name')->implode(', ')) }}" placeholder="наприклад: психологія, групова терапія, онлайн" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 <p class="text-gray-600 text-xs mt-1">Введіть теги через кому</p>
+            </div>
+
+            <div class="mb-4">
+                <label for="type" class="block text-gray-700 text-sm font-bold mb-2">Тип курсу</label>
+                <select name="type" id="type" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('type') border-red-500 @enderror">
+                    <option value="">Не вказано</option>
+                    <option value="upcoming" {{ old('type', $course->type?->value) === 'upcoming' ? 'selected' : '' }}>Майбутні події</option>
+                    <option value="recorded" {{ old('type', $course->type?->value) === 'recorded' ? 'selected' : '' }}>Курси у запісі</option>
+                    <option value="free" {{ old('type', $course->type?->value) === 'free' ? 'selected' : '' }}>Безкоштовні</option>
+                </select>
+                @error('type')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="mb-4">
+                <label for="starts_at" class="block text-gray-700 text-sm font-bold mb-2">Дата початку</label>
+                <input type="datetime-local" name="starts_at" id="starts_at" value="{{ old('starts_at', $course->starts_at?->format('Y-m-d\TH:i')) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('starts_at') border-red-500 @enderror">
+                <p class="text-gray-600 text-xs mt-1">Залиште порожнім, якщо дата не вказана</p>
+                @error('starts_at')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="mb-4">
+                <label for="label" class="block text-gray-700 text-sm font-bold mb-2">Мітка (Label)</label>
+                <input type="text" name="label" id="label" value="{{ old('label', $course->label) }}" placeholder="наприклад: BESTSELLER, NEW" maxlength="50" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('label') border-red-500 @enderror">
+                <p class="text-gray-600 text-xs mt-1">Промо-мітка для картки курсу (макс. 50 символів)</p>
+                @error('label')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="mb-6">
+                <label for="author_id" class="block text-gray-700 text-sm font-bold mb-2">Автор (User ID)</label>
+                <input type="number" name="author_id" id="author_id" value="{{ old('author_id', $course->author_id) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('author_id') border-red-500 @enderror">
+                <p class="text-gray-600 text-xs mt-1">Залиште порожнім, щоб зберегти поточного автора ({{ $course->author?->name ?? 'не вказано' }})</p>
+                @error('author_id')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="flex items-center justify-between">

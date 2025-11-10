@@ -16,7 +16,7 @@ class VerifyCodeData extends Data
     {
         return [
             'contact' => ['required', 'string'],
-            'code' => ['required', 'string', 'size:6'],
+            'code' => ['required', 'string', 'size:4'],
             'type' => ['required', 'in:email,phone'],
         ];
     }

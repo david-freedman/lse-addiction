@@ -30,15 +30,13 @@
 
                 <div class="auth__wrapper">
                     <div class="code-popup__title" style="text-align: center; margin-bottom: 20px; font-size: 18px;">
-                        Введіть код з {{ $type === 'email' ? 'E-mail' : 'SMS' }}
+                        Введіть код з {{ $type === 'email' ? 'E-mail' : 'голосового дзвінка' }}
                     </div>
                     <div class="code-popup__body" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
-                        <input type="number" class="code-input" maxlength="1" autocomplete="off" autofocus style="width: 50px; height: 50px; text-align: center; font-size: 24px;">
-                        <input type="number" class="code-input" maxlength="1" autocomplete="off" style="width: 50px; height: 50px; text-align: center; font-size: 24px;">
-                        <input type="number" class="code-input" maxlength="1" autocomplete="off" style="width: 50px; height: 50px; text-align: center; font-size: 24px;">
-                        <input type="number" class="code-input" maxlength="1" autocomplete="off" style="width: 50px; height: 50px; text-align: center; font-size: 24px;">
-                        <input type="number" class="code-input" maxlength="1" autocomplete="off" style="width: 50px; height: 50px; text-align: center; font-size: 24px;">
-                        <input type="number" class="code-input" maxlength="1" autocomplete="off" style="width: 50px; height: 50px; text-align: center; font-size: 24px;">
+                        <input type="text" inputmode="numeric" pattern="[0-9]" class="code-input" maxlength="1" autocomplete="off" autofocus style="width: 50px; height: 50px; text-align: center; font-size: 24px;">
+                        <input type="text" inputmode="numeric" pattern="[0-9]" class="code-input" maxlength="1" autocomplete="off" style="width: 50px; height: 50px; text-align: center; font-size: 24px;">
+                        <input type="text" inputmode="numeric" pattern="[0-9]" class="code-input" maxlength="1" autocomplete="off" style="width: 50px; height: 50px; text-align: center; font-size: 24px;">
+                        <input type="text" inputmode="numeric" pattern="[0-9]" class="code-input" maxlength="1" autocomplete="off" style="width: 50px; height: 50px; text-align: center; font-size: 24px;">
                     </div>
                     @error('code')
                         <div class="field__error" style="text-align: center; margin-bottom: 15px; color: #dc2626;">{{ $message }}</div>
@@ -54,10 +52,11 @@
                 <button type="submit" id="resendButton" class="auth__link" style="background: none; border: none; cursor: pointer; padding: 0; font: inherit; color: inherit; text-decoration: underline;">
                     Відправити код знову
                 </button>
-                @error('resend')
-                    <div class="field__error" style="text-align: center; margin-top: 10px; color: #dc2626;">{{ $message }}</div>
-                @enderror
             </form>
+
+            @error('resend')
+                <div id="resendError" class="field__error" style="text-align: center; margin-top: 10px; color: #dc2626;">{{ $message }}</div>
+            @enderror
 
             @if(session('status'))
                 <div style="text-align: center; margin-top: 10px; color: #059669; font-size: 14px;">
@@ -98,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
         input.addEventListener('paste', function(e) {
             e.preventDefault();
             const pastedData = e.clipboardData.getData('text');
-            const digits = pastedData.replace(/\D/g, '').split('').slice(0, 6);
+            const digits = pastedData.replace(/\D/g, '').split('').slice(0, 4);
 
             digits.forEach((digit, i) => {
                 if (inputs[i]) {
@@ -135,6 +134,12 @@ document.addEventListener('DOMContentLoaded', function() {
             resendButton.disabled = false;
             resendButton.style.opacity = '1';
             resendButton.style.cursor = 'pointer';
+
+            const errorDiv = document.getElementById('resendError');
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+            }
+
             clearInterval(resendTimerInterval);
             return;
         }

@@ -1,15 +1,16 @@
 <?php
 
 use App\Applications\Http\Admin\Controllers\CourseController;
-use App\Applications\Http\Customer\Controllers\CoursesController;
 use App\Applications\Http\Customer\Controllers\CustomerAuthController;
+use App\Applications\Http\Customer\Controllers\CustomerDashboardController;
 use App\Applications\Http\Customer\Controllers\CustomerProfileController;
 use App\Applications\Http\Customer\Controllers\CustomerRegistrationController;
 use App\Applications\Http\Customer\Controllers\MyCoursesController;
-use App\Applications\Http\Shared\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/', [CustomerDashboardController::class, 'index'])
+    ->middleware(['auth', 'verified.customer'])
+    ->name('home');
 
 Route::prefix('customer')->name('customer.')->group(function () {
     Route::middleware('guest')->group(function () {
@@ -18,6 +19,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
 
         Route::post('registration/send-code', [CustomerRegistrationController::class, 'sendVerificationCode'])->name('registration.send-code');
         Route::post('registration/verify-code', [CustomerRegistrationController::class, 'verifyVerificationCode'])->name('registration.verify-code');
+        Route::post('registration/resend-code', [CustomerRegistrationController::class, 'resendVerificationCodeJson'])->name('registration.resend-code');
 
         Route::get('verify-phone', [CustomerRegistrationController::class, 'showVerifyPhone'])->name('verify-phone.show');
         Route::post('verify-phone', [CustomerRegistrationController::class, 'verifyPhone'])->name('verify-phone');
@@ -59,7 +61,6 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::post('logout', [CustomerAuthController::class, 'logout'])->name('logout');
 
         Route::get('my-courses', [MyCoursesController::class, 'index'])->name('my-courses');
-        Route::get('courses/browse', [CoursesController::class, 'index'])->name('courses.browse');
         Route::get('courses/{course}', [MyCoursesController::class, 'show'])->name('courses.show');
         Route::post('courses/{course}/enroll', [MyCoursesController::class, 'enroll'])->name('courses.enroll');
         Route::post('courses/{course}/unenroll', [MyCoursesController::class, 'unenroll'])->name('courses.unenroll');

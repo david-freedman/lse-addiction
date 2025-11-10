@@ -136,6 +136,11 @@ function registrationForm() {
         phoneError: '',
         emailError: '',
         currentVerificationType: null,
+        resending: false,
+        nextResendAt: null,
+        codeExpiresAt: null,
+        resendError: '',
+        resendInterval: null,
 
         init() {
             document.addEventListener('click', (e) => {
@@ -217,6 +222,9 @@ function registrationForm() {
                 }
 
                 this.currentVerificationType = type;
+                this.codeExpiresAt = Math.floor(Date.now() / 1000) + (15 * 60);
+                this.nextResendAt = null;
+                this.resendError = '';
 
                 this.openVerificationPopup(type);
             } catch (error) {
@@ -235,6 +243,8 @@ function registrationForm() {
         },
 
         openVerificationPopup(type) {
+            this.resetPopupState();
+
             const popup = document.getElementById('popup-code');
             if (!popup) {
                 console.error('Popup not found');
@@ -243,7 +253,7 @@ function registrationForm() {
 
             const title = popup.querySelector('.code-popup__title');
             if (title) {
-                title.textContent = type === 'email' ? 'Введіть код з E-mail' : 'Введіть код з SMS';
+                title.textContent = type === 'email' ? 'Введіть код з E-mail' : 'Введіть код з голосового дзвінка';
             }
 
             const inputs = popup.querySelectorAll('.popup-code-input');
@@ -259,6 +269,8 @@ function registrationForm() {
                 if (firstInput) {
                     firstInput.focus();
                 }
+
+                popup.dispatchEvent(new Event('popup-opened'));
             }, 100);
         },
 
@@ -297,6 +309,30 @@ function registrationForm() {
             }
         },
 
+        resetPopupState() {
+            const errorDiv = document.getElementById('popupCodeError');
+            const infoDiv = document.getElementById('popupCodeInfo');
+            const resendErrorDiv = document.getElementById('popupResendError');
+
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+                errorDiv.textContent = '';
+            }
+
+            if (infoDiv) {
+                infoDiv.style.display = 'none';
+                infoDiv.textContent = '';
+                infoDiv.style.color = '#666';
+            }
+
+            if (resendErrorDiv) {
+                resendErrorDiv.style.display = 'none';
+                resendErrorDiv.textContent = '';
+            }
+
+            this.resendError = '';
+        },
+
         closeVerificationPopup() {
             const popup = document.getElementById('popup-code');
             if (!popup) return;
@@ -305,6 +341,112 @@ function registrationForm() {
             popup.setAttribute('aria-hidden', 'true');
             document.documentElement.classList.remove('popup-show');
             document.body.style.overflow = '';
+
+            if (this.resendInterval) {
+                clearInterval(this.resendInterval);
+                this.resendInterval = null;
+            }
+
+            popup.dispatchEvent(new Event('popup-closed'));
+        },
+
+        async resendCode() {
+            if (!this.currentVerificationType) {
+                return;
+            }
+
+            if (this.nextResendAt && Date.now() / 1000 < this.nextResendAt) {
+                return;
+            }
+
+            this.resending = true;
+            this.resendError = '';
+
+            try {
+                const response = await fetch('{{ route('customer.registration.resend-code') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: this.currentVerificationType
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.status === 429) {
+                    this.nextResendAt = data.next_resend_at;
+                    this.resendError = data.message || 'Спробуйте пізніше';
+                    this.startResendCountdown();
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Помилка відправки коду');
+                }
+
+                this.codeExpiresAt = data.expires_at;
+                this.nextResendAt = null;
+                this.resendError = '';
+
+                const inputs = document.querySelectorAll('.popup-code-input');
+                inputs.forEach(input => input.value = '');
+                if (inputs[0]) {
+                    inputs[0].focus();
+                }
+            } catch (error) {
+                this.resendError = error.message;
+            } finally {
+                this.resending = false;
+            }
+        },
+
+        startResendCountdown() {
+            if (this.resendInterval) {
+                clearInterval(this.resendInterval);
+            }
+
+            this.resendInterval = setInterval(() => {
+                const now = Date.now() / 1000;
+                if (now >= this.nextResendAt) {
+                    this.nextResendAt = null;
+                    clearInterval(this.resendInterval);
+                    this.resendInterval = null;
+                }
+            }, 1000);
+        },
+
+        getResendCountdown() {
+            if (!this.nextResendAt) return null;
+
+            const now = Date.now() / 1000;
+            const diff = Math.max(0, this.nextResendAt - now);
+
+            const minutes = Math.floor(diff / 60);
+            const seconds = Math.floor(diff % 60);
+
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        },
+
+        getCodeExpiry() {
+            if (!this.codeExpiresAt) return null;
+
+            const now = Date.now() / 1000;
+            const diff = Math.max(0, this.codeExpiresAt - now);
+
+            const minutes = Math.floor(diff / 60);
+            const seconds = Math.floor(diff % 60);
+
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        },
+
+        canResend() {
+            if (this.resending) return false;
+            if (!this.nextResendAt) return true;
+            return Date.now() / 1000 >= this.nextResendAt;
         },
 
         handleSubmit(event) {

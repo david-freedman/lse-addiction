@@ -54,7 +54,7 @@ class CourseController
 
     public function edit(Course $course): View
     {
-        $course->load(['tags']);
+        $course->load(['tags', 'author']);
 
         return view('admin.courses.edit', compact('course'));
     }

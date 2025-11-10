@@ -3,6 +3,8 @@
 namespace App\Domains\Course\Data;
 
 use Illuminate\Http\UploadedFile;
+use Spatie\LaravelData\Attributes\Validation\Date;
+use Spatie\LaravelData\Attributes\Validation\Exists;
 use Spatie\LaravelData\Attributes\Validation\Image;
 use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\Min;
@@ -36,6 +38,18 @@ class UpdateCourseData extends Data
 
         #[Nullable]
         public readonly ?array $tags,
+
+        #[Nullable, StringType, Max(50)]
+        public readonly ?string $type,
+
+        #[Nullable, Date]
+        public readonly ?string $starts_at,
+
+        #[Nullable, StringType, Max(50)]
+        public readonly ?string $label,
+
+        #[Nullable, Numeric, Exists('users', 'id')]
+        public readonly ?int $author_id,
     ) {}
 
     public static function rules(): array
@@ -44,6 +58,8 @@ class UpdateCourseData extends Data
             'status' => ['required', 'string', 'in:draft,published,archived'],
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string', 'max:50'],
+            'type' => ['nullable', 'string', 'in:upcoming,recorded,free'],
+            'starts_at' => ['nullable', 'date'],
         ];
     }
 }
