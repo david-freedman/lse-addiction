@@ -2,6 +2,7 @@
 
 namespace App\Domains\Course\Models;
 
+use App\Domains\Course\Enums\CourseStatus;
 use App\Domains\Course\Enums\CourseType;
 use App\Domains\Customer\Models\Customer;
 use App\Models\User;
@@ -29,6 +30,7 @@ class Course extends Model
         'price' => 'decimal:2',
         'starts_at' => 'datetime',
         'type' => CourseType::class,
+        'status' => CourseStatus::class,
     ];
 
     public function coach(): BelongsTo
@@ -55,17 +57,27 @@ class Course extends Model
 
     public function isPublished(): bool
     {
-        return $this->status === 'published';
+        return $this->status === CourseStatus::Published;
     }
 
     public function isDraft(): bool
     {
-        return $this->status === 'draft';
+        return $this->status === CourseStatus::Draft;
+    }
+
+    public function isInProgress(): bool
+    {
+        return $this->status === CourseStatus::InProgress;
+    }
+
+    public function isFinished(): bool
+    {
+        return $this->status === CourseStatus::Finished;
     }
 
     public function isArchived(): bool
     {
-        return $this->status === 'archived';
+        return $this->status === CourseStatus::Archived;
     }
 
     public function hasCustomer(Customer $customer): bool

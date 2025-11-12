@@ -57,6 +57,8 @@
                 <select name="status" id="status" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('status') border-red-500 @enderror" required>
                     <option value="draft" {{ old('status') === 'draft' ? 'selected' : '' }}>Чернетка</option>
                     <option value="published" {{ old('status') === 'published' ? 'selected' : '' }}>Опубліковано</option>
+                    <option value="in_progress" {{ old('status') === 'in_progress' ? 'selected' : '' }}>В процесі</option>
+                    <option value="finished" {{ old('status') === 'finished' ? 'selected' : '' }}>Завершений</option>
                     <option value="archived" {{ old('status') === 'archived' ? 'selected' : '' }}>Архівовано</option>
                 </select>
                 @error('status')

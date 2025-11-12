@@ -6,6 +6,7 @@ use App\Applications\Http\Customer\Controllers\CustomerDashboardController;
 use App\Applications\Http\Customer\Controllers\CustomerProfileController;
 use App\Applications\Http\Customer\Controllers\CustomerRegistrationController;
 use App\Applications\Http\Customer\Controllers\MyCoursesController;
+use App\Applications\Http\Customer\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [CustomerDashboardController::class, 'index'])
@@ -64,6 +65,8 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::get('courses/{course}', [MyCoursesController::class, 'show'])->name('courses.show');
         Route::post('courses/{course}/enroll', [MyCoursesController::class, 'enroll'])->name('courses.enroll');
         Route::post('courses/{course}/unenroll', [MyCoursesController::class, 'unenroll'])->name('courses.unenroll');
+
+        Route::get('transactions', [TransactionController::class, 'index'])->name('transactions');
     });
 });
 

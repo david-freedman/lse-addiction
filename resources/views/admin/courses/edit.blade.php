@@ -60,9 +60,11 @@
             <div class="mb-4">
                 <label for="status" class="block text-gray-700 text-sm font-bold mb-2">Статус</label>
                 <select name="status" id="status" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('status') border-red-500 @enderror" required>
-                    <option value="draft" {{ old('status', $course->status) === 'draft' ? 'selected' : '' }}>Чернетка</option>
-                    <option value="published" {{ old('status', $course->status) === 'published' ? 'selected' : '' }}>Опубліковано</option>
-                    <option value="archived" {{ old('status', $course->status) === 'archived' ? 'selected' : '' }}>Архівовано</option>
+                    <option value="draft" {{ old('status', $course->status->value) === 'draft' ? 'selected' : '' }}>Чернетка</option>
+                    <option value="published" {{ old('status', $course->status->value) === 'published' ? 'selected' : '' }}>Опубліковано</option>
+                    <option value="in_progress" {{ old('status', $course->status->value) === 'in_progress' ? 'selected' : '' }}>В процесі</option>
+                    <option value="finished" {{ old('status', $course->status->value) === 'finished' ? 'selected' : '' }}>Завершений</option>
+                    <option value="archived" {{ old('status', $course->status->value) === 'archived' ? 'selected' : '' }}>Архівовано</option>
                 </select>
                 @error('status')
                     <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>

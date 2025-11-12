@@ -27,13 +27,17 @@
             <div class="grid grid-cols-2 gap-6 mb-6">
                 <div>
                     <label class="block text-gray-600 text-sm font-bold mb-2">Статус</label>
-                    @if($course->status === 'published')
-                        <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded">{{ $viewModel->statusLabel() }}</span>
-                    @elseif($course->status === 'draft')
-                        <span class="px-3 py-1 bg-gray-100 text-gray-800 text-sm rounded">{{ $viewModel->statusLabel() }}</span>
-                    @else
-                        <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm rounded">{{ $viewModel->statusLabel() }}</span>
-                    @endif
+                    @php
+                        $statusColor = match($course->status->color()) {
+                            'green' => 'bg-green-100 text-green-800',
+                            'gray' => 'bg-gray-100 text-gray-800',
+                            'blue' => 'bg-blue-100 text-blue-800',
+                            'purple' => 'bg-purple-100 text-purple-800',
+                            'orange' => 'bg-orange-100 text-orange-800',
+                            default => 'bg-gray-100 text-gray-800',
+                        };
+                    @endphp
+                    <span class="px-3 py-1 {{ $statusColor }} text-sm rounded">{{ $viewModel->statusLabel() }}</span>
                 </div>
 
                 <div>

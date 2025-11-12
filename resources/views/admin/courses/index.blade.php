@@ -43,13 +43,17 @@
                                 {{ number_format($course->price, 2, ',', ' ') }} грн
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                @if($course->status === 'published')
-                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Опубліковано</span>
-                                @elseif($course->status === 'draft')
-                                    <span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded">Чернетка</span>
-                                @else
-                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">Архівовано</span>
-                                @endif
+                                @php
+                                    $statusColor = match($course->status->color()) {
+                                        'green' => 'bg-green-100 text-green-800',
+                                        'gray' => 'bg-gray-100 text-gray-800',
+                                        'blue' => 'bg-blue-100 text-blue-800',
+                                        'purple' => 'bg-purple-100 text-purple-800',
+                                        'orange' => 'bg-orange-100 text-orange-800',
+                                        default => 'bg-gray-100 text-gray-800',
+                                    };
+                                @endphp
+                                <span class="px-2 py-1 {{ $statusColor }} text-xs rounded">{{ $course->status->label() }}</span>
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex flex-wrap gap-1">

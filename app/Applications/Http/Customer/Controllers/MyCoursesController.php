@@ -16,7 +16,8 @@ class MyCoursesController
     public function index(Request $request): View
     {
         $customer = $request->user();
-        $viewModel = new MyCoursesViewModel($customer);
+        $status = $request->query('status');
+        $viewModel = new MyCoursesViewModel($customer, $status);
 
         return view('customer.courses.index', compact('viewModel'));
     }

@@ -2,7 +2,9 @@
 
 namespace App\Domains\Course\Data;
 
+use App\Domains\Course\Enums\CourseStatus;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\Rules\Enum;
 use Spatie\LaravelData\Attributes\Validation\Date;
 use Spatie\LaravelData\Attributes\Validation\Exists;
 use Spatie\LaravelData\Attributes\Validation\Image;
@@ -55,7 +57,7 @@ class CreateCourseData extends Data
     public static function rules(): array
     {
         return [
-            'status' => ['required', 'string', 'in:draft,published,archived'],
+            'status' => ['required', new Enum(CourseStatus::class)],
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string', 'max:50'],
             'type' => ['nullable', 'string', 'in:upcoming,recorded,free'],
