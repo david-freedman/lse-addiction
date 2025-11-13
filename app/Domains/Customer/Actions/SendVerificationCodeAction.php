@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Domains\Customer\Actions;
 
 use App\Domains\ActivityLog\Actions\LogActivityAction;
@@ -8,7 +10,8 @@ use App\Domains\ActivityLog\Enums\ActivitySubject;
 use App\Domains\ActivityLog\Enums\ActivityType;
 use App\Domains\Customer\Exceptions\VerificationRateLimitException;
 use App\Domains\Customer\Models\CustomerVerification;
-use Illuminate\Support\Facades\Http;
+use App\Domains\Verification\Actions\SendWithRetryAction;
+use App\Domains\Verification\Factories\VerificationProviderFactory;
 use Illuminate\Support\Facades\Log;
 
 class SendVerificationCodeAction
@@ -29,7 +32,7 @@ class SendVerificationCodeAction
             ->first();
 
         if ($existingVerification) {
-            if (!$existingVerification->canResend()) {
+            if (! $existingVerification->canResend()) {
                 throw new VerificationRateLimitException(
                     secondsUntilResend: $existingVerification->getSecondsUntilResend(),
                     reason: 'interval'
@@ -58,10 +61,21 @@ class SendVerificationCodeAction
             $verification->save();
         }
 
-        if ($type === 'email') {
-            self::sendEmail($contact, $verification->code);
-        } else {
-            self::sendPhone($contact, $verification->code);
+        $provider = VerificationProviderFactory::make($type);
+        $result = SendWithRetryAction::execute($provider, $contact, $verification->code);
+
+        if (! $result->success) {
+            Log::error('Failed to send verification code', [
+                'type' => $type,
+                'contact' => $contact,
+                'purpose' => $purpose,
+                'error' => $result->message,
+            ]);
+        }
+
+        if ($result->success && $result->generatedCode) {
+            $verification->code = $result->generatedCode;
+            $verification->save();
         }
 
         LogActivityAction::execute(ActivityLogData::from([
@@ -73,31 +87,13 @@ class SendVerificationCodeAction
                 'type' => $type,
                 'contact' => $contact,
                 'purpose' => $purpose,
+                'success' => $result->success,
+                'external_id' => $result->externalId,
             ],
             'ip_address' => null,
             'user_agent' => null,
         ]));
 
         return $verification;
-    }
-
-    private static function sendEmail(string $email, string $code): void
-    {
-        $url = config('services.sendpulse.event_url');
-
-        Http::post($url, [
-            'email' => $email,
-            'reg_code' => $code,
-        ]);
-    }
-
-    private static function sendPhone(string $phone, string $code): void
-    {
-        $url = config('services.sendpulse.event_url');
-
-        Http::post($url, [
-            'phone' => $phone,
-            'reg_code' => $code,
-        ]);
     }
 }

@@ -23,7 +23,7 @@ class CourseSeeder extends Seeder
             'type' => 'upcoming',
             'starts_at' => now()->addDays(3),
             'label' => 'онлайн майстер-клас',
-            'image' => 'courses/01.webp',
+            'banner' => 'courses/01.webp',
         ]);
 
         Course::create([
@@ -36,7 +36,7 @@ class CourseSeeder extends Seeder
             'type' => 'free',
             'starts_at' => now()->addDays(5),
             'label' => 'безкоштовний вебінар',
-            'image' => 'courses/02.webp',
+            'banner' => 'courses/02.webp',
         ]);
 
         Course::create([
@@ -49,7 +49,7 @@ class CourseSeeder extends Seeder
             'type' => 'recorded',
             'starts_at' => now()->subDays(10),
             'label' => 'курс у запісі',
-            'image' => 'courses/03.webp',
+            'banner' => 'courses/03.webp',
         ]);
     }
 }

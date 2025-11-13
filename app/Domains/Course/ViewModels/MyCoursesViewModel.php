@@ -8,14 +8,29 @@ use Illuminate\Database\Eloquent\Collection;
 readonly class MyCoursesViewModel
 {
     private Collection $courses;
+    private Collection $allCourses;
+    private ?string $currentStatus;
 
-    public function __construct(Customer $customer)
+    public function __construct(Customer $customer, ?string $status = null)
     {
-        $this->courses = $customer->courses()
-            ->wherePivot('status', 'active')
+        $this->currentStatus = $status;
+
+        $this->allCourses = $customer->courses()
             ->withPivot(['enrolled_at', 'status'])
+            ->with(['coach', 'tags'])
             ->orderBy('course_customer.enrolled_at', 'desc')
             ->get();
+
+        $query = $customer->courses()
+            ->withPivot(['enrolled_at', 'status'])
+            ->with(['coach', 'tags'])
+            ->orderBy('course_customer.enrolled_at', 'desc');
+
+        if ($status) {
+            $query->wherePivot('status', $status);
+        }
+
+        $this->courses = $query->get();
     }
 
     public function courses(): Collection
@@ -36,5 +51,35 @@ readonly class MyCoursesViewModel
     public function coursesCount(): int
     {
         return $this->courses->count();
+    }
+
+    public function totalCount(): int
+    {
+        return $this->allCourses->count();
+    }
+
+    public function activeCount(): int
+    {
+        return $this->allCourses->where('pivot.status', 'active')->count();
+    }
+
+    public function completedCount(): int
+    {
+        return $this->allCourses->where('pivot.status', 'completed')->count();
+    }
+
+    public function currentStatus(): ?string
+    {
+        return $this->currentStatus;
+    }
+
+    public function isFilteredBy(string $status): bool
+    {
+        return $this->currentStatus === $status;
+    }
+
+    public function isShowingAll(): bool
+    {
+        return $this->currentStatus === null;
     }
 }

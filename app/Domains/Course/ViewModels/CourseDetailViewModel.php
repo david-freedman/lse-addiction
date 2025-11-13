@@ -2,6 +2,7 @@
 
 namespace App\Domains\Course\ViewModels;
 
+use App\Domains\Course\Enums\CourseStatus;
 use App\Domains\Course\Models\Course;
 use App\Domains\Customer\Models\Customer;
 use Illuminate\Support\Facades\Storage;
@@ -59,12 +60,7 @@ readonly class CourseDetailViewModel
 
     public function statusLabel(): string
     {
-        return match ($this->course->status) {
-            'draft' => 'Чернетка',
-            'published' => 'Опубліковано',
-            'archived' => 'Архівовано',
-            default => $this->course->status,
-        };
+        return $this->course->status->label();
     }
 
     public function tags(): array
@@ -93,12 +89,12 @@ readonly class CourseDetailViewModel
 
     public function canEnroll(): bool
     {
-        return $this->course->status === 'published' && !$this->isEnrolled();
+        return $this->course->isPublished() && !$this->isEnrolled();
     }
 
     public function isPublished(): bool
     {
-        return $this->course->status === 'published';
+        return $this->course->isPublished();
     }
 
     public function createdAt(): string

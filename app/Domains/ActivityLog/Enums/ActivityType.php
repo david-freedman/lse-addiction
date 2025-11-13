@@ -25,5 +25,9 @@ enum ActivityType: string
     case CustomerEnrolled = 'course.customer.enrolled';
     case CustomerUnenrolled = 'course.customer.unenrolled';
 
+    case TransactionCreated = 'transaction.created';
+    case TransactionCompleted = 'transaction.completed';
+    case TransactionFailed = 'transaction.failed';
+
     case SystemError = 'system.error';
 }

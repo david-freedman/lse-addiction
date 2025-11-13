@@ -5,7 +5,6 @@ namespace App\Domains\Customer\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 
 class CustomerVerification extends Model
 {
@@ -47,7 +46,7 @@ class CustomerVerification extends Model
             'customer_id' => $customerId,
             'type' => $type,
             'contact' => $contact,
-            'code' => collect(range(1, 6))->map(fn() => random_int(1, 9))->implode(''),
+            'code' => collect(range(1, 4))->map(fn () => random_int(1, 9))->implode(''),
             'expires_at' => now()->addMinutes(15),
             'purpose' => $purpose,
         ]);

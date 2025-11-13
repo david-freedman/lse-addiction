@@ -57,6 +57,8 @@
                 <select name="status" id="status" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('status') border-red-500 @enderror" required>
                     <option value="draft" {{ old('status') === 'draft' ? 'selected' : '' }}>Чернетка</option>
                     <option value="published" {{ old('status') === 'published' ? 'selected' : '' }}>Опубліковано</option>
+                    <option value="in_progress" {{ old('status') === 'in_progress' ? 'selected' : '' }}>В процесі</option>
+                    <option value="finished" {{ old('status') === 'finished' ? 'selected' : '' }}>Завершений</option>
                     <option value="archived" {{ old('status') === 'archived' ? 'selected' : '' }}>Архівовано</option>
                 </select>
                 @error('status')
@@ -64,10 +66,41 @@
                 @enderror
             </div>
 
-            <div class="mb-6">
+            <div class="mb-4">
                 <label for="tags" class="block text-gray-700 text-sm font-bold mb-2">Теги (через кому)</label>
                 <input type="text" name="tags_input" id="tags_input" value="{{ old('tags_input') }}" placeholder="наприклад: психологія, групова терапія, онлайн" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 <p class="text-gray-600 text-xs mt-1">Введіть теги через кому</p>
+            </div>
+
+            <div class="mb-4">
+                <label for="type" class="block text-gray-700 text-sm font-bold mb-2">Тип курсу</label>
+                <select name="type" id="type" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('type') border-red-500 @enderror">
+                    <option value="">Не вказано</option>
+                    <option value="upcoming" {{ old('type') === 'upcoming' ? 'selected' : '' }}>Майбутні події</option>
+                    <option value="recorded" {{ old('type') === 'recorded' ? 'selected' : '' }}>Курси у запісі</option>
+                    <option value="free" {{ old('type') === 'free' ? 'selected' : '' }}>Безкоштовні</option>
+                </select>
+                @error('type')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="mb-4">
+                <label for="starts_at" class="block text-gray-700 text-sm font-bold mb-2">Дата початку</label>
+                <input type="datetime-local" name="starts_at" id="starts_at" value="{{ old('starts_at') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('starts_at') border-red-500 @enderror">
+                <p class="text-gray-600 text-xs mt-1">Залиште порожнім, якщо дата не вказана</p>
+                @error('starts_at')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="mb-6">
+                <label for="label" class="block text-gray-700 text-sm font-bold mb-2">Мітка (Label)</label>
+                <input type="text" name="label" id="label" value="{{ old('label') }}" placeholder="наприклад: BESTSELLER, NEW" maxlength="50" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('label') border-red-500 @enderror">
+                <p class="text-gray-600 text-xs mt-1">Промо-мітка для картки курсу (макс. 50 символів)</p>
+                @error('label')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="flex items-center justify-between">

@@ -30,6 +30,22 @@ class UpdateCourseAction
             $updateData['banner'] = $data->banner->store('courses', 'public');
         }
 
+        if ($data->type !== null) {
+            $updateData['type'] = $data->type;
+        }
+
+        if ($data->starts_at !== null) {
+            $updateData['starts_at'] = $data->starts_at;
+        }
+
+        if ($data->label !== null) {
+            $updateData['label'] = $data->label;
+        }
+
+        if ($data->author_id !== null) {
+            $updateData['author_id'] = $data->author_id;
+        }
+
         $course->update($updateData);
 
         if ($data->tags !== null) {

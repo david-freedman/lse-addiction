@@ -344,7 +344,7 @@ class CustomerRegistrationController
     public function verifyVerificationCode(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'code' => ['required', 'string', 'size:6'],
+            'code' => ['required', 'string', 'size:4'],
             'type' => ['required', 'in:email,phone'],
         ]);
 
@@ -387,5 +387,58 @@ class CustomerRegistrationController
             'message' => $type === 'email' ? 'Email верифіковано' : 'Телефон верифіковано',
             'verified' => true,
         ]);
+    }
+
+    public function resendVerificationCodeJson(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'type' => ['required', 'in:email,phone'],
+        ]);
+
+        $type = $validated['type'];
+        $contactKey = $type === 'email' ? 'registration_email' : 'registration_phone';
+        $contact = session($contactKey);
+
+        if (! $contact) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Спочатку відправте код верифікації',
+            ], 422);
+        }
+
+        try {
+            SendVerificationCodeAction::execute(
+                type: $type,
+                contact: $contact,
+                purpose: 'registration',
+                customerId: null
+            );
+
+            $expiresAt = now()->addMinutes(15)->timestamp;
+            $sessionKey = $type === 'email' ? 'email_code_expires_at' : 'phone_code_expires_at';
+
+            session([
+                $sessionKey => $expiresAt,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Код відправлено повторно',
+                'expires_at' => $expiresAt,
+            ]);
+        } catch (VerificationRateLimitException $e) {
+            $nextResendAt = now()->addSeconds($e->secondsUntilResend)->timestamp;
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'next_resend_at' => $nextResendAt,
+            ], 429);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Помилка відправки коду',
+            ], 500);
+        }
     }
 }

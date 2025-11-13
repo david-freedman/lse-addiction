@@ -6,6 +6,7 @@ use App\Domains\Course\Models\Course;
 use App\Domains\Course\Models\CourseCustomer;
 use App\Domains\Shared\Casts\EmailCast;
 use App\Domains\Shared\Casts\PhoneCast;
+use App\Domains\Transaction\Models\Transaction;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -46,6 +47,11 @@ class Customer extends Authenticatable
         return $this->belongsToMany(Course::class)
             ->using(CourseCustomer::class)
             ->withPivot(['enrolled_at', 'status']);
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
     }
 
     public function markEmailAsVerified(): void
