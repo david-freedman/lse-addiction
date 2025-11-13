@@ -3,6 +3,7 @@
 namespace App\Domains\Transaction\Models;
 
 use App\Domains\Customer\Models\Customer;
+use App\Domains\Payment\Enums\PaymentProvider;
 use App\Domains\Transaction\Enums\PaymentMethod;
 use App\Domains\Transaction\Enums\TransactionStatus;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +21,10 @@ class Transaction extends Model
         'currency',
         'status',
         'payment_method',
+        'payment_provider',
+        'gateway_order_reference',
+        'gateway_transaction_id',
+        'gateway_response',
         'payment_reference',
         'metadata',
         'completed_at',
@@ -29,7 +34,9 @@ class Transaction extends Model
         'amount' => 'decimal:2',
         'status' => TransactionStatus::class,
         'payment_method' => PaymentMethod::class,
+        'payment_provider' => PaymentProvider::class,
         'metadata' => 'array',
+        'gateway_response' => 'array',
         'completed_at' => 'datetime',
     ];
 

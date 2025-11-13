@@ -17,6 +17,8 @@ class Course extends Model
         'name',
         'description',
         'price',
+        'old_price',
+        'discount_percentage',
         'coach_id',
         'banner',
         'author_id',
@@ -28,6 +30,7 @@ class Course extends Model
 
     protected $casts = [
         'price' => 'decimal:2',
+        'old_price' => 'decimal:2',
         'starts_at' => 'datetime',
         'type' => CourseType::class,
         'status' => CourseStatus::class,
@@ -85,6 +88,19 @@ class Course extends Model
         return $this->customers()->where('customer_id', $customer->id)->exists();
     }
 
+    public function scopeAvailableForPurchase($query, ?Customer $customer = null)
+    {
+        $query = $query->where('status', CourseStatus::Published);
+
+        if ($customer) {
+            $query->whereDoesntHave('customers', function($q) use ($customer) {
+                $q->where('customer_id', $customer->id);
+            });
+        }
+
+        return $query;
+    }
+
     public function scopeFeatured($query)
     {
         return $query->where('type', 'featured');
@@ -123,6 +139,47 @@ class Course extends Model
         return Attribute::make(
             get: fn () => $this->starts_at
                 ? $this->starts_at->locale('uk')->isoFormat('D MMMM')
+                : null
+        );
+    }
+
+    protected function hasDiscount(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->old_price !== null && $this->old_price > $this->price
+        );
+    }
+
+    protected function discountAmount(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->has_discount
+                ? $this->old_price - $this->price
+                : 0
+        );
+    }
+
+    protected function formattedPrice(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => number_format($this->price, 0, ',', ' ') . ' ₴'
+        );
+    }
+
+    protected function formattedOldPrice(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->old_price
+                ? number_format($this->old_price, 0, ',', ' ') . ' ₴'
+                : null
+        );
+    }
+
+    protected function formattedDiscountAmount(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->has_discount
+                ? number_format($this->discount_amount, 0, ',', ' ') . ' ₴'
                 : null
         );
     }

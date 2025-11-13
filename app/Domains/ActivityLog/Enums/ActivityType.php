@@ -22,6 +22,7 @@ enum ActivityType: string
     case CourseCreated = 'course.created';
     case CourseUpdated = 'course.updated';
     case CourseDeleted = 'course.deleted';
+    case CoursePurchased = 'course.purchased';
     case CustomerEnrolled = 'course.customer.enrolled';
     case CustomerUnenrolled = 'course.customer.unenrolled';
 

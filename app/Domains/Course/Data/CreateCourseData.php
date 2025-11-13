@@ -29,6 +29,12 @@ class CreateCourseData extends Data
         #[Required, Numeric, Min(0)]
         public readonly float $price,
 
+        #[Nullable, Numeric, Min(0)]
+        public readonly ?float $old_price,
+
+        #[Nullable, Numeric, Min(0), Max(100)]
+        public readonly ?int $discount_percentage,
+
         #[Required, Numeric]
         public readonly int $coach_id,
 
@@ -62,6 +68,8 @@ class CreateCourseData extends Data
             'tags.*' => ['string', 'max:50'],
             'type' => ['nullable', 'string', 'in:upcoming,recorded,free'],
             'starts_at' => ['nullable', 'date'],
+            'old_price' => ['nullable', 'numeric', 'min:0', 'gte:price'],
+            'discount_percentage' => ['nullable', 'integer', 'min:0', 'max:100'],
         ];
     }
 }

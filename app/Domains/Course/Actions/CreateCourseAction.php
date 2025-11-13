@@ -23,6 +23,8 @@ class CreateCourseAction
             'name' => $data->name,
             'description' => $data->description,
             'price' => $data->price,
+            'old_price' => $data->old_price,
+            'discount_percentage' => $data->discount_percentage,
             'coach_id' => $data->coach_id,
             'banner' => $bannerPath,
             'author_id' => $data->author_id,

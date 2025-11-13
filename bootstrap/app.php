@@ -18,6 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified.customer' => EnsureCustomerIsVerified::class,
             'admin' => CheckIsAdmin::class,
         ]);
+        $middleware->validateCsrfTokens(except: [
+            'customer/payment/callback',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

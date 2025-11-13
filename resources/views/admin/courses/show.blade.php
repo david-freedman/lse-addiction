@@ -42,7 +42,13 @@
 
                 <div>
                     <label class="block text-gray-600 text-sm font-bold mb-2">Ціна</label>
-                    <p class="text-gray-900 text-lg font-semibold">{{ $viewModel->price() }} грн</p>
+                    <p class="text-gray-900 text-lg font-semibold">
+                        {{ $viewModel->price() }} грн
+                        @if($course->has_discount)
+                            <span class="text-gray-500 line-through text-base ml-2">{{ $course->old_price }} грн</span>
+                            <span class="text-green-600 text-sm ml-2">Знижка: {{ $course->formatted_discount_amount }}</span>
+                        @endif
+                    </p>
                 </div>
 
                 <div>
