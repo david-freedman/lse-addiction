@@ -35,6 +35,13 @@
                             <span class="ml-3">Мої курси</span>
                         </a>
 
+                        <a href="{{ route('customer.catalog.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-teal-50 hover:text-teal-600 transition {{ request()->routeIs('customer.catalog.*') ? 'bg-teal-50 text-teal-600 font-medium' : '' }}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                            <span class="ml-3">Каталог курсів та вебінарів</span>
+                        </a>
+
                         <a href="{{ route('customer.transactions') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-teal-50 hover:text-teal-600 transition {{ request()->routeIs('customer.transactions*') ? 'bg-teal-50 text-teal-600 font-medium' : '' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />

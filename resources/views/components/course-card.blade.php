@@ -1,48 +1,73 @@
-@props(['course'])
+@props(['course', 'showPurchaseButton' => false])
 
-<div class="card-course">
-    <a href="{{ route('customer.courses.show', $course) }}" class="card-course__image">
-        @if($course->tags->isNotEmpty())
-            <div class="card-course__tag">
-                <span>{{ $course->tags->first()->name }}
-                    <svg style="visibility: hidden; position: absolute;" width="0" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1">
-                        <defs>
-                            <filter id="goo">
-                                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
-                                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 24 -4" result="textBlob" />
-                                <feComposite in="SourceGraphic" in2="textBlob" operator="atop" />
-                            </filter>
-                        </defs>
-                    </svg>
-                </span>
+<div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+    <div class="relative h-48 overflow-hidden">
+        @if($course->banner)
+            <img src="{{ Storage::disk('public')->url($course->banner) }}" alt="{{ $course->name }}" class="w-full h-full object-cover">
+        @else
+            <div class="w-full h-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center">
+                <svg class="w-16 h-16 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
             </div>
         @endif
 
-        <div class="card-course__body">
-            @if($course->label)
-                <div class="card-course__label">
-                    {{ $course->label }}
-                </div>
-            @endif
+        @if($course->label)
+            <div class="absolute top-3 left-3 bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full uppercase">
+                {{ $course->label }}
+            </div>
+        @endif
+    </div>
 
-            @if($course->formatted_date)
-                <div class="card-course__date">
-                    {{ $course->formatted_date }}
-                </div>
-            @endif
+    <div class="p-6">
+        <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2 min-h-[56px]">{{ $course->name }}</h3>
+
+        <div class="flex items-center text-sm text-gray-600 mb-3">
+            <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            <span class="truncate">Викладач: {{ $course->coach->name ?? 'Не вказано' }}</span>
         </div>
 
-        <div class="card-course__logo">
-            <img src="{{ asset('img/logo-white.svg') }}" alt="image" class="ibg ibg-contain">
-        </div>
-    </a>
+        @if($course->starts_at)
+            <div class="flex items-center text-sm text-gray-600 mb-4">
+                <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span>{{ $course->formatted_date }}</span>
+            </div>
+        @endif
 
-    <div class="card-course__content">
-        <h3 class="card-course__title">
-            <a href="{{ route('customer.courses.show', $course) }}">{{ $course->name }}</a>
-        </h3>
-        <a href="{{ route('customer.courses.show', $course) }}" class="card-course__button button button--fill">
-            Детальніше про вебінар
-        </a>
+        <div class="border-t pt-4 flex items-center justify-between">
+            <div class="flex-1">
+                @if($course->has_discount)
+                    <div class="flex items-baseline gap-2 flex-wrap">
+                        <span class="text-2xl font-bold text-teal-600">{{ $course->formatted_price }}</span>
+                        <span class="text-sm text-gray-500 line-through">{{ $course->formatted_old_price }}</span>
+                    </div>
+                    <div class="text-xs text-green-600 font-semibold mt-1">
+                        Економія: {{ $course->formatted_discount_amount }}
+                    </div>
+                @else
+                    <span class="text-2xl font-bold text-teal-600">{{ $course->formatted_price }}</span>
+                @endif
+            </div>
+
+            @if($showPurchaseButton)
+                <button
+                    onclick="openPurchaseModal({{ $course->id }}, '{{ addslashes($course->name) }}', '{{ $course->coach->name ?? '' }}', '{{ $course->formatted_date ?? '' }}', '{{ $course->formatted_price }}', '{{ $course->has_discount ? $course->formatted_discount_amount : '' }}', '{{ $course->banner ? Storage::disk('public')->url($course->banner) : '' }}')"
+                    class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 ml-2"
+                >
+                    Купити
+                </button>
+            @else
+                <a
+                    href="{{ route('customer.catalog.show', $course) }}"
+                    class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 inline-block ml-2"
+                >
+                    Детальніше
+                </a>
+            @endif
+        </div>
     </div>
 </div>

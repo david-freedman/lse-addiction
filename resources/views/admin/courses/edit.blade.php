@@ -36,6 +36,24 @@
             </div>
 
             <div class="mb-4">
+                <label for="old_price" class="block text-gray-700 text-sm font-bold mb-2">Стара ціна (грн)</label>
+                <input type="number" name="old_price" id="old_price" value="{{ old('old_price', $course->old_price) }}" step="0.01" min="0" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('old_price') border-red-500 @enderror">
+                <p class="text-gray-600 text-xs mt-1">Для показу знижки. Залиште порожнім, якщо немає знижки</p>
+                @error('old_price')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="mb-4">
+                <label for="discount_percentage" class="block text-gray-700 text-sm font-bold mb-2">Відсоток знижки (%)</label>
+                <input type="number" name="discount_percentage" id="discount_percentage" value="{{ old('discount_percentage', $course->discount_percentage) }}" min="0" max="100" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('discount_percentage') border-red-500 @enderror">
+                <p class="text-gray-600 text-xs mt-1">Необов'язково. Використовується тільки для відображення</p>
+                @error('discount_percentage')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="mb-4">
                 <label for="coach_id" class="block text-gray-700 text-sm font-bold mb-2">Коуч (User ID)</label>
                 <input type="number" name="coach_id" id="coach_id" value="{{ old('coach_id', $course->coach_id) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('coach_id') border-red-500 @enderror" required>
                 @error('coach_id')

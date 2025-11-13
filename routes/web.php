@@ -1,11 +1,13 @@
 <?php
 
 use App\Applications\Http\Admin\Controllers\CourseController;
+use App\Applications\Http\Customer\Controllers\CourseCatalogController;
 use App\Applications\Http\Customer\Controllers\CustomerAuthController;
 use App\Applications\Http\Customer\Controllers\CustomerDashboardController;
 use App\Applications\Http\Customer\Controllers\CustomerProfileController;
 use App\Applications\Http\Customer\Controllers\CustomerRegistrationController;
 use App\Applications\Http\Customer\Controllers\MyCoursesController;
+use App\Applications\Http\Customer\Controllers\PaymentController;
 use App\Applications\Http\Customer\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
@@ -66,8 +68,17 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::post('courses/{course}/enroll', [MyCoursesController::class, 'enroll'])->name('courses.enroll');
         Route::post('courses/{course}/unenroll', [MyCoursesController::class, 'unenroll'])->name('courses.unenroll');
 
+        Route::get('catalog', [CourseCatalogController::class, 'index'])->name('catalog.index');
+        Route::get('catalog/{course}', [CourseCatalogController::class, 'show'])->name('catalog.show');
+        Route::post('catalog/{course}/purchase', [CourseCatalogController::class, 'purchase'])->name('catalog.purchase');
+
         Route::get('transactions', [TransactionController::class, 'index'])->name('transactions');
+
+        Route::get('payment/{transaction}/initiate', [PaymentController::class, 'initiate'])->name('payment.initiate');
+        Route::get('payment/return', [PaymentController::class, 'return'])->name('payment.return');
     });
+
+    Route::post('payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 });
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
