@@ -13,6 +13,10 @@ class UnenrollCustomerAction
 {
     public static function execute(Course $course, Customer $customer): void
     {
+        if ($customer->hasPurchasedCourse($course)) {
+            throw new \Exception('Неможливо відписатись від придбаного курсу');
+        }
+
         $course->customers()->updateExistingPivot($customer->id, [
             'status' => 'cancelled',
         ]);

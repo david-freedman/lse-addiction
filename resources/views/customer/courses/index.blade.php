@@ -89,7 +89,7 @@
                     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition group">
                         @if($course->banner)
                             <div class="w-full aspect-[16/9] overflow-hidden bg-gray-100">
-                                <img src="{{ Storage::disk('public')->url($course->banner) }}"
+                                <img src="{{ $course->banner_url }}"
                                      alt="{{ $course->name }}"
                                      class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                             </div>

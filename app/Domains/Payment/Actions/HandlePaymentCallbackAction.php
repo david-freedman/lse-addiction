@@ -6,6 +6,8 @@ use App\Domains\ActivityLog\Actions\LogActivityAction;
 use App\Domains\ActivityLog\Data\ActivityLogData;
 use App\Domains\ActivityLog\Enums\ActivitySubject;
 use App\Domains\ActivityLog\Enums\ActivityType;
+use App\Domains\Course\Actions\CompleteCoursePurchaseAction;
+use App\Domains\Course\Models\Course;
 use App\Domains\Payment\Contracts\PaymentGatewayInterface;
 use App\Domains\Payment\Enums\PaymentProvider;
 use App\Domains\Payment\Gateways\WayForPayGateway;
@@ -40,11 +42,15 @@ class HandlePaymentCallbackAction
                 'payment_provider' => $provider->value,
             ]),
             'payment_reference' => $callback->cardPan,
-            'payment_method' => self::mapCardTypeToPaymentMethod($callback->cardType),
+            'payment_method' => $callback->cardType ? self::mapCardTypeToPaymentMethod($callback->cardType) : null,
         ]);
 
         if ($callback->transactionStatus === 'Approved') {
             CompleteTransactionAction::execute($transaction);
+
+            if ($transaction->purchasable_type === Course::class) {
+                CompleteCoursePurchaseAction::execute($transaction);
+            }
 
             LogActivityAction::execute(ActivityLogData::from([
                 'subject_type' => ActivitySubject::Transaction,
@@ -89,8 +95,12 @@ class HandlePaymentCallbackAction
         };
     }
 
-    private static function mapCardTypeToPaymentMethod(string $cardType): PaymentMethod
+    private static function mapCardTypeToPaymentMethod(?string $cardType): ?PaymentMethod
     {
+        if (! $cardType) {
+            return null;
+        }
+
         return match (strtolower($cardType)) {
             'visa' => PaymentMethod::Visa,
             'mastercard', 'mc' => PaymentMethod::Mastercard,

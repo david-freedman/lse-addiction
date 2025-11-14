@@ -37,7 +37,7 @@
                     <a href="{{ route('customer.my-courses') }}" class="block w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-lg transition">
                         Перейти до моїх курсів
                     </a>
-                    <a href="{{ route('customer.transactions') }}" class="block w-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-6 rounded-lg transition">
+                    <a href="{{ route('customer.transactions.index') }}" class="block w-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-6 rounded-lg transition">
                         Переглянути транзакції
                     </a>
                 </div>
@@ -60,7 +60,7 @@
                 </div>
 
                 <div class="space-y-3">
-                    <a href="{{ route('customer.transactions') }}" class="block w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-lg transition">
+                    <a href="{{ route('customer.transactions.index') }}" class="block w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-lg transition">
                         Переглянути статус транзакції
                     </a>
                     <a href="{{ route('home') }}" class="block w-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-6 rounded-lg transition">
@@ -86,7 +86,7 @@
                 </div>
 
                 <div class="space-y-3">
-                    <a href="{{ route('customer.transactions') }}" class="block w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-lg transition">
+                    <a href="{{ route('customer.transactions.index') }}" class="block w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-lg transition">
                         Спробувати ще раз
                     </a>
                     <a href="{{ route('home') }}" class="block w-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-6 rounded-lg transition">

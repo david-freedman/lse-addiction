@@ -183,4 +183,15 @@ class Course extends Model
                 : null
         );
     }
+
+    protected function bannerUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->banner
+                ? (str_starts_with($this->banner, 'http://') || str_starts_with($this->banner, 'https://'))
+                    ? $this->banner
+                    : \Storage::disk('public')->url($this->banner)
+                : null
+        );
+    }
 }

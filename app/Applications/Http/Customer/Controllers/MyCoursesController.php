@@ -53,6 +53,12 @@ class MyCoursesController
     {
         $customer = $request->user();
 
+        if ($customer->hasPurchasedCourse($course)) {
+            return redirect()
+                ->back()
+                ->with('error', 'Неможливо відписатись від придбаного курсу');
+        }
+
         UnenrollCustomerAction::execute($course, $customer);
 
         return redirect()

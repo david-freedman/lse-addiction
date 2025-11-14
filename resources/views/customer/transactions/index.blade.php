@@ -76,7 +76,7 @@
                 <h2 class="text-lg font-semibold text-gray-900">Фільтри</h2>
             </div>
 
-            <form method="GET" action="{{ route('customer.transactions') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <form method="GET" action="{{ route('customer.transactions.index') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Статус платежу</label>
                     <select name="status" id="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
@@ -106,7 +106,7 @@
                         Застосувати фільтри
                     </button>
                     @if($historyViewModel->currentStatus() || $historyViewModel->dateFrom() || $historyViewModel->dateTo())
-                        <a href="{{ route('customer.transactions') }}" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition">
+                        <a href="{{ route('customer.transactions.index') }}" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition">
                             Скинути
                         </a>
                     @endif

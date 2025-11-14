@@ -53,6 +53,30 @@
             <input type="hidden" name="clientPhone" value="{{ $paymentData->clientPhone }}">
             <input type="hidden" name="clientEmail" value="{{ $paymentData->clientEmail }}">
 
+            @if($paymentData->language)
+                <input type="hidden" name="language" value="{{ $paymentData->language }}">
+            @endif
+
+            @if($paymentData->apiVersion)
+                <input type="hidden" name="apiVersion" value="{{ $paymentData->apiVersion }}">
+            @endif
+
+            @if($paymentData->clientAccountId)
+                <input type="hidden" name="clientAccountId" value="{{ $paymentData->clientAccountId }}">
+            @endif
+
+            @if($paymentData->orderTimeout)
+                <input type="hidden" name="orderTimeout" value="{{ $paymentData->orderTimeout }}">
+            @endif
+
+            @if($paymentData->paymentSystems)
+                <input type="hidden" name="paymentSystems" value="{{ $paymentData->paymentSystems }}">
+            @endif
+
+            @if($paymentData->defaultPaymentSystem)
+                <input type="hidden" name="defaultPaymentSystem" value="{{ $paymentData->defaultPaymentSystem }}">
+            @endif
+
             @foreach($paymentData->products as $index => $product)
                 <input type="hidden" name="productName[]" value="{{ $product->name }}">
                 <input type="hidden" name="productPrice[]" value="{{ $product->price }}">
@@ -71,7 +95,7 @@
                     Перейти до оплати
                 </button>
 
-                <a href="{{ route('customer.transactions') }}" class="block w-full text-center border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-6 rounded-lg transition">
+                <a href="{{ route('customer.transactions.index') }}" class="block w-full text-center border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-6 rounded-lg transition">
                     Скасувати
                 </a>
             </div>

@@ -20,6 +20,7 @@ class Customer extends Authenticatable
         'surname',
         'birthday',
         'city',
+        'profile_photo',
         'email_verified_at',
         'phone_verified_at',
     ];
@@ -87,5 +88,36 @@ class Customer extends Authenticatable
             && $this->surname !== null
             && $this->birthday !== null
             && $this->city !== null;
+    }
+
+    public function hasPurchasedCourse(Course $course): bool
+    {
+        return $this->transactions()
+            ->where('purchasable_type', Course::class)
+            ->where('purchasable_id', $course->id)
+            ->where('status', \App\Domains\Transaction\Enums\TransactionStatus::Completed)
+            ->exists();
+    }
+
+    public function getProfilePhotoUrlAttribute(): ?string
+    {
+        if (!$this->profile_photo) {
+            return null;
+        }
+
+        return asset('storage/' . $this->profile_photo);
+    }
+
+    public function getInitialsAttribute(): string
+    {
+        $firstInitial = $this->name ? mb_strtoupper(mb_substr($this->name, 0, 1)) : '';
+        $lastInitial = $this->surname ? mb_strtoupper(mb_substr($this->surname, 0, 1)) : '';
+
+        return $firstInitial . $lastInitial;
+    }
+
+    public function hasProfilePhoto(): bool
+    {
+        return $this->profile_photo !== null;
     }
 }

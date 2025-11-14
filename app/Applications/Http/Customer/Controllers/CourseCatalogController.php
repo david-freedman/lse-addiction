@@ -2,9 +2,12 @@
 
 namespace App\Applications\Http\Customer\Controllers;
 
+use App\Domains\Course\Actions\CompleteCoursePurchaseAction;
 use App\Domains\Course\Actions\PurchaseCourseAction;
+use App\Domains\Course\Enums\CourseStatus;
 use App\Domains\Course\Enums\CourseType;
 use App\Domains\Course\Models\Course;
+use App\Domains\Transaction\Actions\CompleteTransactionAction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -16,9 +19,10 @@ class CourseCatalogController
         $customer = auth()->user();
 
         $type = $request->input('type');
+        $search = $request->input('search');
 
         $courses = Course::with(['coach', 'tags'])
-            ->availableForPurchase($customer)
+            ->where('status', CourseStatus::Published)
             ->when($type, function ($query, $type) {
                 if ($type === 'recorded') {
                     return $query->where('type', CourseType::Recorded);
@@ -27,14 +31,24 @@ class CourseCatalogController
                     return $query->where('type', CourseType::Upcoming);
                 }
             })
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'ilike', "%{$search}%");
+            })
             ->orderBy('created_at', 'desc')
-            ->paginate(9);
+            ->paginate(9)
+            ->withQueryString();
 
-        $recordedCount = Course::availableForPurchase($customer)
+        $purchasedCourseIds = $customer->courses()->pluck('courses.id')->toArray();
+
+        $courses->each(function ($course) use ($purchasedCourseIds) {
+            $course->is_purchased = in_array($course->id, $purchasedCourseIds);
+        });
+
+        $recordedCount = Course::where('status', CourseStatus::Published)
             ->where('type', CourseType::Recorded)
             ->count();
 
-        $upcomingCount = Course::availableForPurchase($customer)
+        $upcomingCount = Course::where('status', CourseStatus::Published)
             ->where('type', CourseType::Upcoming)
             ->count();
 
@@ -44,14 +58,6 @@ class CourseCatalogController
     public function show(Course $course): View
     {
         $course->load(['coach', 'author', 'tags']);
-
-        $customer = auth()->user();
-
-        if ($course->hasCustomer($customer)) {
-            return redirect()
-                ->route('courses.show', $course)
-                ->with('info', 'Ви вже записані на цей курс');
-        }
 
         return view('customer.catalog.show', compact('course'));
     }
@@ -66,16 +72,26 @@ class CourseCatalogController
                 ->with('error', 'Ви вже придбали цей курс');
         }
 
-        if (!$course->isPublished()) {
+        if (! $course->isPublished()) {
             return redirect()
                 ->back()
                 ->with('error', 'Цей курс недоступний для покупки');
         }
 
-        PurchaseCourseAction::execute($course, $customer);
+        if ($course->price == 0) {
+            $transaction = PurchaseCourseAction::execute($course, $customer);
+            CompleteTransactionAction::execute($transaction);
+            CompleteCoursePurchaseAction::execute($transaction);
+
+            return redirect()
+                ->route('customer.courses.show', $course)
+                ->with('success', 'Курс успішно придбано! Приємного навчання!');
+        }
+
+        $transaction = PurchaseCourseAction::execute($course, $customer);
 
         return redirect()
-            ->route('courses.show', $course)
-            ->with('success', 'Курс успішно придбано! Приємного навчання!');
+            ->route('customer.payment.initiate', $transaction)
+            ->with('info', 'Будь ласка, завершіть оплату для отримання доступу до курсу');
     }
 }

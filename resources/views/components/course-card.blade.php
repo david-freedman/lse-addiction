@@ -3,7 +3,7 @@
 <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
     <div class="relative h-48 overflow-hidden">
         @if($course->banner)
-            <img src="{{ Storage::disk('public')->url($course->banner) }}" alt="{{ $course->name }}" class="w-full h-full object-cover">
+            <img src="{{ $course->banner_url }}" alt="{{ $course->name }}" class="w-full h-full object-cover">
         @else
             <div class="w-full h-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center">
                 <svg class="w-16 h-16 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -15,6 +15,15 @@
         @if($course->label)
             <div class="absolute top-3 left-3 bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full uppercase">
                 {{ $course->label }}
+            </div>
+        @endif
+
+        @if(isset($course->is_purchased) && $course->is_purchased)
+            <div class="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                Куплено
             </div>
         @endif
     </div>
@@ -40,7 +49,7 @@
 
         <div class="border-t pt-4 flex items-center justify-between">
             <div class="flex-1">
-                @if($course->has_discount)
+                @if($course->has_discount && !(isset($course->is_purchased) && $course->is_purchased))
                     <div class="flex items-baseline gap-2 flex-wrap">
                         <span class="text-2xl font-bold text-teal-600">{{ $course->formatted_price }}</span>
                         <span class="text-sm text-gray-500 line-through">{{ $course->formatted_old_price }}</span>
@@ -53,9 +62,19 @@
                 @endif
             </div>
 
-            @if($showPurchaseButton)
+            @if(isset($course->is_purchased) && $course->is_purchased)
+                <a
+                    href="{{ route('customer.courses.show', $course) }}"
+                    class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 inline-flex items-center gap-2 ml-2"
+                >
+                    Переглянути
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </a>
+            @elseif($showPurchaseButton)
                 <button
-                    onclick="openPurchaseModal({{ $course->id }}, '{{ addslashes($course->name) }}', '{{ $course->coach->name ?? '' }}', '{{ $course->formatted_date ?? '' }}', '{{ $course->formatted_price }}', '{{ $course->has_discount ? $course->formatted_discount_amount : '' }}', '{{ $course->banner ? Storage::disk('public')->url($course->banner) : '' }}')"
+                    onclick="openPurchaseModal({{ $course->id }}, '{{ addslashes($course->name) }}', '{{ $course->coach->name ?? '' }}', '{{ $course->formatted_date ?? '' }}', '{{ $course->formatted_price }}', '{{ $course->has_discount ? $course->formatted_discount_amount : '' }}', '{{ $course->banner_url ?? '' }}')"
                     class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 ml-2"
                 >
                     Купити

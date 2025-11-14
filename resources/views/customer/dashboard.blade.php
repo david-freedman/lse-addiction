@@ -6,7 +6,7 @@
 <div class="space-y-6">
     <div class="bg-gradient-to-r from-teal-500 to-cyan-600 rounded-2xl shadow-lg p-8 text-white">
         <h1 class="text-3xl font-bold mb-2">
-            Добрий вечір, {{ $customer->name }}! 👋
+            Вітаю, {{ $customer->name }}! 👋
         </h1>
         <p class="text-teal-50 text-lg">
             Ласкаво просимо на освітню платформу LSE. Продовжуйте навчання і розвивайтесь разом з нами.

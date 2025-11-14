@@ -42,7 +42,7 @@
                             <span class="ml-3">Каталог курсів та вебінарів</span>
                         </a>
 
-                        <a href="{{ route('customer.transactions') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-teal-50 hover:text-teal-600 transition {{ request()->routeIs('customer.transactions*') ? 'bg-teal-50 text-teal-600 font-medium' : '' }}">
+                        <a href="{{ route('customer.transactions.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-teal-50 hover:text-teal-600 transition {{ request()->routeIs('customer.transactions*') ? 'bg-teal-50 text-teal-600 font-medium' : '' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                             </svg>
@@ -115,18 +115,22 @@
                         </div>
 
                         <div class="flex items-center gap-4">
-                            <div class="relative hidden md:block">
-                                <input type="text" placeholder="Пошук курсів..." class="w-64 pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-                                <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <form action="{{ route('customer.catalog.index') }}" method="GET" class="relative hidden md:block">
+                                <input type="text" name="search" placeholder="Пошук курсів..." class="w-64 pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                                <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
-                            </div>
+                            </form>
 
-                            <div class="relative">
-                                <button class="flex items-center justify-center w-10 h-10 rounded-full bg-teal-500 text-white font-semibold hover:bg-teal-600 transition">
-                                    {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
-                                </button>
-                            </div>
+                            <a href="{{ route('customer.profile.show') }}" class="relative block">
+                                @if(auth()->user()->hasProfilePhoto())
+                                    <img src="{{ auth()->user()->profile_photo_url }}" alt="Profile" class="w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-teal-500 transition">
+                                @else
+                                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-teal-500 text-white font-semibold hover:bg-teal-600 transition">
+                                        {{ auth()->user()->initials }}
+                                    </div>
+                                @endif
+                            </a>
                         </div>
                     </div>
                 </header>
