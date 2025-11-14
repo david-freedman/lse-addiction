@@ -14,12 +14,14 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo(fn () => route('customer.login'));
+        $middleware->trustProxies(at: '*');
         $middleware->alias([
             'verified.customer' => EnsureCustomerIsVerified::class,
             'admin' => CheckIsAdmin::class,
         ]);
         $middleware->validateCsrfTokens(except: [
             'customer/payment/callback',
+            'customer/payment/return',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -94,4 +94,19 @@ readonly class CustomerProfileViewModel
 
         return $result;
     }
+
+    public function profilePhotoUrl(): ?string
+    {
+        return $this->customer->profile_photo_url;
+    }
+
+    public function initials(): string
+    {
+        return $this->customer->initials;
+    }
+
+    public function hasProfilePhoto(): bool
+    {
+        return $this->customer->hasProfilePhoto();
+    }
 }

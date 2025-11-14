@@ -15,7 +15,7 @@
                 <input
                     type="text"
                     name="search"
-                    placeholder="Пошук сертифікатів за назвою курсу або категорією..."
+                    placeholder="Пошук курсів за назвою..."
                     value="{{ request('search') }}"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 >

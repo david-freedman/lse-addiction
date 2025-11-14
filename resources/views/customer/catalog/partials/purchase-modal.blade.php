@@ -1,4 +1,4 @@
-<div id="purchase-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+<div id="purchase-modal" class="fixed inset-0 bg-gray-900/30 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden" onclick="event.stopPropagation()">
         <div class="p-6">
             <div class="flex justify-between items-start mb-4">
@@ -19,7 +19,6 @@
                     <p class="text-sm text-gray-600">
                         <span>Викладач: <span id="modal-course-instructor"></span></span>
                     </p>
-                    <p id="modal-course-duration" class="text-sm text-gray-600"></p>
                 </div>
             </div>
 
@@ -66,14 +65,6 @@ function openPurchaseModal(courseId, name, instructor, duration, price, discount
     document.getElementById('modal-course-instructor').textContent = instructor || 'Не вказано';
     document.getElementById('modal-course-price').textContent = price;
     document.getElementById('modal-final-price').textContent = price;
-
-    const durationElement = document.getElementById('modal-course-duration');
-    if (duration) {
-        durationElement.textContent = 'Тривалість: ' + duration;
-        durationElement.classList.remove('hidden');
-    } else {
-        durationElement.classList.add('hidden');
-    }
 
     const discountRow = document.getElementById('modal-discount-row');
     if (discount) {

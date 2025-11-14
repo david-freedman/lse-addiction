@@ -87,6 +87,15 @@ readonly class CourseDetailViewModel
             ->exists();
     }
 
+    public function wasPurchased(): bool
+    {
+        if (!$this->customer) {
+            return false;
+        }
+
+        return $this->customer->hasPurchasedCourse($this->course);
+    }
+
     public function canEnroll(): bool
     {
         return $this->course->isPublished() && !$this->isEnrolled();

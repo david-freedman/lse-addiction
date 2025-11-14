@@ -57,9 +57,11 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::get('profile', [CustomerProfileController::class, 'show'])->name('profile.show');
         Route::get('profile/edit', [CustomerProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('profile', [CustomerProfileController::class, 'update'])->name('profile.update');
+        Route::patch('profile/profile-fields', [CustomerProfileController::class, 'updateProfileFields'])->name('profile.profile-fields.update');
 
         Route::get('verify-change', [CustomerProfileController::class, 'showVerifyChange'])->name('verify-change.show');
         Route::post('verify-change', [CustomerProfileController::class, 'verifyChange'])->name('verify-change');
+        Route::post('verify-change/resend', [CustomerProfileController::class, 'resendChangeCode'])->name('verify-change.resend');
 
         Route::post('logout', [CustomerAuthController::class, 'logout'])->name('logout');
 
@@ -72,13 +74,13 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::get('catalog/{course}', [CourseCatalogController::class, 'show'])->name('catalog.show');
         Route::post('catalog/{course}/purchase', [CourseCatalogController::class, 'purchase'])->name('catalog.purchase');
 
-        Route::get('transactions', [TransactionController::class, 'index'])->name('transactions');
+        Route::get('transactions', [TransactionController::class, 'index'])->name('transactions.index');
 
         Route::get('payment/{transaction}/initiate', [PaymentController::class, 'initiate'])->name('payment.initiate');
-        Route::get('payment/return', [PaymentController::class, 'return'])->name('payment.return');
     });
 
     Route::post('payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
+    Route::any('payment/return', [PaymentController::class, 'return'])->name('payment.return');
 });
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {

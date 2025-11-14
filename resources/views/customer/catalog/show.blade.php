@@ -16,7 +16,7 @@
     <div class="bg-white rounded-xl shadow-md overflow-hidden mb-6">
         @if($course->banner)
             <div class="w-full h-80 overflow-hidden bg-gray-100">
-                <img src="{{ Storage::disk('public')->url($course->banner) }}" alt="{{ $course->name }}" class="w-full h-full object-cover">
+                <img src="{{ $course->banner_url }}" alt="{{ $course->name }}" class="w-full h-full object-cover">
             </div>
         @endif
 
@@ -64,7 +64,7 @@
                     @endif
 
                     <button
-                        onclick="openPurchaseModal({{ $course->id }}, '{{ addslashes($course->name) }}', '{{ $course->coach->name ?? '' }}', '{{ $course->formatted_date ?? '' }}', '{{ $course->formatted_price }}', '{{ $course->has_discount ? $course->formatted_discount_amount : '' }}', '{{ $course->banner ? Storage::disk('public')->url($course->banner) : '' }}')"
+                        onclick="openPurchaseModal({{ $course->id }}, '{{ addslashes($course->name) }}', '{{ $course->coach->name ?? '' }}', '{{ $course->formatted_date ?? '' }}', '{{ $course->formatted_price }}', '{{ $course->has_discount ? $course->formatted_discount_amount : '' }}', '{{ $course->banner_url ?? '' }}')"
                         class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200"
                     >
                         C?8B8 :C@A

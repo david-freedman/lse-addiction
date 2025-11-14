@@ -20,16 +20,16 @@ class PaymentCallbackData extends Data
         public readonly string $currency,
         #[Required, StringType]
         public readonly string $authCode,
-        #[Required, StringType]
-        public readonly string $email,
-        #[Required, StringType]
-        public readonly string $phone,
+        #[Nullable, StringType]
+        public readonly ?string $email = null,
+        #[Nullable, StringType]
+        public readonly ?string $phone = null,
         #[Required, StringType]
         public readonly string $transactionStatus,
         #[Required, StringType]
         public readonly string $cardPan,
-        #[Required, StringType]
-        public readonly string $cardType,
+        #[Nullable, StringType]
+        public readonly ?string $cardType = null,
         #[Required, StringType]
         public readonly string $reasonCode,
         #[Required, StringType]
@@ -38,5 +38,21 @@ class PaymentCallbackData extends Data
         public readonly ?string $recToken = null,
         #[Nullable, StringType]
         public readonly ?string $fee = null,
+        #[Nullable]
+        public readonly ?int $createdDate = null,
+        #[Nullable]
+        public readonly ?int $processingDate = null,
+        #[Nullable, StringType]
+        public readonly ?string $paymentSystem = null,
+        #[Nullable, StringType]
+        public readonly ?string $issuerBankCountry = null,
+        #[Nullable, StringType]
+        public readonly ?string $issuerBankName = null,
+        #[Nullable, StringType]
+        public readonly ?string $cardBin = null,
+        #[Nullable, StringType]
+        public readonly ?string $reason = null,
+        #[Nullable, StringType]
+        public readonly ?string $repayUrl = null,
     ) {}
 }

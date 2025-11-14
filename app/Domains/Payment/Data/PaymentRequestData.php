@@ -3,6 +3,7 @@
 namespace App\Domains\Payment\Data;
 
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Attributes\Validation\Nullable;
 use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Attributes\Validation\StringType;
 use Spatie\LaravelData\Attributes\Validation\Url;
@@ -42,5 +43,17 @@ class PaymentRequestData extends Data
         public readonly string $clientPhone,
         #[Required, StringType]
         public readonly string $clientEmail,
+        #[Nullable, StringType]
+        public readonly ?string $language = 'UA',
+        #[Nullable]
+        public readonly ?int $apiVersion = 2,
+        #[Nullable, StringType]
+        public readonly ?string $clientAccountId = null,
+        #[Nullable]
+        public readonly ?int $orderTimeout = null,
+        #[Nullable, StringType]
+        public readonly ?string $paymentSystems = null,
+        #[Nullable, StringType]
+        public readonly ?string $defaultPaymentSystem = null,
     ) {}
 }

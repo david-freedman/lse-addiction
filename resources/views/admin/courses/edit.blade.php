@@ -65,7 +65,7 @@
                 <label for="banner" class="block text-gray-700 text-sm font-bold mb-2">Банер</label>
                 @if($course->banner)
                     <div class="mb-2">
-                        <img src="{{ Storage::disk('public')->url($course->banner) }}" alt="Current banner" class="max-w-xs rounded">
+                        <img src="{{ $course->banner_url }}" alt="Current banner" class="max-w-xs rounded">
                     </div>
                 @endif
                 <input type="file" name="banner" id="banner" accept="image/*" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('banner') border-red-500 @enderror">

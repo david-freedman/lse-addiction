@@ -35,11 +35,11 @@ class WayForPayGateway implements PaymentGatewayInterface
             $this->merchantDomain,
             $transaction->transaction_number,
             $orderDate,
-            $transaction->amount,
+            (float) $transaction->amount,
             $transaction->currency,
             ...$products->map(fn ($p) => $p->name)->toArray(),
             ...$products->map(fn ($p) => $p->count)->toArray(),
-            ...$products->map(fn ($p) => $p->price)->toArray(),
+            ...$products->map(fn ($p) => (float) $p->price)->toArray(),
         ];
 
         $signature = PaymentSignature::generate($signatureFields, $this->secretKey);
@@ -56,31 +56,56 @@ class WayForPayGateway implements PaymentGatewayInterface
             'merchantTransactionSecureType' => 'AUTO',
             'returnUrl' => route('customer.payment.return'),
             'serviceUrl' => route('customer.payment.callback'),
-            'clientFirstName' => $customer->first_name,
-            'clientLastName' => $customer->last_name,
+            'clientFirstName' => $customer->name ?? 'Клієнт',
+            'clientLastName' => $customer->surname ?? 'LSE',
             'clientPhone' => $customer->phone ?? '',
             'clientEmail' => $customer->email,
+            'language' => config('payment.wayforpay.language', 'UA'),
+            'apiVersion' => config('payment.wayforpay.api_version', 2),
+            'clientAccountId' => (string) $customer->id,
+            'orderTimeout' => config('payment.wayforpay.order_timeout'),
+            'paymentSystems' => config('payment.wayforpay.payment_systems'),
+            'defaultPaymentSystem' => config('payment.wayforpay.default_payment_system'),
         ]);
     }
 
     public function verifyCallback(array $data): bool
     {
         $signatureFields = [
-            $data['orderReference'] ?? '',
             $data['merchantAccount'] ?? '',
-            $data['amount'] ?? '',
+            $data['orderReference'] ?? '',
+            (string) ($data['amount'] ?? ''),
             $data['currency'] ?? '',
             $data['authCode'] ?? '',
             $data['cardPan'] ?? '',
             $data['transactionStatus'] ?? '',
-            $data['reasonCode'] ?? '',
+            (string) ($data['reasonCode'] ?? ''),
         ];
 
-        return PaymentSignature::verify(
+        $signatureString = implode(';', $signatureFields);
+        $generatedSignature = hash_hmac('md5', $signatureString, $this->secretKey);
+
+        \Log::info('WayForPay callback signature verification', [
+            'fields' => $signatureFields,
+            'signature_string' => $signatureString,
+            'secret_key_length' => strlen($this->secretKey),
+            'secret_key_first_chars' => substr($this->secretKey, 0, 5),
+            'generated_signature' => $generatedSignature,
+            'provided_signature' => $data['merchantSignature'] ?? '',
+            'signatures_match' => $generatedSignature === ($data['merchantSignature'] ?? ''),
+        ]);
+
+        $isValid = PaymentSignature::verify(
             $signatureFields,
             $this->secretKey,
             $data['merchantSignature'] ?? ''
         );
+
+        \Log::info('WayForPay signature verification result', [
+            'is_valid' => $isValid,
+        ]);
+
+        return $isValid;
     }
 
     public function parseCallback(array $data): PaymentCallbackData
