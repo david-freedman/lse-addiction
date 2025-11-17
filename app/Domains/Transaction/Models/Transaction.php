@@ -40,6 +40,11 @@ class Transaction extends Model
         'completed_at' => 'datetime',
     ];
 
+    public function getRouteKeyName(): string
+    {
+        return 'transaction_number';
+    }
+
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);

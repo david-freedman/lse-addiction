@@ -55,5 +55,7 @@ class PaymentRequestData extends Data
         public readonly ?string $paymentSystems = null,
         #[Nullable, StringType]
         public readonly ?string $defaultPaymentSystem = null,
+        #[Nullable, Url]
+        public readonly ?string $declineUrl = null,
     ) {}
 }

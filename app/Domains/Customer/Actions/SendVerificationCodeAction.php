@@ -61,21 +61,32 @@ class SendVerificationCodeAction
             $verification->save();
         }
 
-        $provider = VerificationProviderFactory::make($type);
-        $result = SendWithRetryAction::execute($provider, $contact, $verification->code);
+        $requireVerification = config("verification.require_{$type}", true);
 
-        if (! $result->success) {
-            Log::error('Failed to send verification code', [
-                'type' => $type,
-                'contact' => $contact,
-                'purpose' => $purpose,
-                'error' => $result->message,
-            ]);
-        }
+        if ($requireVerification) {
+            $provider = VerificationProviderFactory::make($type);
+            $result = SendWithRetryAction::execute($provider, $contact, $verification->code);
 
-        if ($result->success && $result->generatedCode) {
-            $verification->code = $result->generatedCode;
-            $verification->save();
+            if (! $result->success) {
+                Log::error('Failed to send verification code', [
+                    'type' => $type,
+                    'contact' => $contact,
+                    'purpose' => $purpose,
+                    'error' => $result->message,
+                ]);
+            }
+
+            if ($result->success && $result->generatedCode) {
+                $verification->code = $result->generatedCode;
+                $verification->save();
+            }
+        } else {
+            $result = (object) [
+                'success' => true,
+                'message' => 'Verification sending disabled',
+                'externalId' => null,
+                'generatedCode' => null,
+            ];
         }
 
         LogActivityAction::execute(ActivityLogData::from([

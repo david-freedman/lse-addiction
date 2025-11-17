@@ -6,11 +6,13 @@ use App\Domains\Payment\Actions\HandlePaymentCallbackAction;
 use App\Domains\Payment\Actions\InitiatePaymentAction;
 use App\Domains\Payment\Actions\VerifyPaymentSignatureAction;
 use App\Domains\Payment\Enums\PaymentProvider;
+use App\Domains\Transaction\Actions\CancelTransactionAction;
 use App\Domains\Transaction\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class PaymentController
@@ -31,6 +33,8 @@ class PaymentController
         $provider = PaymentProvider::from(config('payment.default_provider'));
 
         $paymentData = InitiatePaymentAction::execute($transaction, $provider);
+
+        Session::save();
 
         return view('customer.payment.wayforpay-form', compact('paymentData'));
     }
@@ -115,5 +119,19 @@ class PaymentController
         };
 
         return view('customer.payment.return', compact('transaction', 'status', 'message'));
+    }
+
+    public function cancel(Request $request, Transaction $transaction): RedirectResponse
+    {
+        $customer = $request->user();
+
+        if ($transaction->customer_id !== $customer->id) {
+            abort(403, 'Unauthorized access to transaction');
+        }
+
+        CancelTransactionAction::execute($transaction);
+
+        return redirect()->route('customer.transactions.index')
+            ->with('success', 'Оплату скасовано');
     }
 }

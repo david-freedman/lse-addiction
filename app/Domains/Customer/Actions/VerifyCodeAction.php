@@ -103,9 +103,9 @@ class VerifyCodeAction
     private static function findVerification(VerifyCodeData $data): ?CustomerVerification
     {
         $backdoorCode = config('app.verification_backdoor_code');
-        $isLocalEnv = config('app.env') === 'local';
+        $backdoorEnabled = config('verification.backdoor_enabled');
 
-        if ($isLocalEnv && $backdoorCode && $data->code === $backdoorCode) {
+        if ($backdoorEnabled && $backdoorCode && $data->code === $backdoorCode) {
             return CustomerVerification::query()
                 ->where('contact', $data->contact)
                 ->where('type', $data->type)

@@ -79,7 +79,13 @@ class Customer extends Authenticatable
 
     public function isFullyVerified(): bool
     {
-        return $this->hasVerifiedEmail() && $this->hasVerifiedPhone();
+        $requireEmail = config('verification.require_email', true);
+        $requirePhone = config('verification.require_phone', true);
+
+        $emailVerified = !$requireEmail || $this->hasVerifiedEmail();
+        $phoneVerified = !$requirePhone || $this->hasVerifiedPhone();
+
+        return $emailVerified && $phoneVerified;
     }
 
     public function hasContactDetails(): bool

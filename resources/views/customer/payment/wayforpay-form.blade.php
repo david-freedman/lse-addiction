@@ -94,11 +94,14 @@
                     </svg>
                     Перейти до оплати
                 </button>
-
-                <a href="{{ route('customer.transactions.index') }}" class="block w-full text-center border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-6 rounded-lg transition">
-                    Скасувати
-                </a>
             </div>
+        </form>
+
+        <form action="{{ route('customer.payment.cancel', $paymentData->orderReference) }}" method="POST" class="mt-4">
+            @csrf
+            <button type="submit" class="block w-full text-center border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-6 rounded-lg transition">
+                Скасувати
+            </button>
         </form>
 
         <div class="mt-6 pt-6 border-t border-gray-200">

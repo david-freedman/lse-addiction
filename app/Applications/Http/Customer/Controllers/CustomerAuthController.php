@@ -165,7 +165,11 @@ class CustomerAuthController
             return redirect()->route('customer.profile.show');
         }
 
-        $verificationStep = ! $customer->hasVerifiedPhone() ? 'phone' : 'email';
+        $requirePhone = config('verification.require_phone', true);
+
+        $verificationStep = ($requirePhone && !$customer->hasVerifiedPhone())
+            ? 'phone'
+            : 'email';
         $contact = $verificationStep === 'phone'
             ? $customer->phone
             : $customer->email;
@@ -220,7 +224,11 @@ class CustomerAuthController
             return redirect()->route('customer.login');
         }
 
-        $verificationStep = ! $customer->hasVerifiedPhone() ? 'phone' : 'email';
+        $requirePhone = config('verification.require_phone', true);
+
+        $verificationStep = ($requirePhone && !$customer->hasVerifiedPhone())
+            ? 'phone'
+            : 'email';
         $contact = $verificationStep === 'phone'
             ? $customer->phone
             : $customer->email;

@@ -34,7 +34,7 @@ class CourseCatalogController
             ->when($search, function ($query, $search) {
                 return $query->where('name', 'ilike', "%{$search}%");
             })
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->paginate(9)
             ->withQueryString();
 

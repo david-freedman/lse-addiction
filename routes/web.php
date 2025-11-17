@@ -77,6 +77,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::get('transactions', [TransactionController::class, 'index'])->name('transactions.index');
 
         Route::get('payment/{transaction}/initiate', [PaymentController::class, 'initiate'])->name('payment.initiate');
+        Route::post('payment/{transaction}/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
     });
 
     Route::post('payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');

@@ -15,7 +15,7 @@ enum TransactionStatus: string
             self::Pending => 'Очікується',
             self::Processing => 'В обробці',
             self::Completed => 'Завершено',
-            self::Failed => 'Відхилено',
+            self::Failed => 'Скасовано',
         };
     }
 

@@ -66,6 +66,7 @@ class WayForPayGateway implements PaymentGatewayInterface
             'orderTimeout' => config('payment.wayforpay.order_timeout'),
             'paymentSystems' => config('payment.wayforpay.payment_systems'),
             'defaultPaymentSystem' => config('payment.wayforpay.default_payment_system'),
+            'declineUrl' => route('customer.payment.return'),
         ]);
     }
 
@@ -140,7 +141,7 @@ class WayForPayGateway implements PaymentGatewayInterface
 
         return collect([
             PaymentProductData::from([
-                'name' => $purchasable->title ?? 'Course',
+                'name' => $purchasable->name ? "Курс \"{$purchasable->name}\"" : 'Course',
                 'price' => $transaction->amount,
                 'count' => 1,
             ]),
