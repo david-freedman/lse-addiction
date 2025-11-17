@@ -25,5 +25,37 @@ class UserSeeder extends Seeder
             'photo' => 'img/speakers/02.webp',
             'position' => 'Лікар-рентгенолог',
         ]);
+
+        User::create([
+            'name' => 'Петренко Олександр Іванович',
+            'email' => 'petrenko@lse.loc',
+            'password' => Hash::make('password'),
+            'photo' => 'img/speakers/03.webp',
+            'position' => 'Кардіолог',
+        ]);
+
+        User::create([
+            'name' => 'Сидоренко Ірина Василівна',
+            'email' => 'sydorenko@lse.loc',
+            'password' => Hash::make('password'),
+            'photo' => 'img/speakers/04.webp',
+            'position' => 'Невролог',
+        ]);
+
+        User::create([
+            'name' => 'Коваленко Микола Петрович',
+            'email' => 'kovalenko@lse.loc',
+            'password' => Hash::make('password'),
+            'photo' => 'img/speakers/05.webp',
+            'position' => 'Хірург',
+        ]);
+
+        User::create([
+            'name' => 'Іваненко Тетяна Сергіївна',
+            'email' => 'ivanenko@lse.loc',
+            'password' => Hash::make('password'),
+            'photo' => 'img/speakers/06.webp',
+            'position' => 'Педіатр',
+        ]);
     }
 }

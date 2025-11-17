@@ -67,7 +67,7 @@ class HandlePaymentCallbackAction
                 'user_agent' => request()->userAgent(),
             ]));
         } else {
-            FailTransactionAction::execute($transaction);
+            FailTransactionAction::execute($transaction, $callback->reasonCode ?? 'Payment declined by gateway');
 
             LogActivityAction::execute(ActivityLogData::from([
                 'subject_type' => ActivitySubject::Transaction,

@@ -5,7 +5,6 @@ namespace App\Domains\Course\ViewModels;
 use App\Domains\Course\Enums\CourseStatus;
 use App\Domains\Course\Models\Course;
 use App\Domains\Customer\Models\Customer;
-use Illuminate\Support\Facades\Storage;
 
 readonly class CourseDetailViewModel
 {
@@ -46,11 +45,7 @@ readonly class CourseDetailViewModel
 
     public function bannerUrl(): ?string
     {
-        if (!$this->course->banner) {
-            return null;
-        }
-
-        return Storage::disk('public')->url($this->course->banner);
+        return $this->course->bannerUrl;
     }
 
     public function status(): string
