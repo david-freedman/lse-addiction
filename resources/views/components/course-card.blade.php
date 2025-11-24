@@ -2,8 +2,8 @@
 
 @php
     $cardUrl = (isset($course->is_purchased) && $course->is_purchased)
-        ? route('customer.courses.show', $course)
-        : route('customer.catalog.show', $course);
+        ? route('student.courses.show', $course)
+        : route('student.catalog.show', $course);
 @endphp
 
 <a href="{{ $cardUrl }}" class="group block bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">

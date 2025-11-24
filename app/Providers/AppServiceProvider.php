@@ -23,8 +23,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::defaultView('pagination.tailwind');
 
-//        if (str_starts_with(config('app.url'), 'https://')) {
-//            URL::forceScheme('https');
-//        }
+        //        if (str_starts_with(config('app.url'), 'https://')) {
+        //            URL::forceScheme('https');
+        //        }
     }
 }

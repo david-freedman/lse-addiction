@@ -13,13 +13,13 @@ class CompleteCoursePurchaseAction
     public static function execute(Transaction $transaction): void
     {
         $course = $transaction->purchasable;
-        $customer = $transaction->customer;
+        $student = $transaction->student;
 
-        if ($course->hasCustomer($customer)) {
+        if ($course->hasStudent($student)) {
             return;
         }
 
-        EnrollCustomerAction::execute($course, $customer);
+        EnrollStudentAction::execute($course, $student);
 
         LogActivityAction::execute(ActivityLogData::from([
             'subject_type' => ActivitySubject::Course,
@@ -28,8 +28,8 @@ class CompleteCoursePurchaseAction
             'description' => 'Course purchased via payment',
             'properties' => [
                 'course_name' => $course->name,
-                'customer_id' => $customer->id,
-                'customer_email' => $customer->email->value,
+                'student_id' => $student->id,
+                'student_email' => $student->email->value,
                 'amount' => $transaction->amount,
                 'transaction_number' => $transaction->transaction_number,
                 'payment_provider' => $transaction->payment_provider?->value,

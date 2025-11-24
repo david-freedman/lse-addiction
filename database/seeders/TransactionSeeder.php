@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Domains\Course\Models\Course;
-use App\Domains\Customer\Models\Customer;
+use App\Domains\Student\Models\Student;
 use App\Domains\Transaction\Enums\PaymentMethod;
 use App\Domains\Transaction\Enums\TransactionStatus;
 use App\Domains\Transaction\Models\Transaction;
@@ -13,20 +13,21 @@ class TransactionSeeder extends Seeder
 {
     public function run(): void
     {
-        $customers = Customer::all();
+        $students = Student::all();
         $courses = Course::all();
 
-        if ($customers->isEmpty() || $courses->isEmpty()) {
-            $this->command->warn('Seeder skipped: No customers or courses found. Please run CustomerSeeder and CourseSeeder first.');
+        if ($students->isEmpty() || $courses->isEmpty()) {
+            $this->command->warn('Seeder skipped: No students or courses found. Please run StudentSeeder and CourseSeeder first.');
+
             return;
         }
 
-        $customer = $customers->first();
+        $student = $students->first();
 
         $transactions = [
             [
                 'transaction_number' => 'TXN-001',
-                'customer_id' => $customer->id,
+                'student_id' => $student->id,
                 'purchasable_type' => Course::class,
                 'purchasable_id' => $courses->random()->id,
                 'amount' => 2500.00,
@@ -38,7 +39,7 @@ class TransactionSeeder extends Seeder
             ],
             [
                 'transaction_number' => 'TXN-002',
-                'customer_id' => $customer->id,
+                'student_id' => $student->id,
                 'purchasable_type' => Course::class,
                 'purchasable_id' => $courses->random()->id,
                 'amount' => 5300.00,
@@ -50,7 +51,7 @@ class TransactionSeeder extends Seeder
             ],
             [
                 'transaction_number' => 'TXN-003',
-                'customer_id' => $customer->id,
+                'student_id' => $student->id,
                 'purchasable_type' => Course::class,
                 'purchasable_id' => $courses->random()->id,
                 'amount' => 2500.00,
@@ -62,7 +63,7 @@ class TransactionSeeder extends Seeder
             ],
             [
                 'transaction_number' => 'TXN-004',
-                'customer_id' => $customer->id,
+                'student_id' => $student->id,
                 'purchasable_type' => Course::class,
                 'purchasable_id' => $courses->random()->id,
                 'amount' => 2500.00,
@@ -74,7 +75,7 @@ class TransactionSeeder extends Seeder
             ],
             [
                 'transaction_number' => 'TXN-005',
-                'customer_id' => $customer->id,
+                'student_id' => $student->id,
                 'purchasable_type' => Course::class,
                 'purchasable_id' => $courses->random()->id,
                 'amount' => 6700.00,
@@ -87,7 +88,7 @@ class TransactionSeeder extends Seeder
             ],
             [
                 'transaction_number' => 'TXN-006',
-                'customer_id' => $customer->id,
+                'student_id' => $student->id,
                 'purchasable_type' => Course::class,
                 'purchasable_id' => $courses->random()->id,
                 'amount' => 2500.00,
@@ -99,7 +100,7 @@ class TransactionSeeder extends Seeder
             ],
             [
                 'transaction_number' => 'TXN-007',
-                'customer_id' => $customer->id,
+                'student_id' => $student->id,
                 'purchasable_type' => Course::class,
                 'purchasable_id' => $courses->random()->id,
                 'amount' => 2500.00,
@@ -111,7 +112,7 @@ class TransactionSeeder extends Seeder
             ],
             [
                 'transaction_number' => 'TXN-008',
-                'customer_id' => $customer->id,
+                'student_id' => $student->id,
                 'purchasable_type' => Course::class,
                 'purchasable_id' => $courses->random()->id,
                 'amount' => 2500.00,
@@ -123,7 +124,7 @@ class TransactionSeeder extends Seeder
             ],
             [
                 'transaction_number' => 'TXN-009',
-                'customer_id' => $customer->id,
+                'student_id' => $student->id,
                 'purchasable_type' => Course::class,
                 'purchasable_id' => $courses->random()->id,
                 'amount' => 1800.00,
@@ -135,7 +136,7 @@ class TransactionSeeder extends Seeder
             ],
             [
                 'transaction_number' => 'TXN-010',
-                'customer_id' => $customer->id,
+                'student_id' => $student->id,
                 'purchasable_type' => Course::class,
                 'purchasable_id' => $courses->random()->id,
                 'amount' => 3700.00,

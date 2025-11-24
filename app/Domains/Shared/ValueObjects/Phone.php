@@ -6,7 +6,7 @@ use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
 
-class Phone implements Stringable, JsonSerializable
+class Phone implements JsonSerializable, Stringable
 {
     public readonly string $value;
 

@@ -31,7 +31,7 @@ class CompleteTransactionAction
                 'transaction_number' => $transaction->transaction_number,
                 'amount' => $transaction->amount,
                 'currency' => $transaction->currency,
-                'customer_id' => $transaction->customer_id,
+                'student_id' => $transaction->student_id,
             ],
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),

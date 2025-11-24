@@ -2,19 +2,22 @@
 
 namespace App\Domains\Transaction\ViewModels;
 
-use App\Domains\Customer\Models\Customer;
+use App\Domains\Student\Models\Student;
 use App\Domains\Transaction\Enums\TransactionStatus;
 
 readonly class TransactionStatsViewModel
 {
     private int $totalCount;
+
     private int $completedCount;
+
     private int $processingCount;
+
     private float $totalAmount;
 
-    public function __construct(Customer $customer)
+    public function __construct(Student $student)
     {
-        $allTransactions = $customer->transactions()->get();
+        $allTransactions = $student->transactions()->get();
 
         $this->totalCount = $allTransactions->count();
         $this->completedCount = $allTransactions->where('status', TransactionStatus::Completed)->count();
@@ -46,6 +49,6 @@ readonly class TransactionStatsViewModel
 
     public function formattedTotalAmount(): string
     {
-        return number_format($this->totalAmount, 0, ',', ' ') . ' ₴';
+        return number_format($this->totalAmount, 0, ',', ' ').' ₴';
     }
 }

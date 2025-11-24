@@ -4,8 +4,7 @@ namespace App\Domains\ActivityLog\Models;
 
 use App\Domains\ActivityLog\Enums\ActivitySubject;
 use App\Domains\ActivityLog\Enums\ActivityType;
-use App\Domains\Customer\Models\Customer;
-use App\Models\User;
+use App\Domains\Student\Models\Student;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -30,9 +29,9 @@ class ActivityLog extends Model
         'created_at' => 'datetime',
     ];
 
-    public function customer(): BelongsTo
+    public function student(): BelongsTo
     {
-        return $this->belongsTo(Customer::class, 'subject_id')
-            ->where('subject_type', ActivitySubject::Customer);
+        return $this->belongsTo(Student::class, 'subject_id')
+            ->where('subject_type', ActivitySubject::Student);
     }
 }

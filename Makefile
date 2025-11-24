@@ -1,4 +1,4 @@
-.PHONY: help up down restart logs shell env-reload composer artisan db-restart db-logs db-shell
+.PHONY: help up down restart rebuild logs shell env-reload composer artisan db-restart db-logs db-shell
 
 help:
 	@echo "LSE - Makefile commands"
@@ -7,6 +7,7 @@ help:
 	@echo "  make up              - Запуск app і db контейнерів"
 	@echo "  make down            - Зупинка всіх контейнерів"
 	@echo "  make restart         - Перезапуск app контейнера"
+	@echo "  make rebuild         - Перебудова app контейнера (build + restart)"
 	@echo "  make logs            - Перегляд логів app"
 	@echo "  make shell           - Bash в app контейнері"
 	@echo "  make env-reload      - Перезавантажити .env (restart + clear cache)"
@@ -43,6 +44,12 @@ down:
 
 restart:
 	docker compose restart app
+
+rebuild:
+	docker compose build --no-cache app
+	docker compose up -d app
+	docker compose restart app
+	@echo "✓ App перебудовано та перезапущено"
 
 logs:
 	docker compose logs -f app

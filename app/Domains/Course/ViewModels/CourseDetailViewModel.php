@@ -2,15 +2,14 @@
 
 namespace App\Domains\Course\ViewModels;
 
-use App\Domains\Course\Enums\CourseStatus;
 use App\Domains\Course\Models\Course;
-use App\Domains\Customer\Models\Customer;
+use App\Domains\Student\Models\Student;
 
 readonly class CourseDetailViewModel
 {
     public function __construct(
         private Course $course,
-        private ?Customer $customer = null
+        private ?Student $student = null
     ) {}
 
     public function id(): int
@@ -65,35 +64,35 @@ readonly class CourseDetailViewModel
 
     public function enrolledCount(): int
     {
-        return $this->course->customers()
+        return $this->course->students()
             ->wherePivot('status', 'active')
             ->count();
     }
 
     public function isEnrolled(): bool
     {
-        if (!$this->customer) {
+        if (! $this->student) {
             return false;
         }
 
-        return $this->course->customers()
-            ->where('customer_id', $this->customer->id)
+        return $this->course->students()
+            ->where('student_id', $this->student->id)
             ->wherePivot('status', 'active')
             ->exists();
     }
 
     public function wasPurchased(): bool
     {
-        if (!$this->customer) {
+        if (! $this->student) {
             return false;
         }
 
-        return $this->customer->hasPurchasedCourse($this->course);
+        return $this->student->hasPurchasedCourse($this->course);
     }
 
     public function canEnroll(): bool
     {
-        return $this->course->isPublished() && !$this->isEnrolled();
+        return $this->course->isPublished() && ! $this->isEnrolled();
     }
 
     public function isPublished(): bool

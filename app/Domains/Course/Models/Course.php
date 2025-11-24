@@ -4,7 +4,7 @@ namespace App\Domains\Course\Models;
 
 use App\Domains\Course\Enums\CourseStatus;
 use App\Domains\Course\Enums\CourseType;
-use App\Domains\Customer\Models\Customer;
+use App\Domains\Student\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -51,10 +51,10 @@ class Course extends Model
         return $this->belongsToMany(Tag::class);
     }
 
-    public function customers(): BelongsToMany
+    public function students(): BelongsToMany
     {
-        return $this->belongsToMany(Customer::class)
-            ->using(CourseCustomer::class)
+        return $this->belongsToMany(Student::class)
+            ->using(CourseStudent::class)
             ->withPivot(['enrolled_at', 'status']);
     }
 
@@ -83,18 +83,18 @@ class Course extends Model
         return $this->status === CourseStatus::Archived;
     }
 
-    public function hasCustomer(Customer $customer): bool
+    public function hasStudent(Student $student): bool
     {
-        return $this->customers()->where('customer_id', $customer->id)->exists();
+        return $this->students()->where('student_id', $student->id)->exists();
     }
 
-    public function scopeAvailableForPurchase($query, ?Customer $customer = null)
+    public function scopeAvailableForPurchase($query, ?Student $student = null)
     {
         $query = $query->where('status', CourseStatus::Published);
 
-        if ($customer) {
-            $query->whereDoesntHave('customers', function($q) use ($customer) {
-                $q->where('customer_id', $customer->id);
+        if ($student) {
+            $query->whereDoesntHave('students', function ($q) use ($student) {
+                $q->where('student_id', $student->id);
             });
         }
 
@@ -127,7 +127,7 @@ class Course extends Model
             return $query;
         }
 
-        return match($filter) {
+        return match ($filter) {
             CourseType::Upcoming => $query->upcoming(),
             CourseType::Recorded => $query->recorded(),
             CourseType::Free => $query->free(),
@@ -162,7 +162,7 @@ class Course extends Model
     protected function formattedPrice(): Attribute
     {
         return Attribute::make(
-            get: fn () => number_format($this->price, 0, ',', ' ') . ' ₴'
+            get: fn () => number_format($this->price, 0, ',', ' ').' ₴'
         );
     }
 
@@ -170,7 +170,7 @@ class Course extends Model
     {
         return Attribute::make(
             get: fn () => $this->old_price
-                ? number_format($this->old_price, 0, ',', ' ') . ' ₴'
+                ? number_format($this->old_price, 0, ',', ' ').' ₴'
                 : null
         );
     }
@@ -179,7 +179,7 @@ class Course extends Model
     {
         return Attribute::make(
             get: fn () => $this->has_discount
-                ? number_format($this->discount_amount, 0, ',', ' ') . ' ₴'
+                ? number_format($this->discount_amount, 0, ',', ' ').' ₴'
                 : null
         );
     }

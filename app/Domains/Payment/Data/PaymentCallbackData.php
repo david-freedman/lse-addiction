@@ -21,15 +21,15 @@ class PaymentCallbackData extends Data
         #[Required, StringType]
         public readonly string $authCode,
         #[Nullable, StringType]
-        public readonly ?string $email = null,
+        public readonly ?string $email,
         #[Nullable, StringType]
-        public readonly ?string $phone = null,
+        public readonly ?string $phone,
         #[Required, StringType]
         public readonly string $transactionStatus,
         #[Required, StringType]
         public readonly string $cardPan,
         #[Nullable, StringType]
-        public readonly ?string $cardType = null,
+        public readonly ?string $cardType,
         #[Required, StringType]
         public readonly string $reasonCode,
         #[Required, StringType]
