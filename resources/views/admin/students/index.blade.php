@@ -157,7 +157,9 @@
                                         @endif
                                         <div>
                                             <p class="font-medium text-gray-900">{{ $student->name }} {{ $student->surname }}</p>
-                                            @if($student->isNew())
+                                            @if($student->trashed())
+                                                <span class="text-xs text-danger-600">Видалений</span>
+                                            @elseif($student->isNew())
                                                 <span class="text-xs text-success-600">Новий</span>
                                             @endif
                                         </div>

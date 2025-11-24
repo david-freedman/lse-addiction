@@ -38,18 +38,6 @@
         @enderror
     </div>
 
-    <div class="flex items-center">
-        <input
-            id="remember"
-            name="remember"
-            type="checkbox"
-            class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
-        >
-        <label for="remember" class="ml-2 block text-sm text-gray-700">
-            Запам'ятати мене
-        </label>
-    </div>
-
     @error('rate_limit')
         <div class="rounded-lg border border-error-200 bg-error-50 px-4 py-3">
             <p class="text-sm text-error-700">{{ $message }}</p>

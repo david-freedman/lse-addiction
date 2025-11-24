@@ -30,10 +30,10 @@ readonly class StudentListViewModel
 
         if ($filters->search) {
             $query->where(function ($q) use ($filters) {
-                $q->where('name', 'like', "%{$filters->search}%")
-                    ->orWhere('surname', 'like', "%{$filters->search}%")
-                    ->orWhere('email', 'like', "%{$filters->search}%")
-                    ->orWhere('phone', 'like', "%{$filters->search}%");
+                $q->where('name', 'ilike', "%{$filters->search}%")
+                    ->orWhere('surname', 'ilike', "%{$filters->search}%")
+                    ->orWhere('email', 'ilike', "%{$filters->search}%")
+                    ->orWhere('phone', 'ilike', "%{$filters->search}%");
             });
         }
 

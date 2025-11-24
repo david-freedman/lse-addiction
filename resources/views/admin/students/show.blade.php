@@ -6,7 +6,9 @@
 <div class="mb-6 flex items-center justify-between">
     <div>
         <h1 class="text-title-xl font-bold text-gray-900">{{ $student->name }} {{ $student->surname }}</h1>
-        @if($student->isNew())
+        @if($student->trashed())
+            <span class="mt-2 inline-block rounded-full bg-danger-100 px-3 py-1 text-xs font-medium text-danger-700">Видалений</span>
+        @elseif($student->isNew())
             <span class="mt-2 inline-block rounded-full bg-success-100 px-3 py-1 text-xs font-medium text-success-700">Новий</span>
         @endif
     </div>
@@ -119,9 +121,10 @@
                                         @endif
                                         <div class="mt-2 flex gap-4 text-xs text-gray-500">
                                             <span>Прогрес: {{ $course->pivot->formattedProgress() }} ({{ $course->pivot->progressPercentage() }}%)</span>
-                                            @if($course->pivot->individual_discount > 0)
+                                            {{-- Temporarily hidden: Individual discount display --}}
+                                            {{-- @if($course->pivot->individual_discount > 0)
                                                 <span class="text-brand-600">Знижка: {{ $course->pivot->individual_discount }}%</span>
-                                            @endif
+                                            @endif --}}
                                         </div>
                                         @if($course->pivot->notes)
                                             <p class="mt-2 text-sm text-gray-600">{{ $course->pivot->notes }}</p>
@@ -162,10 +165,11 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div>
+                            {{-- Temporarily hidden: Individual discount form field --}}
+                            {{-- <div>
                                 <label class="mb-2 block text-sm font-medium text-gray-700">Персональна знижка (%)</label>
                                 <input type="number" name="courses[0][individual_discount]" min="0" max="100" step="0.01" class="w-full rounded-lg border border-gray-300 px-4 py-2">
-                            </div>
+                            </div> --}}
                             <button type="submit" class="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600">Призначити</button>
                         </form>
                     </details>
@@ -184,7 +188,7 @@
                                 </div>
                                 <div class="text-right">
                                     <p class="font-medium text-gray-900">{{ number_format($transaction->amount, 2) }} ₴</p>
-                                    <span class="text-xs text-{{ $transaction->status->value === 'completed' ? 'success' : 'gray' }}-600">{{ $transaction->status->value }}</span>
+                                    <span class="text-xs text-{{ $transaction->status->value === 'completed' ? 'success' : 'gray' }}-600">{{ $transaction->status->label() }}</span>
                                 </div>
                             </div>
                         @endforeach

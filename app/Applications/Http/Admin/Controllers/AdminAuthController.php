@@ -104,7 +104,7 @@ class AdminAuthController
             return back()->withErrors(['code' => $message]);
         }
 
-        Auth::guard('admin')->login($user, $request->boolean('remember'));
+        Auth::guard('admin')->login($user);
 
         session()->forget(['admin_login_email', 'next_resend_at']);
 

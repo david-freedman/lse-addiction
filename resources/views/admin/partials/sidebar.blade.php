@@ -138,66 +138,35 @@
                     </li>
 
                     {{-- Menu Item UI Kit --}}
-                    <li>
-                        <a
-                            href="{{ route('admin.ui-kit') }}"
-                            @click="selected = 'UIKit'"
-                            class="menu-item group"
-                            :class="selected === 'UIKit' || '{{ request()->routeIs('admin.ui-kit') ? 'true' : 'false' }}' === 'true' ? 'menu-item-active' : 'menu-item-inactive'"
-                        >
-                            <svg
-                                :class="selected === 'UIKit' || '{{ request()->routeIs('admin.ui-kit') ? 'true' : 'false' }}' === 'true' ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
-                                    d="M3.75 3C3.75 2.58579 4.08579 2.25 4.5 2.25H9.5C9.91421 2.25 10.25 2.58579 10.25 3V9C10.25 9.41421 9.91421 9.75 9.5 9.75H4.5C4.08579 9.75 3.75 9.41421 3.75 9V3ZM5.25 3.75V8.25H8.75V3.75H5.25ZM13.75 3C13.75 2.58579 14.0858 2.25 14.5 2.25H19.5C19.9142 2.25 20.25 2.58579 20.25 3V9C20.25 9.41421 19.9142 9.75 19.5 9.75H14.5C14.0858 9.75 13.75 9.41421 13.75 9V3ZM15.25 3.75V8.25H18.75V3.75H15.25ZM3.75 14C3.75 13.5858 4.08579 13.25 4.5 13.25H9.5C9.91421 13.25 10.25 13.5858 10.25 14V20C10.25 20.4142 9.91421 20.75 9.5 20.75H4.5C4.08579 20.75 3.75 20.4142 3.75 20V14ZM5.25 14.75V19.25H8.75V14.75H5.25ZM13.75 14C13.75 13.5858 14.0858 13.25 14.5 13.25H19.5C19.9142 13.25 20.25 13.5858 20.25 14V20C20.25 20.4142 19.9142 20.75 19.5 20.75H14.5C14.0858 20.75 13.75 20.4142 13.75 20V14ZM15.25 14.75V19.25H18.75V14.75H15.25Z"
-                                    fill=""
-                                />
-                            </svg>
+{{--                    <li>--}}
+{{--                        <a--}}
+{{--                            href="{{ route('admin.ui-kit') }}"--}}
+{{--                            @click="selected = 'UIKit'"--}}
+{{--                            class="menu-item group"--}}
+{{--                            :class="selected === 'UIKit' || '{{ request()->routeIs('admin.ui-kit') ? 'true' : 'false' }}' === 'true' ? 'menu-item-active' : 'menu-item-inactive'"--}}
+{{--                        >--}}
+{{--                            <svg--}}
+{{--                                :class="selected === 'UIKit' || '{{ request()->routeIs('admin.ui-kit') ? 'true' : 'false' }}' === 'true' ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"--}}
+{{--                                width="24"--}}
+{{--                                height="24"--}}
+{{--                                viewBox="0 0 24 24"--}}
+{{--                                fill="none"--}}
+{{--                                xmlns="http://www.w3.org/2000/svg"--}}
+{{--                            >--}}
+{{--                                <path--}}
+{{--                                    fill-rule="evenodd"--}}
+{{--                                    clip-rule="evenodd"--}}
+{{--                                    d="M3.75 3C3.75 2.58579 4.08579 2.25 4.5 2.25H9.5C9.91421 2.25 10.25 2.58579 10.25 3V9C10.25 9.41421 9.91421 9.75 9.5 9.75H4.5C4.08579 9.75 3.75 9.41421 3.75 9V3ZM5.25 3.75V8.25H8.75V3.75H5.25ZM13.75 3C13.75 2.58579 14.0858 2.25 14.5 2.25H19.5C19.9142 2.25 20.25 2.58579 20.25 3V9C20.25 9.41421 19.9142 9.75 19.5 9.75H14.5C14.0858 9.75 13.75 9.41421 13.75 9V3ZM15.25 3.75V8.25H18.75V3.75H15.25ZM3.75 14C3.75 13.5858 4.08579 13.25 4.5 13.25H9.5C9.91421 13.25 10.25 13.5858 10.25 14V20C10.25 20.4142 9.91421 20.75 9.5 20.75H4.5C4.08579 20.75 3.75 20.4142 3.75 20V14ZM5.25 14.75V19.25H8.75V14.75H5.25ZM13.75 14C13.75 13.5858 14.0858 13.25 14.5 13.25H19.5C19.9142 13.25 20.25 13.5858 20.25 14V20C20.25 20.4142 19.9142 20.75 19.5 20.75H14.5C14.0858 20.75 13.75 20.4142 13.75 20V14ZM15.25 14.75V19.25H18.75V14.75H15.25Z"--}}
+{{--                                    fill=""--}}
+{{--                                />--}}
+{{--                            </svg>--}}
 
-                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
-                                UI Kit
-                            </span>
-                        </a>
-                    </li>
+{{--                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">--}}
+{{--                                UI Kit--}}
+{{--                            </span>--}}
+{{--                        </a>--}}
+{{--                    </li>--}}
 
-                    {{-- Menu Item Logout --}}
-                    <li>
-                        <form action="{{ route('admin.logout') }}" method="POST" class="w-full">
-                            @csrf
-                            <button
-                                type="submit"
-                                class="menu-item group w-full menu-item-inactive"
-                            >
-                                <svg
-                                    class="menu-item-icon-inactive"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M17 16L21 12M21 12L17 8M21 12H7M13 16V17C13 18.6569 11.6569 20 10 20H6C4.34315 20 3 18.6569 3 17V7C3 5.34315 4.34315 4 6 4H10C11.6569 4 13 5.34315 13 7V8"
-                                        stroke=""
-                                        stroke-width="1.5"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                    />
-                                </svg>
-
-                                <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
-                                    Вийти
-                                </span>
-                            </button>
-                        </form>
-                    </li>
                 </ul>
             </div>
         </nav>

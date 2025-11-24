@@ -92,7 +92,7 @@
                         #{{ $transaction->id }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {{ $transaction->student->first_name }} {{ $transaction->student->last_name }}
+                        {{ $transaction->student->name }} {{ $transaction->student->surname }}
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-900">
                         {{ $transaction->course->name ?? 'N/A' }}
@@ -101,19 +101,17 @@
                         {{ number_format($transaction->amount, 0, ',', ' ') }} ₴
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        @if($transaction->status === 'completed')
-                            <span class="inline-flex rounded-full bg-success-100 px-2.5 py-0.5 text-xs font-medium text-success-700">
-                                Завершено
-                            </span>
-                        @elseif($transaction->status === 'pending')
-                            <span class="inline-flex rounded-full bg-warning-100 px-2.5 py-0.5 text-xs font-medium text-warning-700">
-                                Очікується
-                            </span>
-                        @else
-                            <span class="inline-flex rounded-full bg-error-100 px-2.5 py-0.5 text-xs font-medium text-error-700">
-                                Скасовано
-                            </span>
-                        @endif
+                        @php
+                            $statusClasses = match($transaction->status) {
+                                \App\Domains\Transaction\Enums\TransactionStatus::Pending => 'bg-gray-100 text-gray-700',
+                                \App\Domains\Transaction\Enums\TransactionStatus::Processing => 'bg-orange-100 text-orange-700',
+                                \App\Domains\Transaction\Enums\TransactionStatus::Completed => 'bg-green-100 text-green-700',
+                                \App\Domains\Transaction\Enums\TransactionStatus::Failed => 'bg-red-100 text-red-700',
+                            };
+                        @endphp
+                        <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $statusClasses }}">
+                            {{ $transaction->status->label() }}
+                        </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {{ $transaction->created_at->format('d.m.Y H:i') }}
