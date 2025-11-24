@@ -44,6 +44,6 @@ readonly class CourseListViewModel
 
     public function filterUrl(CourseType $type): string
     {
-        return route('customer.courses.browse', ['filter' => $type->value]);
+        return route('student.courses.browse', ['filter' => $type->value]);
     }
 }

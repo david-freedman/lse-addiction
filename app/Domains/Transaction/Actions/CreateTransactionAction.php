@@ -15,7 +15,7 @@ class CreateTransactionAction
     {
         $transaction = Transaction::create([
             'transaction_number' => self::generateTransactionNumber(),
-            'customer_id' => $data->customer_id,
+            'student_id' => $data->student_id,
             'purchasable_type' => $data->purchasable_type,
             'purchasable_id' => $data->purchasable_id,
             'amount' => $data->amount,
@@ -35,7 +35,7 @@ class CreateTransactionAction
                 'transaction_number' => $transaction->transaction_number,
                 'amount' => $transaction->amount,
                 'currency' => $transaction->currency,
-                'customer_id' => $transaction->customer_id,
+                'student_id' => $transaction->student_id,
             ],
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
@@ -49,6 +49,6 @@ class CreateTransactionAction
         $lastTransaction = Transaction::orderBy('id', 'desc')->first();
         $nextId = $lastTransaction ? $lastTransaction->id + 1 : 1;
 
-        return 'TXN-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
+        return 'TXN-'.str_pad($nextId, 3, '0', STR_PAD_LEFT);
     }
 }

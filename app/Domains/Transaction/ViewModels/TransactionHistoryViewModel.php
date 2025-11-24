@@ -2,19 +2,22 @@
 
 namespace App\Domains\Transaction\ViewModels;
 
-use App\Domains\Customer\Models\Customer;
+use App\Domains\Student\Models\Student;
 use App\Domains\Transaction\Enums\TransactionStatus;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 readonly class TransactionHistoryViewModel
 {
     private LengthAwarePaginator $transactions;
+
     private ?TransactionStatus $currentStatus;
+
     private ?string $dateFrom;
+
     private ?string $dateTo;
 
     public function __construct(
-        Customer $customer,
+        Student $student,
         ?TransactionStatus $status = null,
         ?string $dateFrom = null,
         ?string $dateTo = null,
@@ -24,7 +27,7 @@ readonly class TransactionHistoryViewModel
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateTo;
 
-        $query = $customer->transactions()
+        $query = $student->transactions()
             ->with('purchasable')
             ->byStatus($status)
             ->byDateRange($dateFrom, $dateTo)

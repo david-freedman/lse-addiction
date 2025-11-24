@@ -2,29 +2,31 @@
 
 namespace App\Domains\Course\ViewModels;
 
-use App\Domains\Customer\Models\Customer;
+use App\Domains\Student\Models\Student;
 use Illuminate\Database\Eloquent\Collection;
 
 readonly class MyCoursesViewModel
 {
     private Collection $courses;
+
     private Collection $allCourses;
+
     private ?string $currentStatus;
 
-    public function __construct(Customer $customer, ?string $status = null)
+    public function __construct(Student $student, ?string $status = null)
     {
         $this->currentStatus = $status;
 
-        $this->allCourses = $customer->courses()
+        $this->allCourses = $student->courses()
             ->withPivot(['enrolled_at', 'status'])
             ->with(['coach', 'tags'])
-            ->orderBy('course_customer.enrolled_at', 'desc')
+            ->orderBy('course_student.enrolled_at', 'desc')
             ->get();
 
-        $query = $customer->courses()
+        $query = $student->courses()
             ->withPivot(['enrolled_at', 'status'])
             ->with(['coach', 'tags'])
-            ->orderBy('course_customer.enrolled_at', 'desc');
+            ->orderBy('course_student.enrolled_at', 'desc');
 
         if ($status) {
             $query->wherePivot('status', $status);

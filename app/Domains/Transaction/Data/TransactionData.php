@@ -14,7 +14,7 @@ class TransactionData extends Data
 {
     public function __construct(
         #[Required]
-        public readonly int $customer_id,
+        public readonly int $student_id,
         #[Required, StringType]
         public readonly string $purchasable_type,
         #[Required]

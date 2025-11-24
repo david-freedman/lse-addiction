@@ -13,7 +13,7 @@ class ValidEmail implements ValidationRule
             return;
         }
 
-        if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+        if (! filter_var($value, FILTER_VALIDATE_EMAIL)) {
             $fail(__('validation.custom.email.valid_email'));
         }
     }

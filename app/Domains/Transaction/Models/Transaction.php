@@ -2,8 +2,9 @@
 
 namespace App\Domains\Transaction\Models;
 
-use App\Domains\Customer\Models\Customer;
+use App\Domains\Course\Models\Course;
 use App\Domains\Payment\Enums\PaymentProvider;
+use App\Domains\Student\Models\Student;
 use App\Domains\Transaction\Enums\PaymentMethod;
 use App\Domains\Transaction\Enums\TransactionStatus;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ class Transaction extends Model
 {
     protected $fillable = [
         'transaction_number',
-        'customer_id',
+        'student_id',
         'purchasable_type',
         'purchasable_id',
         'amount',
@@ -45,14 +46,19 @@ class Transaction extends Model
         return 'transaction_number';
     }
 
-    public function customer(): BelongsTo
+    public function student(): BelongsTo
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Student::class);
     }
 
     public function purchasable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(Course::class, 'purchasable_id');
     }
 
     public function isPending(): bool
@@ -80,9 +86,9 @@ class Transaction extends Model
         return $query->where('status', TransactionStatus::Completed->value);
     }
 
-    public function scopeForCustomer($query, Customer $customer)
+    public function scopeForStudent($query, Student $student)
     {
-        return $query->where('customer_id', $customer->id);
+        return $query->where('student_id', $student->id);
     }
 
     public function scopeByStatus($query, ?TransactionStatus $status)
@@ -109,15 +115,15 @@ class Transaction extends Model
 
     public function getFormattedAmountAttribute(): string
     {
-        return number_format($this->amount, 0, ',', ' ') . ' ' . $this->currency;
+        return number_format($this->amount, 0, ',', ' ').' '.$this->currency;
     }
 
     public function getMaskedPaymentReferenceAttribute(): ?string
     {
-        if (!$this->payment_reference) {
+        if (! $this->payment_reference) {
             return null;
         }
 
-        return '•••• ' . substr($this->payment_reference, -4);
+        return '•••• '.substr($this->payment_reference, -4);
     }
 }

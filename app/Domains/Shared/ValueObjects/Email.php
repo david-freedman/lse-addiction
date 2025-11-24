@@ -6,7 +6,7 @@ use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
 
-class Email implements Stringable, JsonSerializable
+class Email implements JsonSerializable, Stringable
 {
     public readonly string $value;
 

@@ -26,7 +26,7 @@ class WayForPayGateway implements PaymentGatewayInterface
 
     public function preparePayment(Transaction $transaction): PaymentRequestData
     {
-        $customer = $transaction->customer;
+        $student = $transaction->student;
         $products = $this->getProductsFromTransaction($transaction);
         $orderDate = now()->timestamp;
 
@@ -54,19 +54,19 @@ class WayForPayGateway implements PaymentGatewayInterface
             'currency' => $transaction->currency,
             'products' => $products,
             'merchantTransactionSecureType' => 'AUTO',
-            'returnUrl' => route('customer.payment.return'),
-            'serviceUrl' => route('customer.payment.callback'),
-            'clientFirstName' => $customer->name ?? 'Клієнт',
-            'clientLastName' => $customer->surname ?? 'LSE',
-            'clientPhone' => $customer->phone ?? '',
-            'clientEmail' => $customer->email,
+            'returnUrl' => route('student.payment.return'),
+            'serviceUrl' => route('student.payment.callback'),
+            'clientFirstName' => $student->name ?? 'Клієнт',
+            'clientLastName' => $student->surname ?? 'LSE',
+            'clientPhone' => $student->phone ?? '',
+            'clientEmail' => $student->email,
             'language' => config('payment.wayforpay.language', 'UA'),
             'apiVersion' => config('payment.wayforpay.api_version', 2),
-            'clientAccountId' => (string) $customer->id,
+            'clientAccountId' => (string) $student->id,
             'orderTimeout' => config('payment.wayforpay.order_timeout'),
             'paymentSystems' => config('payment.wayforpay.payment_systems'),
             'defaultPaymentSystem' => config('payment.wayforpay.default_payment_system'),
-            'declineUrl' => route('customer.payment.return'),
+            'declineUrl' => route('student.payment.return'),
         ]);
     }
 

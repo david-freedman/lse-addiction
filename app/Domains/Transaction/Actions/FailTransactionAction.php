@@ -34,7 +34,7 @@ class FailTransactionAction
                 'transaction_number' => $transaction->transaction_number,
                 'amount' => $transaction->amount,
                 'currency' => $transaction->currency,
-                'customer_id' => $transaction->customer_id,
+                'student_id' => $transaction->student_id,
                 'failure_reason' => $reason,
             ],
             'ip_address' => request()->ip(),
