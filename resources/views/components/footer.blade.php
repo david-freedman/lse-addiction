@@ -28,11 +28,11 @@
                     </li>
                     <li>
                         @auth
-                            <a href="{{ route('customer.profile.show') }}">
+                            <a href="{{ route('student.profile.show') }}">
                                 Особистий кабінет
                             </a>
                         @else
-                            <a href="{{ route('customer.login') }}">
+                            <a href="{{ route('student.login') }}">
                                 Особистий кабінет
                             </a>
                         @endauth

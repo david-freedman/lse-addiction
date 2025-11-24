@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Domains\Course\Enums;
+
 enum CourseStatus: string
 {
     case Draft = 'draft';

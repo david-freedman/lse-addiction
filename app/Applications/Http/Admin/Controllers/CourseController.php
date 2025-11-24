@@ -29,7 +29,7 @@ class CourseController
 
     public function show(Course $course): View
     {
-        $course->load(['coach', 'author', 'tags', 'customers']);
+        $course->load(['coach', 'author', 'tags', 'students']);
 
         $viewModel = new CourseDetailViewModel($course);
 

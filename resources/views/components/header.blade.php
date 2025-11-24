@@ -22,10 +22,10 @@
                                         </summary>
                                         <ul class="sublist">
                                             <li>
-                                                <a href="{{ route('customer.courses.browse') }}?category=doctors&type=upcoming">майбутні події</a>
+                                                <a href="{{ route('student.courses.browse') }}?category=doctors&type=upcoming">майбутні події</a>
                                             </li>
                                             <li>
-                                                <a href="{{ route('customer.courses.browse') }}?category=doctors&type=recorded">події у запісі</a>
+                                                <a href="{{ route('student.courses.browse') }}?category=doctors&type=recorded">події у запісі</a>
                                             </li>
                                         </ul>
                                     </details>
@@ -37,26 +37,26 @@
                                         </summary>
                                         <ul class="sublist">
                                             <li>
-                                                <a href="{{ route('customer.courses.browse') }}?category=radiologists&type=upcoming">майбутні події</a>
+                                                <a href="{{ route('student.courses.browse') }}?category=radiologists&type=upcoming">майбутні події</a>
                                             </li>
                                             <li>
-                                                <a href="{{ route('customer.courses.browse') }}?category=radiologists&type=recorded">події у запісі</a>
+                                                <a href="{{ route('student.courses.browse') }}?category=radiologists&type=recorded">події у запісі</a>
                                             </li>
                                         </ul>
                                     </details>
                                 </li>
                                 <li>
-                                    <a href="{{ route('customer.courses.browse') }}?type=intercourse">
+                                    <a href="{{ route('student.courses.browse') }}?type=intercourse">
                                         інтеркурс у нас
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('customer.courses.browse') }}?type=free">
+                                    <a href="{{ route('student.courses.browse') }}?type=free">
                                         безкоштовно
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('customer.courses.browse') }}?type=cases">
+                                    <a href="{{ route('student.courses.browse') }}?type=cases">
                                         цікави випадки
                                     </a>
                                 </li>
@@ -68,13 +68,13 @@
                 </ul>
                 <a href="#" class="header__search-btn _icon-search">Пошук</a>
                 @auth
-                    <a href="{{ route('customer.profile.show') }}" class="header__button button">Особистий кабінет</a>
-                    <form action="{{ route('customer.logout') }}" method="POST" style="display: inline;">
+                    <a href="{{ route('student.profile.show') }}" class="header__button button">Особистий кабінет</a>
+                    <form action="{{ route('student.logout') }}" method="POST" style="display: inline;">
                         @csrf
                         <button type="submit" class="header__button button button--outline">Вихід</button>
                     </form>
                 @else
-                    <a href="{{ route('customer.login') }}" class="header__button button">Особистий кабінет</a>
+                    <a href="{{ route('student.login') }}" class="header__button button">Особистий кабінет</a>
                 @endauth
             </nav>
         </div>

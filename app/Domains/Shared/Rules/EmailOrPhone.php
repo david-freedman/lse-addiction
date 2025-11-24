@@ -14,13 +14,17 @@ class EmailOrPhone implements ValidationRule
     {
         try {
             Email::from($value);
+
             return;
-        } catch (InvalidArgumentException) {}
+        } catch (InvalidArgumentException) {
+        }
 
         try {
             Phone::from($value);
+
             return;
-        } catch (InvalidArgumentException) {}
+        } catch (InvalidArgumentException) {
+        }
 
         $fail(__('validation.custom.contact.email_or_phone'));
     }

@@ -4,16 +4,16 @@ namespace App\Domains\ActivityLog\Enums;
 
 enum ActivityType: string
 {
-    case CustomerRegistered = 'customer.registered';
-    case CustomerLoginSuccess = 'customer.login.success';
-    case CustomerLoginFailed = 'customer.login.failed';
-    case CustomerLoggedOut = 'customer.logged.out';
-    case CustomerVerificationSent = 'customer.verification.sent';
-    case CustomerVerificationVerified = 'customer.verification.verified';
-    case CustomerVerificationFailed = 'customer.verification.failed';
-    case CustomerContactChanged = 'customer.contact.changed';
-    case CustomerContactDetailsAdded = 'customer.contact.details.added';
-    case CustomerPersonalDetailsUpdated = 'customer.personal.details.updated';
+    case StudentRegistered = 'student.registered';
+    case StudentLoginSuccess = 'student.login.success';
+    case StudentLoginFailed = 'student.login.failed';
+    case StudentLoggedOut = 'student.logged.out';
+    case StudentVerificationSent = 'student.verification.sent';
+    case StudentVerificationVerified = 'student.verification.verified';
+    case StudentVerificationFailed = 'student.verification.failed';
+    case StudentContactChanged = 'student.contact.changed';
+    case StudentContactDetailsAdded = 'student.contact.details.added';
+    case StudentPersonalDetailsUpdated = 'student.personal.details.updated';
     case ProfileFieldsCompleted = 'profile.fields.completed';
     case ProfileFieldCreated = 'admin.profile.field.created';
     case ProfileFieldUpdated = 'admin.profile.field.updated';
@@ -23,8 +23,15 @@ enum ActivityType: string
     case CourseUpdated = 'course.updated';
     case CourseDeleted = 'course.deleted';
     case CoursePurchased = 'course.purchased';
-    case CustomerEnrolled = 'course.customer.enrolled';
-    case CustomerUnenrolled = 'course.customer.unenrolled';
+    case StudentEnrolled = 'course.student.enrolled';
+    case StudentUnenrolled = 'course.student.unenrolled';
+
+    case StudentCreatedByAdmin = 'admin.student.created';
+    case StudentUpdatedByAdmin = 'admin.student.updated';
+    case StudentDeletedByAdmin = 'admin.student.deleted';
+    case StudentRestoredByAdmin = 'admin.student.restored';
+    case StudentAssignedToCourse = 'admin.student.assigned_to_course';
+    case StudentUnenrolledFromCourse = 'admin.student.unenrolled_from_course';
 
     case TransactionCreated = 'transaction.created';
     case TransactionCompleted = 'transaction.completed';
