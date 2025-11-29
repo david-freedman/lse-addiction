@@ -27,14 +27,14 @@
                 <span x-show="!showFilters">Показати фільтри</span>
                 <span x-show="showFilters">Сховати фільтри</span>
             </button>
-            <button type="submit" class="rounded-lg bg-brand-500 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-brand-600">
-                Фільтрувати
-            </button>
             @if($viewModel->isFiltered())
                 <a href="{{ route('admin.students.index') }}" class="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50">
                     Скинути
                 </a>
             @endif
+            <button type="submit" class="rounded-lg bg-brand-500 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-brand-600">
+                Фільтрувати
+            </button>
         </div>
 
         <div x-show="showFilters" x-transition class="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -53,9 +53,10 @@
             <div>
                 <label class="mb-2 block text-sm font-medium text-gray-700">Дата створення (від)</label>
                 <input
-                    type="date"
+                    type="text"
                     name="created_from"
-                    value="{{ $viewModel->filters()->created_from }}"
+                    x-datepicker
+                    value="{{ $viewModel->filters()->created_from?->format('d.m.Y') }}"
                     class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5"
                 >
             </div>
@@ -63,9 +64,10 @@
             <div>
                 <label class="mb-2 block text-sm font-medium text-gray-700">Дата створення (до)</label>
                 <input
-                    type="date"
+                    type="text"
                     name="created_to"
-                    value="{{ $viewModel->filters()->created_to }}"
+                    x-datepicker
+                    value="{{ $viewModel->filters()->created_to?->format('d.m.Y') }}"
                     class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5"
                 >
             </div>
@@ -131,7 +133,7 @@
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Курси</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Прогрес</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Останній вхід</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Створено</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Реєстрація</th>
                             <th class="px-4 py-3 text-right text-xs font-semibold uppercase text-gray-600">Дії</th>
                         </tr>
                     </thead>
@@ -190,7 +192,7 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3">
-                                    <span class="text-sm text-gray-600">—</span>
+                                    <span class="text-sm text-gray-600">{{ $student->last_login_at?->format('d.m.Y H:i') ?? '—' }}</span>
                                 </td>
                                 <td class="px-4 py-3">
                                     <span class="text-sm text-gray-600">{{ $student->created_at->format('d.m.Y') }}</span>

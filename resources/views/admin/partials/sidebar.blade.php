@@ -20,7 +20,7 @@
 
     <div class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         {{-- Sidebar Menu --}}
-        <nav x-data="{selected: $persist('{{ $currentMenu ?? 'Dashboard' }}')}">
+        <nav>
             {{-- Menu Group --}}
             <div>
                 <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
@@ -51,24 +51,19 @@
                     <li>
                         <a
                             href="{{ route('admin.dashboard') }}"
-                            @click="selected = 'Dashboard'"
-                            class="menu-item group"
-                            :class="selected === 'Dashboard' || '{{ request()->routeIs('admin.dashboard') ? 'true' : 'false' }}' === 'true' ? 'menu-item-active' : 'menu-item-inactive'"
+                            class="menu-item group {{ request()->routeIs('admin.dashboard') ? 'menu-item-active' : 'menu-item-inactive' }}"
                         >
                             <svg
-                                :class="selected === 'Dashboard' || '{{ request()->routeIs('admin.dashboard') ? 'true' : 'false' }}' === 'true' ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
+                                class="{{ request()->routeIs('admin.dashboard') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"
                                 width="24"
                                 height="24"
                                 viewBox="0 0 24 24"
                                 fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
                                 xmlns="http://www.w3.org/2000/svg"
                             >
-                                <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
-                                    d="M5.5 3.25C4.25736 3.25 3.25 4.25736 3.25 5.5V8.99998C3.25 10.2426 4.25736 11.25 5.5 11.25H9C10.2426 11.25 11.25 10.2426 11.25 8.99998V5.5C11.25 4.25736 10.2426 3.25 9 3.25H5.5ZM4.75 5.5C4.75 5.08579 5.08579 4.75 5.5 4.75H9C9.41421 4.75 9.75 5.08579 9.75 5.5V8.99998C9.75 9.41419 9.41421 9.74998 9 9.74998H5.5C5.08579 9.74998 4.75 9.41419 4.75 8.99998V5.5ZM5.5 12.75C4.25736 12.75 3.25 13.7574 3.25 15V18.5C3.25 19.7426 4.25736 20.75 5.5 20.75H9C10.2426 20.75 11.25 19.7427 11.25 18.5V15C11.25 13.7574 10.2426 12.75 9 12.75H5.5ZM4.75 15C4.75 14.5858 5.08579 14.25 5.5 14.25H9C9.41421 14.25 9.75 14.5858 9.75 15V18.5C9.75 18.9142 9.41421 19.25 9 19.25H5.5C5.08579 19.25 4.75 18.9142 4.75 18.5V15ZM12.75 5.5C12.75 4.25736 13.7574 3.25 15 3.25H18.5C19.7426 3.25 20.75 4.25736 20.75 5.5V8.99998C20.75 10.2426 19.7426 11.25 18.5 11.25H15C13.7574 11.25 12.75 10.2426 12.75 8.99998V5.5ZM15 4.75C14.5858 4.75 14.25 5.08579 14.25 5.5V8.99998C14.25 9.41419 14.5858 9.74998 15 9.74998H18.5C18.9142 9.74998 19.25 9.41419 19.25 8.99998V5.5C19.25 5.08579 18.9142 4.75 18.5 4.75H15ZM15 12.75C13.7574 12.75 12.75 13.7574 12.75 15V18.5C12.75 19.7426 13.7574 20.75 15 20.75H18.5C19.7426 20.75 20.75 19.7427 20.75 18.5V15C20.75 13.7574 19.7426 12.75 18.5 12.75H15ZM14.25 15C14.25 14.5858 14.5858 14.25 15 14.25H18.5C18.9142 14.25 19.25 14.5858 19.25 15V18.5C19.25 18.9142 18.9142 19.25 18.5 19.25H15C14.5858 19.25 14.25 18.9142 14.25 18.5V15Z"
-                                    fill=""
-                                />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
                             </svg>
 
                             <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
@@ -81,24 +76,19 @@
                     <li>
                         <a
                             href="{{ route('admin.courses.index') }}"
-                            @click="selected = 'Courses'"
-                            class="menu-item group"
-                            :class="selected === 'Courses' || '{{ request()->routeIs('admin.courses.*') ? 'true' : 'false' }}' === 'true' ? 'menu-item-active' : 'menu-item-inactive'"
+                            class="menu-item group {{ request()->routeIs('admin.courses.*') ? 'menu-item-active' : 'menu-item-inactive' }}"
                         >
                             <svg
-                                :class="selected === 'Courses' || '{{ request()->routeIs('admin.courses.*') ? 'true' : 'false' }}' === 'true' ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
+                                class="{{ request()->routeIs('admin.courses.*') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"
                                 width="24"
                                 height="24"
                                 viewBox="0 0 24 24"
                                 fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
                                 xmlns="http://www.w3.org/2000/svg"
                             >
-                                <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
-                                    d="M8.50391 4.25C8.50391 3.83579 8.83969 3.5 9.25391 3.5H15.2777C15.4766 3.5 15.6674 3.57902 15.8081 3.71967L18.2807 6.19234C18.4214 6.333 18.5004 6.52376 18.5004 6.72268V16.75C18.5004 17.1642 18.1646 17.5 17.7504 17.5H16.248V17.4993H14.748V17.5H9.25391C8.83969 17.5 8.50391 17.1642 8.50391 16.75V4.25ZM14.748 19H9.25391C8.01126 19 7.00391 17.9926 7.00391 16.75V6.49854H6.24805C5.83383 6.49854 5.49805 6.83432 5.49805 7.24854V19.75C5.49805 20.1642 5.83383 20.5 6.24805 20.5H13.998C14.4123 20.5 14.748 20.1642 14.748 19.75L14.748 19Z"
-                                    fill=""
-                                />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
                             </svg>
 
                             <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
@@ -111,24 +101,19 @@
                     <li>
                         <a
                             href="{{ route('admin.students.index') }}"
-                            @click="selected = 'Students'"
-                            class="menu-item group"
-                            :class="selected === 'Students' || '{{ request()->routeIs('admin.students.*') ? 'true' : 'false' }}' === 'true' ? 'menu-item-active' : 'menu-item-inactive'"
+                            class="menu-item group {{ request()->routeIs('admin.students.*') ? 'menu-item-active' : 'menu-item-inactive' }}"
                         >
                             <svg
-                                :class="selected === 'Students' || '{{ request()->routeIs('admin.students.*') ? 'true' : 'false' }}' === 'true' ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
+                                class="{{ request()->routeIs('admin.students.*') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"
                                 width="24"
                                 height="24"
                                 viewBox="0 0 24 24"
                                 fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
                                 xmlns="http://www.w3.org/2000/svg"
                             >
-                                <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
-                                    d="M12 2.75C9.92893 2.75 8.25 4.42893 8.25 6.5C8.25 8.57107 9.92893 10.25 12 10.25C14.0711 10.25 15.75 8.57107 15.75 6.5C15.75 4.42893 14.0711 2.75 12 2.75ZM6.75 6.5C6.75 3.60051 9.10051 1.25 12 1.25C14.8995 1.25 17.25 3.60051 17.25 6.5C17.25 9.39949 14.8995 11.75 12 11.75C9.10051 11.75 6.75 9.39949 6.75 6.5ZM5.25 15.5C4.42157 15.5 3.75 16.1716 3.75 17V19.5C3.75 19.9142 3.41421 20.25 3 20.25C2.58579 20.25 2.25 19.9142 2.25 19.5V17C2.25 15.3431 3.59315 14 5.25 14H18.75C20.4069 14 21.75 15.3431 21.75 17V19.5C21.75 19.9142 21.4142 20.25 21 20.25C20.5858 20.25 20.25 19.9142 20.25 19.5V17C20.25 16.1716 19.5784 15.5 18.75 15.5H5.25Z"
-                                    fill=""
-                                />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                             </svg>
 
                             <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
@@ -137,16 +122,95 @@
                         </a>
                     </li>
 
+                    @can('access-teachers')
+                    {{-- Menu Item Teachers --}}
+                    <li>
+                        <a
+                            href="{{ route('admin.teachers.index') }}"
+                            class="menu-item group {{ request()->routeIs('admin.teachers.*') ? 'menu-item-active' : 'menu-item-inactive' }}"
+                        >
+                            <svg
+                                class="{{ request()->routeIs('admin.teachers.*') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
+                            </svg>
+
+                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                Викладачі
+                            </span>
+                        </a>
+                    </li>
+                    @endcan
+
+                    @can('access-users')
+                    {{-- Menu Item Users --}}
+                    <li>
+                        <a
+                            href="{{ route('admin.users.index') }}"
+                            class="menu-item group {{ request()->routeIs('admin.users.*') ? 'menu-item-active' : 'menu-item-inactive' }}"
+                        >
+                            <svg
+                                class="{{ request()->routeIs('admin.users.*') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                            </svg>
+
+                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                Користувачі
+                            </span>
+                        </a>
+                    </li>
+                    @endcan
+
+                    @can('access-finances')
+                    {{-- Menu Item Finances --}}
+                    <li>
+                        <a
+                            href="{{ route('admin.finances.index') }}"
+                            class="menu-item group {{ request()->routeIs('admin.finances.*') ? 'menu-item-active' : 'menu-item-inactive' }}"
+                        >
+                            <svg
+                                class="{{ request()->routeIs('admin.finances.*') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                            </svg>
+
+                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                Фінанси
+                            </span>
+                        </a>
+                    </li>
+                    @endcan
+
                     {{-- Menu Item UI Kit --}}
 {{--                    <li>--}}
 {{--                        <a--}}
 {{--                            href="{{ route('admin.ui-kit') }}"--}}
-{{--                            @click="selected = 'UIKit'"--}}
-{{--                            class="menu-item group"--}}
-{{--                            :class="selected === 'UIKit' || '{{ request()->routeIs('admin.ui-kit') ? 'true' : 'false' }}' === 'true' ? 'menu-item-active' : 'menu-item-inactive'"--}}
+{{--                            class="menu-item group {{ request()->routeIs('admin.ui-kit') ? 'menu-item-active' : 'menu-item-inactive' }}"--}}
 {{--                        >--}}
 {{--                            <svg--}}
-{{--                                :class="selected === 'UIKit' || '{{ request()->routeIs('admin.ui-kit') ? 'true' : 'false' }}' === 'true' ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"--}}
+{{--                                class="{{ request()->routeIs('admin.ui-kit') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"--}}
 {{--                                width="24"--}}
 {{--                                height="24"--}}
 {{--                                viewBox="0 0 24 24"--}}

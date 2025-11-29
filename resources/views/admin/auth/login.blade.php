@@ -1,7 +1,7 @@
 @extends('admin.auth.layouts.guest')
 
 @section('title', 'Вхід')
-@section('heading', 'Вхід для адміністраторів')
+@section('heading', 'Вхід в панель керування')
 
 @section('content')
 <form class="space-y-5" method="POST" action="{{ route('admin.login.send') }}">

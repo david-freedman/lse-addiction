@@ -16,17 +16,30 @@ readonly class StudentListViewModel
 
     private StudentFilterData $filters;
 
-    public function __construct(StudentFilterData $filters, int $perPage = 20)
-    {
+    public function __construct(
+        StudentFilterData $filters,
+        int $perPage = 20,
+        ?array $restrictToCourseIds = null
+    ) {
         $this->filters = $filters;
 
-        $this->courses = Course::orderBy('name')->get();
+        $coursesQuery = Course::orderBy('name');
+        if ($restrictToCourseIds !== null) {
+            $coursesQuery->whereIn('id', $restrictToCourseIds);
+        }
+        $this->courses = $coursesQuery->get();
 
         $query = Student::query()
             ->with(['courses' => function ($query) {
                 $query->withPivot(['enrolled_at', 'status', 'lessons_completed', 'total_lessons']);
             }])
             ->withCount('courses');
+
+        if ($restrictToCourseIds !== null) {
+            $query->whereHas('courses', function ($q) use ($restrictToCourseIds) {
+                $q->whereIn('courses.id', $restrictToCourseIds);
+            });
+        }
 
         if ($filters->search) {
             $query->where(function ($q) use ($filters) {

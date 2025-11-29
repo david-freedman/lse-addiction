@@ -55,7 +55,7 @@
                                 Дата народження
                             </div>
                             <div class="field__input">
-                                <input type="date" name="birthday" id="birthday" placeholder="17.10.2025" value="{{ old('birthday') }}" required>
+                                <input type="text" name="birthday" id="birthday" x-datepicker placeholder="17.10.2025" value="{{ old('birthday') }}" required>
                             </div>
                             @error('birthday')
                                 <div class="field__error">{{ $message }}</div>

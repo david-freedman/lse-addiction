@@ -19,7 +19,7 @@ class CompleteCoursePurchaseAction
             return;
         }
 
-        EnrollStudentAction::execute($course, $student);
+        EnrollStudentAction::execute($course, $student, $transaction);
 
         LogActivityAction::execute(ActivityLogData::from([
             'subject_type' => ActivitySubject::Course,

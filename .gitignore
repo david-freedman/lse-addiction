@@ -24,4 +24,8 @@ Homestead.yaml
 Thumbs.db
 .claude
 CLAUDE.md
-docs/coding-style
+docs/internal
+.mcp.json
+boost.json
+.junie
+.playwright-mcp

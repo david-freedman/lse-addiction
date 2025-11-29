@@ -45,7 +45,7 @@
 
             <div>
                 <label for="birthday" class="mb-2 block text-sm font-medium text-gray-700">Дата народження</label>
-                <input type="date" name="birthday" id="birthday" value="{{ old('birthday') }}"
+                <input type="text" name="birthday" id="birthday" x-datepicker value="{{ old('birthday') }}"
                     class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('birthday') border-error-500 @enderror">
                 @error('birthday')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
             </div>

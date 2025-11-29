@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+[x-cloak] { display: none !important; }
+
 @theme {
   --font-*: initial;
 
@@ -180,11 +182,11 @@
 }
 
 @utility menu-item-icon-active {
-  @apply fill-brand-500;
+  @apply stroke-brand-500;
 }
 
 @utility menu-item-icon-inactive {
-  @apply fill-gray-500 group-hover:fill-gray-700;
+  @apply stroke-gray-500 group-hover:stroke-gray-700;
 }
 
 @utility menu-item-arrow {
@@ -345,4 +347,13 @@
 
 #chartSixteen .apexcharts-legend {
   @apply p-0! pl-6!;
+}
+
+select {
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25rem;
+  appearance: none;
 }

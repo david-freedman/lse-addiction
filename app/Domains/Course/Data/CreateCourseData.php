@@ -35,10 +35,7 @@ class CreateCourseData extends Data
         public readonly ?int $discount_percentage,
 
         #[Required, Numeric]
-        public readonly int $coach_id,
-
-        #[Required, Numeric]
-        public readonly int $author_id,
+        public readonly int $teacher_id,
 
         #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png', 'webp']), Max(5120)]
         public readonly ?UploadedFile $banner,
@@ -66,9 +63,10 @@ class CreateCourseData extends Data
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string', 'max:50'],
             'type' => ['nullable', 'string', 'in:upcoming,recorded,free'],
-            'starts_at' => ['nullable', 'date'],
+            'starts_at' => ['nullable', 'date', 'date_format:d.m.Y H:i'],
             'old_price' => ['nullable', 'numeric', 'min:0', 'gte:price'],
             'discount_percentage' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'teacher_id' => ['required', 'integer', 'exists:teachers,id'],
         ];
     }
 }

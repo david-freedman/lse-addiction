@@ -93,22 +93,71 @@
             </div>
         </div>
 
-        <div>
-            <label for="coach_id" class="mb-2 block text-sm font-medium text-gray-700">Коуч (User ID) <span class="text-error-500">*</span></label>
-            <input
-                type="number"
-                name="coach_id"
-                id="coach_id"
-                value="{{ old('coach_id', 1) }}"
-                required
-                class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('coach_id') border-error-500 @enderror"
-            >
-            @error('coach_id')
+        <div x-data="{
+            open: false,
+            search: '',
+            selectedId: {{ old('teacher_id', 'null') }},
+            teachers: {{ Js::from($teachers->map(fn($t) => ['id' => $t->id, 'full_name' => $t->full_name, 'position' => $t->position])) }},
+            get selectedTeacher() {
+                return this.teachers.find(t => t.id === this.selectedId);
+            },
+            get filteredTeachers() {
+                if (!this.search) return this.teachers;
+                const s = this.search.toLowerCase();
+                return this.teachers.filter(t => t.full_name.toLowerCase().includes(s));
+            }
+        }">
+            <label class="mb-2 block text-sm font-medium text-gray-700">Викладач <span class="text-error-500">*</span></label>
+            <input type="hidden" name="teacher_id" :value="selectedId">
+
+            <div class="relative">
+                <button
+                    type="button"
+                    @click="open = !open"
+                    class="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-left text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('teacher_id') border-error-500 @enderror"
+                >
+                    <span x-text="selectedTeacher ? selectedTeacher.full_name : 'Оберіть викладача'"></span>
+                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+
+                <div
+                    x-show="open"
+                    @click.away="open = false"
+                    x-transition
+                    class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg"
+                >
+                    <div class="sticky top-0 bg-white p-2">
+                        <input
+                            type="text"
+                            x-model="search"
+                            placeholder="Пошук викладача..."
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand-500"
+                            @click.stop
+                        >
+                    </div>
+                    <ul class="py-1">
+                        <template x-for="teacher in filteredTeachers" :key="teacher.id">
+                            <li
+                                @click="selectedId = teacher.id; open = false; search = ''"
+                                class="cursor-pointer px-4 py-2 hover:bg-gray-100"
+                                :class="{ 'bg-brand-50': selectedId === teacher.id }"
+                            >
+                                <div class="font-medium" x-text="teacher.full_name"></div>
+                                <div class="text-xs text-gray-500" x-text="teacher.position || ''"></div>
+                            </li>
+                        </template>
+                        <li x-show="filteredTeachers.length === 0" class="px-4 py-2 text-sm text-gray-500">
+                            Викладачів не знайдено
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            @error('teacher_id')
                 <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
             @enderror
         </div>
-
-        <input type="hidden" name="author_id" value="{{ auth()->guard('web')->user()->id ?? 1 }}">
 
         <div>
             <label for="banner" class="mb-2 block text-sm font-medium text-gray-700">Банер</label>
@@ -179,9 +228,10 @@
             <div>
                 <label for="starts_at" class="mb-2 block text-sm font-medium text-gray-700">Дата початку</label>
                 <input
-                    type="datetime-local"
+                    type="text"
                     name="starts_at"
                     id="starts_at"
+                    x-datepicker.datetime
                     value="{{ old('starts_at') }}"
                     class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('starts_at') border-error-500 @enderror"
                 >

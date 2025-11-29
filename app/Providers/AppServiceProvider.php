@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -23,8 +25,19 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::defaultView('pagination.tailwind');
 
-        //        if (str_starts_with(config('app.url'), 'https://')) {
-        //            URL::forceScheme('https');
-        //        }
+        $this->configureAuthorization();
+    }
+
+    private function configureAuthorization(): void
+    {
+        Gate::before(function (User $user, string $ability) {
+            if ($user->isAdmin()) {
+                return true;
+            }
+        });
+
+        Gate::define('access-teachers', fn(User $user) => false);
+        Gate::define('access-users', fn(User $user) => false);
+        Gate::define('access-finances', fn(User $user) => false);
     }
 }

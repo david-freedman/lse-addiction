@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -13,42 +14,42 @@ class UserSeeder extends Seeder
             'name' => 'Майборода Алла Анатоліївна',
             'email' => 'maiboroda@lse.loc',
             'photo' => 'img/speakers/01.webp',
-            'position' => 'Лікар-рентгенолог',
+            'role' => UserRole::Teacher,
         ]);
 
         User::create([
             'name' => 'Чумак Ярослав Анатолійович',
             'email' => 'chumak@lse.loc',
             'photo' => 'img/speakers/02.webp',
-            'position' => 'Лікар-рентгенолог',
+            'role' => UserRole::Teacher,
         ]);
 
         User::create([
             'name' => 'Петренко Олександр Іванович',
             'email' => 'petrenko@lse.loc',
-            'photo' => 'img/speakers/03.webp',
-            'position' => 'Кардіолог',
+            'photo' => 'https://ui-avatars.com/api/?name=Петренко+Олександр&background=4f46e5&color=fff&size=256',
+            'role' => UserRole::Teacher,
         ]);
 
         User::create([
             'name' => 'Сидоренко Ірина Василівна',
             'email' => 'sydorenko@lse.loc',
-            'photo' => 'img/speakers/04.webp',
-            'position' => 'Невролог',
+            'photo' => 'https://ui-avatars.com/api/?name=Сидоренко+Ірина&background=059669&color=fff&size=256',
+            'role' => UserRole::Teacher,
         ]);
 
         User::create([
             'name' => 'Коваленко Микола Петрович',
             'email' => 'kovalenko@lse.loc',
-            'photo' => 'img/speakers/05.webp',
-            'position' => 'Хірург',
+            'photo' => 'https://ui-avatars.com/api/?name=Коваленко+Микола&background=dc2626&color=fff&size=256',
+            'role' => UserRole::Teacher,
         ]);
 
         User::create([
             'name' => 'Іваненко Тетяна Сергіївна',
             'email' => 'ivanenko@lse.loc',
-            'photo' => 'img/speakers/06.webp',
-            'position' => 'Педіатр',
+            'photo' => 'https://ui-avatars.com/api/?name=Іваненко+Тетяна&background=7c3aed&color=fff&size=256',
+            'role' => UserRole::Teacher,
         ]);
     }
 }

@@ -14,8 +14,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('photo')->nullable();
-            $table->string('position')->nullable();
-            $table->string('role')->nullable()->index();
+            $table->string('role')->default('teacher')->index();
+            $table->boolean('is_active')->default(true)->index();
             $table->timestamps();
         });
     }

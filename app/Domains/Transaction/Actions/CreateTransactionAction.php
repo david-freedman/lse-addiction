@@ -49,6 +49,6 @@ class CreateTransactionAction
         $lastTransaction = Transaction::orderBy('id', 'desc')->first();
         $nextId = $lastTransaction ? $lastTransaction->id + 1 : 1;
 
-        return 'TXN-'.str_pad($nextId, 3, '0', STR_PAD_LEFT);
+        return 'TXN-'.str_pad($nextId, 6, '0', STR_PAD_LEFT);
     }
 }

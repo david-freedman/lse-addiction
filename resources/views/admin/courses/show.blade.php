@@ -58,8 +58,8 @@
             </div>
 
             <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                <label class="mb-2 block text-xs font-medium text-gray-500 uppercase">Коуч</label>
-                <p class="text-sm font-medium text-gray-900">{{ $viewModel->coachName() }}</p>
+                <label class="mb-2 block text-xs font-medium text-gray-500 uppercase">Викладач</label>
+                <p class="text-sm font-medium text-gray-900">{{ $viewModel->teacherName() }}</p>
             </div>
 
             <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">

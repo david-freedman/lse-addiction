@@ -62,7 +62,7 @@
             </button>
 
             <a href="{{ route('admin.dashboard') }}" class="lg:hidden">
-                <span class="text-lg font-semibold text-brand-600">LSE Admin</span>
+                <span class="text-lg font-semibold text-brand-600">LSE/span>
             </a>
 
             <button
@@ -101,16 +101,24 @@
                     >
                         <span class="text-right hidden sm:block">
                             <span class="block text-sm font-medium text-gray-900">
-                                {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
+                                {{ auth()->user()->name }}
                             </span>
                             <span class="block text-xs text-gray-500">
-                                Адміністратор
+                                {{ auth()->user()->role->label() }}
                             </span>
                         </span>
 
-                        <span class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 text-brand-600 font-medium">
-                            {{ strtoupper(substr(auth()->user()->first_name, 0, 1)) }}{{ strtoupper(substr(auth()->user()->last_name, 0, 1)) }}
-                        </span>
+                        @if(auth()->user()->photo)
+                            <img
+                                src="{{ asset(auth()->user()->photo) }}"
+                                alt="{{ auth()->user()->name }}"
+                                class="h-10 w-10 rounded-full object-cover"
+                            >
+                        @else
+                            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 text-brand-600 font-medium">
+                                {{ strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
+                            </span>
+                        @endif
 
                         <svg
                             :class="dropdownOpen ? 'rotate-180' : ''"
@@ -131,6 +139,7 @@
                     </button>
 
                     <div
+                        x-cloak
                         x-show="dropdownOpen"
                         x-transition:enter="ease-out duration-200"
                         x-transition:enter-start="opacity-0 scale-95"
@@ -142,7 +151,7 @@
                     >
                         <div class="px-4 py-3 border-b border-gray-200">
                             <p class="text-sm font-medium text-gray-900">
-                                {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
+                                {{ auth()->user()->name }}
                             </p>
                             <p class="text-xs text-gray-500 mt-0.5">
                                 {{ auth()->user()->email }}
@@ -156,21 +165,8 @@
                                     type="submit"
                                     class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-100"
                                 >
-                                    <svg
-                                        class="fill-gray-500"
-                                        width="20"
-                                        height="20"
-                                        viewBox="0 0 20 20"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            d="M14.1666 13.3333L17.4999 10M17.4999 10L14.1666 6.66667M17.4999 10H5.83325M10.8333 13.3333V14.1667C10.8333 15.5474 9.71397 16.6667 8.33325 16.6667H4.99992C3.6192 16.6667 2.49992 15.5474 2.49992 14.1667V5.83333C2.49992 4.45262 3.6192 3.33333 4.99992 3.33333H8.33325C9.71397 3.33333 10.8333 4.45262 10.8333 5.83333V6.66667"
-                                            stroke=""
-                                            stroke-width="1.5"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                        />
+                                    <svg class="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 0 0-3 3V9A.75.75 0 0 0 9 9V5.25a1.5 1.5 0 0 1 1.5-1.5h6ZM5.78 8.47a.75.75 0 0 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 0 0-1.06-1.06l-1.72 1.72V6.75a.75.75 0 0 0-1.5 0v3.44L5.78 8.47Z" clip-rule="evenodd" />
                                     </svg>
                                     Вийти
                                 </button>

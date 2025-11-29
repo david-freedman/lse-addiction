@@ -37,7 +37,7 @@ help:
 	@echo "  make db-shell        - PostgreSQL консоль (psql)"
 
 up:
-	docker compose up -d app db
+	docker compose up -d app db nginx
 
 down:
 	docker compose down

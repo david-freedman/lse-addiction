@@ -1,8 +1,8 @@
 <?php
 
+use App\Applications\Http\Middleware\CheckUserRole;
 use App\Applications\Http\Middleware\EnsureStudentIsVerified;
-use App\Http\Middleware\CheckUserRole;
-use App\Http\Middleware\EnsureUserIsVerified;
+use App\Applications\Http\Middleware\EnsureUserIsVerified;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo(function ($request) {
-            if ($request->is('admin/*')) {
+            if ($request->is('admin', 'admin/*')) {
                 return route('admin.login');
             }
 

@@ -71,7 +71,7 @@ class UpdateStudentData extends Data
                 new \App\Domains\Shared\Rules\ValidPhone,
                 Rule::unique('students', 'phone')->ignore(request()->route('student')),
             ],
-            'birthday' => ['nullable', 'date', 'before:today'],
+            'birthday' => ['nullable', 'date', 'date_format:d.m.Y', 'before:today'],
         ];
     }
 }
