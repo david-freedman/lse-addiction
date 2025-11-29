@@ -37,9 +37,9 @@ readonly class CourseDetailViewModel
         return (float) $this->course->price;
     }
 
-    public function coachName(): string
+    public function teacherName(): string
     {
-        return $this->course->coach->name;
+        return $this->course->teacher?->full_name ?? 'Не вказано';
     }
 
     public function bannerUrl(): ?string

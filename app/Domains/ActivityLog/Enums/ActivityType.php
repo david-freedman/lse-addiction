@@ -33,6 +33,15 @@ enum ActivityType: string
     case StudentAssignedToCourse = 'admin.student.assigned_to_course';
     case StudentUnenrolledFromCourse = 'admin.student.unenrolled_from_course';
 
+    case UserCreated = 'admin.user.created';
+    case UserUpdated = 'admin.user.updated';
+    case UserDeleted = 'admin.user.deleted';
+    case UserStatusChanged = 'admin.user.status_changed';
+
+    case TeacherCreated = 'admin.teacher.created';
+    case TeacherUpdated = 'admin.teacher.updated';
+    case TeacherDeleted = 'admin.teacher.deleted';
+
     case TransactionCreated = 'transaction.created';
     case TransactionCompleted = 'transaction.completed';
     case TransactionFailed = 'transaction.failed';

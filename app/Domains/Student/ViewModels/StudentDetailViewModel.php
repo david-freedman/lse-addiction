@@ -2,13 +2,17 @@
 
 namespace App\Domains\Student\ViewModels;
 
+use App\Domains\ActivityLog\Enums\ActivitySubject;
 use App\Domains\ActivityLog\Enums\ActivityType;
 use App\Domains\ActivityLog\Models\ActivityLog;
 use App\Domains\Course\Models\Course;
+use App\Domains\Discount\Models\StudentCourseDiscount;
 use App\Domains\Student\Models\Student;
 use App\Domains\Transaction\Models\Transaction;
 use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Jenssegers\Agent\Agent;
 
 readonly class StudentDetailViewModel
 {
@@ -20,9 +24,13 @@ readonly class StudentDetailViewModel
 
     private Collection $teachers;
 
-    private Collection $loginHistory;
+    private LengthAwarePaginator $loginHistory;
 
     private Collection $transactions;
+
+    private Collection $activeDiscounts;
+
+    private Collection $usedDiscounts;
 
     public function __construct(Student $student)
     {
@@ -39,8 +47,7 @@ readonly class StudentDetailViewModel
                     'notes',
                 ]);
             },
-            'courses.coach',
-            'coupons',
+            'courses.teacher',
         ]);
 
         $this->enrolledCourses = $this->student->courses;
@@ -51,20 +58,32 @@ readonly class StudentDetailViewModel
 
         $this->teachers = User::teachers()->orderBy('name')->get();
 
-        $this->loginHistory = ActivityLog::where('subject_type', \App\Domains\ActivityLog\Enums\ActivitySubject::Student)
+        $this->loginHistory = ActivityLog::where('subject_type', ActivitySubject::Student)
             ->where('subject_id', $student->id)
             ->whereIn('activity_type', [
                 ActivityType::StudentLoginSuccess,
                 ActivityType::StudentLoginFailed,
             ])
             ->orderBy('created_at', 'desc')
-            ->limit(20)
-            ->get();
+            ->paginate(3, ['*'], 'login_history_page');
 
         $this->transactions = Transaction::where('student_id', $student->id)
             ->with('purchasable')
             ->orderBy('created_at', 'desc')
             ->limit(20)
+            ->get();
+
+        $this->activeDiscounts = StudentCourseDiscount::forStudent($student->id)
+            ->active()
+            ->with(['course', 'assignedBy'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $this->usedDiscounts = StudentCourseDiscount::forStudent($student->id)
+            ->used()
+            ->with(['course', 'assignedBy'])
+            ->orderBy('used_at', 'desc')
+            ->limit(10)
             ->get();
     }
 
@@ -88,9 +107,32 @@ readonly class StudentDetailViewModel
         return $this->teachers;
     }
 
-    public function loginHistory(): Collection
+    public function loginHistory(): LengthAwarePaginator
     {
         return $this->loginHistory;
+    }
+
+    public function parseUserAgent(?string $userAgent): array
+    {
+        if (!$userAgent) {
+            return ['os' => 'N/A', 'browser' => 'N/A', 'device' => 'N/A'];
+        }
+
+        $agent = new Agent();
+        $agent->setUserAgent($userAgent);
+
+        $device = match (true) {
+            $agent->isDesktop() => 'Desktop',
+            $agent->isMobile() => 'Mobile',
+            $agent->isTablet() => 'Tablet',
+            default => 'Unknown',
+        };
+
+        return [
+            'os' => $agent->platform() ?: 'Unknown',
+            'browser' => $agent->browser() ?: 'Unknown',
+            'device' => $device,
+        ];
     }
 
     public function transactions(): Collection
@@ -110,7 +152,7 @@ readonly class StudentDetailViewModel
 
     public function hasLoginHistory(): bool
     {
-        return $this->loginHistory->isNotEmpty();
+        return $this->loginHistory->total() > 0;
     }
 
     public function hasTransactions(): bool
@@ -120,9 +162,7 @@ readonly class StudentDetailViewModel
 
     public function lastLoginAt(): ?string
     {
-        $lastLogin = $this->loginHistory->first();
-
-        return $lastLogin?->created_at?->format('Y-m-d H:i:s');
+        return $this->student->last_login_at?->format('d.m.Y H:i');
     }
 
     public function enrolledCoursesCount(): int
@@ -135,5 +175,59 @@ readonly class StudentDetailViewModel
         return $this->transactions
             ->where('status', \App\Domains\Transaction\Enums\TransactionStatus::Completed)
             ->sum('amount');
+    }
+
+    public function activeDiscounts(): Collection
+    {
+        return $this->activeDiscounts;
+    }
+
+    public function usedDiscounts(): Collection
+    {
+        return $this->usedDiscounts;
+    }
+
+    public function hasActiveDiscounts(): bool
+    {
+        return $this->activeDiscounts->isNotEmpty();
+    }
+
+    public function hasUsedDiscounts(): bool
+    {
+        return $this->usedDiscounts->isNotEmpty();
+    }
+
+    public function coursesWithoutActiveDiscount(): Collection
+    {
+        $courseIdsWithDiscount = $this->activeDiscounts->pluck('course_id');
+
+        return $this->availableCourses->reject(function ($course) use ($courseIdsWithDiscount) {
+            return $courseIdsWithDiscount->contains($course->id);
+        });
+    }
+
+    public function profileFields(): array
+    {
+        $values = $this->student->profileFieldValues()->with('profileField')->get();
+
+        $result = [];
+        foreach ($values as $value) {
+            if ($value->profileField && $value->value) {
+                $displayValue = $value->value;
+
+                if ($value->profileField->type->value === 'select' && $value->profileField->options) {
+                    $displayValue = $value->profileField->options[$value->value] ?? $value->value;
+                }
+
+                $result[$value->profileField->label] = $displayValue;
+            }
+        }
+
+        return $result;
+    }
+
+    public function hasProfileFields(): bool
+    {
+        return !empty($this->profileFields());
     }
 }

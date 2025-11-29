@@ -13,6 +13,8 @@ class AuthenticateStudentAction
 {
     public static function execute(Student $student): void
     {
+        $student->update(['last_login_at' => now()]);
+
         Auth::guard('web')->login($student);
         request()->session()->regenerate();
 

@@ -111,7 +111,7 @@
 
                         <div>
                             <label for="birthday" class="block text-sm font-medium text-gray-700 mb-2">Дата народження</label>
-                            <input type="date" name="birthday" id="birthday" value="{{ old('birthday', $student->birthday?->format('Y-m-d')) }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                            <input type="text" name="birthday" id="birthday" x-datepicker value="{{ old('birthday', $student->birthday?->format('d.m.Y')) }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
                             <p class="mt-1 text-xs text-gray-500">Вам повинно бути не менше 18 років</p>
                             @error('birthday')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -184,7 +184,8 @@
                                             @break
 
                                         @case('date')
-                                            <input type="date"
+                                            <input type="text"
+                                                x-datepicker
                                                 name="profile_fields[{{ $field->key }}]"
                                                 id="field_{{ $field->key }}"
                                                 value="{{ old('profile_fields.' . $field->key, $existingValues[$field->id] ?? '') }}"

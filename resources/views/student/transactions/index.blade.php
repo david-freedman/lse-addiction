@@ -91,25 +91,25 @@
 
                 <div>
                     <label for="date_from" class="block text-sm font-medium text-gray-700 mb-1">Дата з</label>
-                    <input type="date" name="date_from" id="date_from" value="{{ $historyViewModel->dateFrom() }}"
+                    <input type="text" name="date_from" id="date_from" x-datepicker value="{{ $historyViewModel->dateFrom() }}"
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
                 </div>
 
                 <div>
                     <label for="date_to" class="block text-sm font-medium text-gray-700 mb-1">Дата до</label>
-                    <input type="date" name="date_to" id="date_to" value="{{ $historyViewModel->dateTo() }}"
+                    <input type="text" name="date_to" id="date_to" x-datepicker value="{{ $historyViewModel->dateTo() }}"
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
                 </div>
 
                 <div class="md:col-span-3 flex gap-2">
-                    <button type="submit" class="px-6 py-2 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg transition">
-                        Застосувати фільтри
-                    </button>
                     @if($historyViewModel->currentStatus() || $historyViewModel->dateFrom() || $historyViewModel->dateTo())
                         <a href="{{ route('student.transactions.index') }}" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition">
                             Скинути
                         </a>
                     @endif
+                    <button type="submit" class="px-6 py-2 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg transition">
+                        Застосувати фільтри
+                    </button>
                 </div>
             </form>
         </div>
@@ -173,13 +173,17 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <button disabled title="Функція завантаження чеків буде доступна незабаром"
-                                            class="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed">
-                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                        </svg>
-                                        Завантажити
-                                    </button>
+                                    @if($transaction->isPending() && $transaction->created_at->gte(now()->subMinutes(30)))
+                                        <a href="{{ route('student.payment.initiate', $transaction) }}"
+                                           class="inline-flex items-center px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                            </svg>
+                                            Оплатити
+                                        </a>
+                                    @else
+                                        <span class="text-gray-400">—</span>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

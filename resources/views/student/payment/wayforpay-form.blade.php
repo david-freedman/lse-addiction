@@ -22,6 +22,18 @@
                 <span class="text-gray-600">Номер замовлення:</span>
                 <span class="font-bold text-gray-900">{{ $paymentData->orderReference }}</span>
             </div>
+
+            @if(isset($discountInfo) && $discountInfo['amount'] > 0)
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-600">Вартість курсу:</span>
+                    <span class="font-medium text-gray-500 line-through">{{ number_format($discountInfo['original_price'], 2) }} {{ $paymentData->currency }}</span>
+                </div>
+                <div class="flex justify-between mb-2 text-brand-600">
+                    <span>Персональна знижка ({{ $discountInfo['value'] }}{{ $discountInfo['type'] === 'percentage' ? '%' : ' грн' }}):</span>
+                    <span class="font-medium">-{{ number_format($discountInfo['amount'], 2) }} {{ $paymentData->currency }}</span>
+                </div>
+            @endif
+
             <div class="flex justify-between mb-3">
                 <span class="text-gray-600">Сума до оплати:</span>
                 <span class="font-bold text-2xl text-teal-600">{{ number_format($paymentData->amount, 2) }} {{ $paymentData->currency }}</span>

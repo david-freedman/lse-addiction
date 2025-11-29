@@ -85,6 +85,20 @@
                 @endif
             </div>
 
+            @if($viewModel->hasProfileFields())
+                <div class="mt-6 border-t border-gray-200 pt-6">
+                    <h4 class="mb-3 text-sm font-semibold text-gray-900">Додаткова інформація</h4>
+                    <div class="space-y-3">
+                        @foreach($viewModel->profileFields() as $label => $value)
+                            <div>
+                                <p class="text-xs font-medium text-gray-500">{{ $label }}</p>
+                                <p class="text-sm text-gray-900">{{ $value }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             @if($student->trashed())
                 <form action="{{ route('admin.students.restore', $student->id) }}" method="POST" class="mt-6">
                     @csrf
@@ -176,46 +190,80 @@
                 @endif
             </div>
 
-            @if($viewModel->hasTransactions())
-                <div class="rounded-2xl border border-gray-200 bg-white p-6">
-                    <h3 class="mb-4 text-lg font-bold text-gray-900">Транзакції</h3>
-                    <div class="space-y-2">
-                        @foreach($viewModel->transactions() as $transaction)
-                            <div class="flex items-center justify-between rounded-lg border border-gray-200 p-3">
-                                <div>
-                                    <p class="font-medium text-gray-900">{{ $transaction->purchasable->name ?? 'N/A' }}</p>
-                                    <p class="text-xs text-gray-500">{{ $transaction->created_at->format('d.m.Y H:i') }}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="font-medium text-gray-900">{{ number_format($transaction->amount, 2) }} ₴</p>
-                                    <span class="text-xs text-{{ $transaction->status->value === 'completed' ? 'success' : 'gray' }}-600">{{ $transaction->status->label() }}</span>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            @endif
+            <div class="rounded-2xl border border-gray-200 bg-white p-6">
+                <h3 class="mb-4 text-lg font-bold text-gray-900">Персональні знижки</h3>
 
-            @if($viewModel->hasLoginHistory())
-                <div class="rounded-2xl border border-gray-200 bg-white p-6">
-                    <h3 class="mb-4 text-lg font-bold text-gray-900">Історія входів</h3>
-                    <div class="space-y-2">
-                        @foreach($viewModel->loginHistory() as $log)
-                            <div class="rounded-lg border border-gray-200 p-3">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-900">{{ $log->created_at->format('d.m.Y H:i:s') }}</p>
-                                        <p class="text-xs text-gray-500">IP: {{ $log->ip_address ?? 'N/A' }}</p>
-                                    </div>
-                                    <span class="text-xs {{ $log->activity_type->value === 'student.login.success' ? 'text-success-600' : 'text-error-600' }}">
-                                        {{ $log->activity_type->value === 'student.login.success' ? 'Успішно' : 'Помилка' }}
-                                    </span>
+                @if($viewModel->hasActiveDiscounts())
+                    <div class="mb-4 space-y-2">
+                        @foreach($viewModel->activeDiscounts() as $discount)
+                            <div class="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 p-3">
+                                <div>
+                                    <p class="font-medium text-gray-900">{{ $discount->course->name }}</p>
+                                    <p class="text-sm text-green-700">Знижка: {{ $discount->formattedValue() }}</p>
+                                    <p class="text-xs text-gray-500">Призначив: {{ $discount->assignedBy->name }} · {{ $discount->created_at->format('d.m.Y') }}</p>
                                 </div>
+                                <form action="{{ route('admin.students.remove-discount', [$student, $discount]) }}" method="POST" onsubmit="return confirm('Видалити знижку?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-sm text-error-600 hover:text-error-700">Видалити</button>
+                                </form>
                             </div>
                         @endforeach
                     </div>
-                </div>
-            @endif
+                @else
+                    <p class="mb-4 text-sm text-gray-500">Немає активних знижок</p>
+                @endif
+
+                @if($viewModel->coursesWithoutActiveDiscount()->isNotEmpty())
+                    <details>
+                        <summary class="cursor-pointer text-sm font-medium text-brand-600">Призначити знижку</summary>
+                        <form action="{{ route('admin.students.assign-discount', $student) }}" method="POST" class="mt-4 space-y-4 rounded-lg bg-gray-50 p-4">
+                            @csrf
+                            <div>
+                                <label class="mb-2 block text-sm font-medium text-gray-700">Курс</label>
+                                <select name="course_id" required class="w-full rounded-lg border border-gray-300 px-4 py-2">
+                                    @foreach($viewModel->coursesWithoutActiveDiscount() as $course)
+                                        <option value="{{ $course->id }}">{{ $course->name }} ({{ number_format($course->price, 2) }} ₴)</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Тип знижки</label>
+                                    <select name="type" required class="w-full rounded-lg border border-gray-300 px-4 py-2">
+                                        <option value="percentage">Відсотки (%)</option>
+                                        <option value="fixed">Фіксована сума (грн)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Значення</label>
+                                    <input type="number" name="value" min="0.01" step="0.01" required class="w-full rounded-lg border border-gray-300 px-4 py-2" placeholder="10">
+                                </div>
+                            </div>
+                            <button type="submit" class="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600">Призначити знижку</button>
+                        </form>
+                    </details>
+                @endif
+
+                @if($viewModel->hasUsedDiscounts())
+                    <details class="mt-4">
+                        <summary class="cursor-pointer text-sm text-gray-500">Історія використаних знижок</summary>
+                        <div class="mt-2 space-y-2">
+                            @foreach($viewModel->usedDiscounts() as $discount)
+                                <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 opacity-60">
+                                    <p class="font-medium text-gray-900">{{ $discount->course->name }}</p>
+                                    <p class="text-sm text-gray-600">Знижка: {{ $discount->formattedValue() }}</p>
+                                    <p class="text-xs text-gray-500">Використано: {{ $discount->used_at->format('d.m.Y H:i') }}</p>
+                                </div>
+                            @endforeach
+                        </div>
+                    </details>
+                @endif
+            </div>
+
+            <livewire:admin.student-transactions :studentId="$student->id" />
+
+            <livewire:admin.student-login-history :studentId="$student->id" />
         </div>
     </div>
 </div>

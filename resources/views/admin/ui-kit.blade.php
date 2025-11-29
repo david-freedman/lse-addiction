@@ -1104,7 +1104,7 @@
                         <span class="text-2xl font-bold text-white">L</span>
                     </div>
                     <div class="inline-flex h-12 w-12 animate-spin items-center justify-center rounded-full border-4 border-gray-200 border-t-brand-500"></div>
-                    <p class="mt-4 text-sm font-medium text-gray-700">Завантаження LSE Admin...</p>
+                    <p class="mt-4 text-sm font-medium text-gray-700">Завантаження LSE...</p>
                 </div>
             </div>
         </div>

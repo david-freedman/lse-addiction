@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -15,16 +16,28 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
+            'role' => UserRole::Teacher,
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
     public function unverified(): static
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Admin,
+        ]);
+    }
+
+    public function teacher(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Teacher,
         ]);
     }
 }

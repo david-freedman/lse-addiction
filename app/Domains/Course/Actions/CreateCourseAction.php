@@ -8,7 +8,7 @@ use App\Domains\ActivityLog\Enums\ActivitySubject;
 use App\Domains\ActivityLog\Enums\ActivityType;
 use App\Domains\Course\Data\CreateCourseData;
 use App\Domains\Course\Models\Course;
-use App\Domains\Course\Models\Tag;
+use App\Domains\Course\Models\CourseTag;
 
 class CreateCourseAction
 {
@@ -25,9 +25,9 @@ class CreateCourseAction
             'price' => $data->price,
             'old_price' => $data->old_price,
             'discount_percentage' => $data->discount_percentage,
-            'coach_id' => $data->coach_id,
+            'teacher_id' => $data->teacher_id,
             'banner' => $bannerPath,
-            'author_id' => $data->author_id,
+            'author_id' => auth()->id(),
             'status' => $data->status,
             'type' => $data->type,
             'starts_at' => $data->starts_at,
@@ -37,7 +37,7 @@ class CreateCourseAction
         if ($data->tags) {
             $tagIds = [];
             foreach ($data->tags as $tagName) {
-                $tag = Tag::findOrCreateByName($tagName);
+                $tag = CourseTag::findOrCreateByName($tagName);
                 $tagIds[] = $tag->id;
             }
             $course->tags()->sync($tagIds);

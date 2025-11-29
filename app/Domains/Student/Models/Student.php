@@ -27,6 +27,7 @@ class Student extends Authenticatable
         'profile_photo',
         'email_verified_at',
         'phone_verified_at',
+        'last_login_at',
     ];
 
     protected $casts = [
@@ -35,6 +36,7 @@ class Student extends Authenticatable
         'birthday' => 'date',
         'email_verified_at' => 'datetime',
         'phone_verified_at' => 'datetime',
+        'last_login_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
 
@@ -135,11 +137,5 @@ class Student extends Authenticatable
     public function isNew(): bool
     {
         return $this->created_at->diffInDays(now()) <= 7;
-    }
-
-    public function coupons(): BelongsToMany
-    {
-        return $this->belongsToMany(\App\Domains\Coupon\Models\Coupon::class)
-            ->withPivot(['assigned_at', 'used_at']);
     }
 }

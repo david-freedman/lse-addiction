@@ -5,6 +5,7 @@ namespace App\Domains\Course\Models;
 use App\Domains\Course\Enums\CourseStatus;
 use App\Domains\Course\Enums\CourseType;
 use App\Domains\Student\Models\Student;
+use App\Domains\Teacher\Models\Teacher;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -19,7 +20,7 @@ class Course extends Model
         'price',
         'old_price',
         'discount_percentage',
-        'coach_id',
+        'teacher_id',
         'banner',
         'author_id',
         'status',
@@ -36,9 +37,9 @@ class Course extends Model
         'status' => CourseStatus::class,
     ];
 
-    public function coach(): BelongsTo
+    public function teacher(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'coach_id');
+        return $this->belongsTo(Teacher::class);
     }
 
     public function author(): BelongsTo
@@ -48,7 +49,7 @@ class Course extends Model
 
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class);
+        return $this->belongsToMany(CourseTag::class, 'course_tag', 'course_id', 'tag_id');
     }
 
     public function students(): BelongsToMany

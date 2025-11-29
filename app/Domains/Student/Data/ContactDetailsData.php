@@ -17,7 +17,7 @@ class ContactDetailsData extends Data
         public readonly string $surname,
         #[Required, StringType, Min(2)]
         public readonly string $name,
-        #[Required, Date, DateFormat('Y-m-d'), Before('today')]
+        #[Required, Date, DateFormat('d.m.Y'), Before('today')]
         public readonly string $birthday,
         #[Required, StringType, Min(2)]
         public readonly string $city,
@@ -26,7 +26,7 @@ class ContactDetailsData extends Data
     public static function rules(): array
     {
         return [
-            'birthday' => ['required', 'date', 'date_format:Y-m-d', 'before:today', 'before_or_equal:'.now()->subYears(18)->format('Y-m-d')],
+            'birthday' => ['required', 'date', 'date_format:d.m.Y', 'before:today', 'before_or_equal:'.now()->subYears(18)->format('d.m.Y')],
         ];
     }
 }

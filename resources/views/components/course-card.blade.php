@@ -1,9 +1,15 @@
-@props(['course', 'showPurchaseButton' => false])
+@props(['course', 'showPurchaseButton' => false, 'individualDiscount' => null])
 
 @php
     $cardUrl = (isset($course->is_purchased) && $course->is_purchased)
         ? route('student.courses.show', $course)
         : route('student.catalog.show', $course);
+
+    $finalPrice = (float) $course->price;
+    if ($individualDiscount) {
+        $discountAmount = $individualDiscount->calculateDiscountAmount($finalPrice);
+        $finalPrice = max(0, $finalPrice - $discountAmount);
+    }
 @endphp
 
 <a href="{{ $cardUrl }}" class="group block bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">
@@ -41,7 +47,7 @@
             <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
             </svg>
-            <span class="truncate">Викладач: {{ $course->coach->name ?? 'Не вказано' }}</span>
+            <span class="truncate">Викладач: {{ $course->teacher?->full_name ?? 'Не вказано' }}</span>
         </div>
 
         @if($course->starts_at)
@@ -55,14 +61,20 @@
 
         <div class="border-t pt-4 flex items-center justify-between">
             <div class="flex-1">
-                @if($course->has_discount && !(isset($course->is_purchased) && $course->is_purchased))
+                @if(($course->has_discount || $individualDiscount) && !(isset($course->is_purchased) && $course->is_purchased))
                     <div class="flex items-baseline gap-2 flex-wrap">
-                        <span class="text-2xl font-bold text-teal-600">{{ $course->formatted_price }}</span>
-                        <span class="text-sm text-gray-500 line-through">{{ $course->formatted_old_price }}</span>
+                        <span class="text-2xl font-bold text-teal-600">{{ number_format($finalPrice, 0, ',', ' ') }} ₴</span>
+                        <span class="text-sm text-gray-500 line-through">{{ $course->formatted_price }}</span>
                     </div>
-                    <div class="text-xs text-green-600 font-semibold mt-1">
-                        Економія: {{ $course->formatted_discount_amount }}
-                    </div>
+                    @if($individualDiscount)
+                        <div class="text-xs text-brand-600 font-semibold mt-1">
+                            Персональна знижка: {{ $individualDiscount->formattedValue() }}
+                        </div>
+                    @elseif($course->has_discount)
+                        <div class="text-xs text-green-600 font-semibold mt-1">
+                            Економія: {{ $course->formatted_discount_amount }}
+                        </div>
+                    @endif
                 @else
                     <span class="text-2xl font-bold text-teal-600">{{ $course->formatted_price }}</span>
                 @endif
@@ -70,7 +82,7 @@
 
             @if($showPurchaseButton && !(isset($course->is_purchased) && $course->is_purchased))
                 <button
-                    onclick="event.preventDefault(); event.stopPropagation(); openPurchaseModal({{ $course->id }}, '{{ addslashes($course->name) }}', '{{ $course->coach->name ?? '' }}', '{{ $course->formatted_date ?? '' }}', '{{ $course->formatted_price }}', '{{ $course->has_discount ? $course->formatted_discount_amount : '' }}', '{{ $course->banner_url ?? '' }}')"
+                    onclick="event.preventDefault(); event.stopPropagation(); openPurchaseModal({{ $course->id }}, '{{ addslashes($course->name) }}', '{{ $course->teacher?->full_name ?? '' }}', '{{ $course->formatted_date ?? '' }}', '{{ $course->formatted_price }}', '{{ $course->has_discount ? $course->formatted_discount_amount : '' }}', '{{ $course->banner_url ?? '' }}', '{{ $individualDiscount?->formattedValue() ?? '' }}', '{{ $individualDiscount ? number_format($finalPrice, 0, ',', ' ') . " ₴" : "" }}')"
                     class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 ml-2 relative z-10"
                 >
                     Купити

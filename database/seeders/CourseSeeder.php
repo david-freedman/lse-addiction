@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Domains\Course\Models\Course;
+use App\Domains\Teacher\Models\Teacher;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -11,6 +12,7 @@ class CourseSeeder extends Seeder
     public function run(): void
     {
         $users = User::all();
+        $teachers = Teacher::all();
 
         Course::create([
             'name' => 'Сучасні методи діагностики та лікування гострого коронарного синдрому',
@@ -18,7 +20,7 @@ class CourseSeeder extends Seeder
             'price' => 4500.00,
             'old_price' => 6000.00,
             'discount_percentage' => 25,
-            'coach_id' => $users->random()->id,
+            'teacher_id' => $teachers->random()->id,
             'author_id' => $users->random()->id,
             'status' => 'published',
             'type' => 'upcoming',
@@ -31,7 +33,7 @@ class CourseSeeder extends Seeder
             'name' => 'Неврологічні ускладнення цукрового діабету: від діагностики до терапії',
             'description' => 'Комплексний огляд діабетичної нейропатії, автономних порушень та когнітивних розладів при ЦД. Розглядаються сучасні діагностичні критерії, диференційна діагностика та доказові методи лікування. Особлива увага приділяється мультидисциплінарному підходу до ведення пацієнтів.',
             'price' => 1.00,
-            'coach_id' => $users->random()->id,
+            'teacher_id' => $teachers->random()->id,
             'author_id' => $users->random()->id,
             'status' => 'published',
             'type' => 'recorded',
@@ -44,7 +46,7 @@ class CourseSeeder extends Seeder
             'name' => 'Малоінвазивна хірургія: лапароскопічні та ендоскопічні техніки',
             'description' => 'Практичний курс з оволодіння сучасними малоінвазивними хірургічними методиками. Детальний розбір показань, протипоказань, технічних аспектів та можливих ускладнень. Включає відеодемонстрації операцій та розбір складних клінічних випадків.',
             'price' => 2,
-            'coach_id' => $users->random()->id,
+            'teacher_id' => $teachers->random()->id,
             'author_id' => $users->random()->id,
             'status' => 'published',
             'type' => 'upcoming',
@@ -59,7 +61,7 @@ class CourseSeeder extends Seeder
             'price' => 3800.00,
             'old_price' => 4500.00,
             'discount_percentage' => 15,
-            'coach_id' => $users->random()->id,
+            'teacher_id' => $teachers->random()->id,
             'author_id' => $users->random()->id,
             'status' => 'published',
             'type' => 'upcoming',
@@ -72,7 +74,7 @@ class CourseSeeder extends Seeder
             'name' => 'Сучасна імунотерапія в онкології: персоналізований підхід',
             'description' => 'Актуальні дані про застосування чекпоінт-інгібіторів, CAR-T клітинної терапії та таргетних препаратів у лікуванні солідних пухлин та гематологічних захворювань. Розбір біомаркерів відповіді на терапію, управління імун-опосередкованими побічними ефектами та комбінованих стратегій лікування.',
             'price' => 5600.00,
-            'coach_id' => $users->random()->id,
+            'teacher_id' => $teachers->random()->id,
             'author_id' => $users->random()->id,
             'status' => 'published',
             'type' => 'recorded',
@@ -85,7 +87,7 @@ class CourseSeeder extends Seeder
             'name' => 'Ендокринологія репродуктивної системи: від діагностики до лікування',
             'description' => 'Комплексний курс з репродуктивної ендокринології, що включає синдром полікістозних яєчників, гіперпролактинемію, гіпотиреоз та його вплив на фертильність. Сучасні підходи до стимуляції овуляції, корекції гормональних порушень та підготовки до вагітності.',
             'price' => 4200.00,
-            'coach_id' => $users->random()->id,
+            'teacher_id' => $teachers->random()->id,
             'author_id' => $users->random()->id,
             'status' => 'published',
             'type' => 'upcoming',
@@ -100,7 +102,7 @@ class CourseSeeder extends Seeder
             'price' => 2800.00,
             'old_price' => 3500.00,
             'discount_percentage' => 20,
-            'coach_id' => $users->random()->id,
+            'teacher_id' => $teachers->random()->id,
             'author_id' => $users->random()->id,
             'status' => 'published',
             'type' => 'recorded',
@@ -113,7 +115,7 @@ class CourseSeeder extends Seeder
             'name' => 'Регіонарна анестезія в ортопедії та травматології',
             'description' => 'Сучасні техніки провідникової та нейроаксіальної анестезії для ортопедичних втручань. УЗД-навігація при виконанні блокад, вибір місцевих анестетиків, попередження та лікування ускладнень. Мультимодальна аналгезія в периопераційному періоді.',
             'price' => 6800.00,
-            'coach_id' => $users->random()->id,
+            'teacher_id' => $teachers->random()->id,
             'author_id' => $users->random()->id,
             'status' => 'published',
             'type' => 'upcoming',
@@ -126,7 +128,7 @@ class CourseSeeder extends Seeder
             'name' => 'Інтерпретація КТ та МРТ: нейрорадіологія',
             'description' => 'Систематичний підхід до інтерпретації нейровізуалізації. Детальний розбір патологічних змін при інсультах, пухлинах ЦНС, демієлінізуючих захворюваннях та травмах. Практичні навички читання знімків, складання протоколів дослідження та клінічні кореляції.',
             'price' => 5200.00,
-            'coach_id' => $users->random()->id,
+            'teacher_id' => $teachers->random()->id,
             'author_id' => $users->random()->id,
             'status' => 'published',
             'type' => 'recorded',
@@ -139,7 +141,7 @@ class CourseSeeder extends Seeder
             'name' => 'Антибіотикорезистентність: раціональна антибіотикотерапія 2025',
             'description' => 'Актуальні дані про механізми резистентності, епідеміологію мультирезистентних збудників в Україні та світі. Принципи антибіотичного стюардшипу, де-ескалаційна терапія, комбінації антибіотиків. Клінічні рекомендації для лікування інфекцій різних локалізацій з урахуванням локальних даних резистентності.',
             'price' => 3600.00,
-            'coach_id' => $users->random()->id,
+            'teacher_id' => $teachers->random()->id,
             'author_id' => $users->random()->id,
             'status' => 'published',
             'type' => 'upcoming',

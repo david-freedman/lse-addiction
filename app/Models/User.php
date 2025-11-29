@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use App\Domains\Course\Models\Course;
+use App\Domains\Teacher\Models\Teacher;
 use App\Domains\Verification\Models\Verification;
+use App\Models\Enums\UserRole;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -17,19 +20,19 @@ class User extends Authenticatable
         'name',
         'email',
         'photo',
-        'position',
         'role',
+        'is_active',
     ];
 
     protected $hidden = [];
 
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
-    public function coachedCourses(): HasMany
+    protected function casts(): array
     {
-        return $this->hasMany(Course::class, 'coach_id');
+        return [
+            'email_verified_at' => 'datetime',
+            'is_active' => 'boolean',
+            'role' => UserRole::class,
+        ];
     }
 
     public function authoredCourses(): HasMany
@@ -37,14 +40,24 @@ class User extends Authenticatable
         return $this->hasMany(Course::class, 'author_id');
     }
 
-    public function scopeCoaches($query)
+    public function teacherProfile(): HasOne
     {
-        return $query->whereNotNull('photo');
+        return $this->hasOne(Teacher::class);
     }
 
     public function scopeTeachers($query)
     {
-        return $query->where('role', 'teacher');
+        return $query->where('role', UserRole::Teacher);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeInactive($query)
+    {
+        return $query->where('is_active', false);
     }
 
     public function verifications(): MorphMany
@@ -54,20 +67,34 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === UserRole::Admin;
     }
 
     public function isTeacher(): bool
     {
-        return $this->role === 'teacher';
+        return $this->role === UserRole::Teacher;
     }
 
-    public function hasRole(string|array $roles): bool
+    public function hasRole(UserRole|string|array $roles): bool
     {
-        if (is_array($roles)) {
-            return in_array($this->role, $roles, true);
+        $rolesToCheck = is_array($roles) ? $roles : [$roles];
+
+        foreach ($rolesToCheck as $role) {
+            $roleEnum = $role instanceof UserRole ? $role : UserRole::tryFrom($role);
+            if ($roleEnum && $this->role === $roleEnum) {
+                return true;
+            }
         }
 
-        return $this->role === $roles;
+        return false;
+    }
+
+    public function getTeacherCourseIds(): array
+    {
+        if (!$this->isTeacher()) {
+            return [];
+        }
+
+        return $this->teacherProfile?->courses()->pluck('id')->toArray() ?? [];
     }
 }

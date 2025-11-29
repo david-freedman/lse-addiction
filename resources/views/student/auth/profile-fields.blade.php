@@ -54,7 +54,8 @@
 
                                         @case('date')
                                             <div class="field__input">
-                                                <input type="date"
+                                                <input type="text"
+                                                    x-datepicker
                                                     name="profile_fields[{{ $field->key }}]"
                                                     id="field_{{ $field->key }}"
                                                     value="{{ old('profile_fields.' . $field->key) }}"

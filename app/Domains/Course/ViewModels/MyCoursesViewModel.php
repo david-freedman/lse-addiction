@@ -19,13 +19,13 @@ readonly class MyCoursesViewModel
 
         $this->allCourses = $student->courses()
             ->withPivot(['enrolled_at', 'status'])
-            ->with(['coach', 'tags'])
+            ->with(['teacher', 'tags'])
             ->orderBy('course_student.enrolled_at', 'desc')
             ->get();
 
         $query = $student->courses()
             ->withPivot(['enrolled_at', 'status'])
-            ->with(['coach', 'tags'])
+            ->with(['teacher', 'tags'])
             ->orderBy('course_student.enrolled_at', 'desc');
 
         if ($status) {

@@ -14,7 +14,7 @@ class AdminUserSeeder extends Seeder
     {
         User::create([
             'name' => 'Admin User',
-            'email' => 'admin@lse-addiction.loc',
+            'email' => 'admin@lse.loc',
             'role' => 'admin',
             'email_verified_at' => now(),
         ]);

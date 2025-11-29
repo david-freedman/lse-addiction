@@ -27,7 +27,7 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Назва</th>
-                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Коуч</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Викладач</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ціна</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Статус</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Теги</th>
@@ -43,13 +43,10 @@
                                 </a>
                             </td>
                             <td class="px-6 py-4 text-gray-700">
-                                {{ $course->coach->name }}
+                                {{ $course->teacher?->full_name ?? 'Не вказано' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="font-medium text-gray-900">{{ number_format($course->price, 0, ',', ' ') }} ₴</span>
-                                @if($course->has_discount)
-                                    <span class="ml-2 text-xs text-gray-500 line-through">{{ number_format($course->old_price, 0, ',', ' ') }} ₴</span>
-                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @php

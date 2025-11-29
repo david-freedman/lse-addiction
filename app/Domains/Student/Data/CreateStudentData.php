@@ -63,7 +63,7 @@ class CreateStudentData extends Data
     public static function rules(): array
     {
         return [
-            'birthday' => ['nullable', 'date', 'before:today'],
+            'birthday' => ['nullable', 'date', 'date_format:d.m.Y', 'before:today'],
         ];
     }
 }

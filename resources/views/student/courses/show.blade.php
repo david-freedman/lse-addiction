@@ -149,7 +149,7 @@
                     </div>
                 @endif
 
-                <!-- Coach Info Card -->
+                <!-- Teacher Info Card -->
                 <div class="bg-white rounded-xl shadow-md p-6">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Ваш викладач</h3>
                     <div class="flex items-center gap-3 mb-3">
@@ -159,8 +159,8 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="font-semibold text-gray-900">{{ $viewModel->coachName() }}</p>
-                            <p class="text-sm text-gray-600">Коуч курсу</p>
+                            <p class="font-semibold text-gray-900">{{ $viewModel->teacherName() }}</p>
+                            <p class="text-sm text-gray-600">Викладач курсу</p>
                         </div>
                     </div>
                 </div>

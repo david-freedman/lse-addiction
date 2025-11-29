@@ -6,7 +6,6 @@ use App\Domains\Course\Enums\CourseStatus;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rules\Enum;
 use Spatie\LaravelData\Attributes\Validation\Date;
-use Spatie\LaravelData\Attributes\Validation\Exists;
 use Spatie\LaravelData\Attributes\Validation\Image;
 use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\Mimes;
@@ -36,7 +35,7 @@ class UpdateCourseData extends Data
         public readonly ?int $discount_percentage,
 
         #[Required, Numeric]
-        public readonly int $coach_id,
+        public readonly int $teacher_id,
 
         #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png', 'webp']), Max(5120)]
         public readonly ?UploadedFile $banner,
@@ -55,9 +54,6 @@ class UpdateCourseData extends Data
 
         #[Nullable, StringType, Max(50)]
         public readonly ?string $label,
-
-        #[Nullable, Numeric, Exists('users', 'id')]
-        public readonly ?int $author_id,
     ) {}
 
     public static function rules(): array
@@ -67,9 +63,10 @@ class UpdateCourseData extends Data
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string', 'max:50'],
             'type' => ['nullable', 'string', 'in:upcoming,recorded,free'],
-            'starts_at' => ['nullable', 'date'],
+            'starts_at' => ['nullable', 'date', 'date_format:d.m.Y H:i'],
             'old_price' => ['nullable', 'numeric', 'min:0', 'gte:price'],
             'discount_percentage' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'teacher_id' => ['required', 'integer', 'exists:teachers,id'],
         ];
     }
 }
