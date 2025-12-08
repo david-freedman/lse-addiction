@@ -12,13 +12,13 @@ final class SkipProfileFieldsController
     {
         $studentId = session('student_id');
 
-        if (!$studentId) {
+        if (! $studentId) {
             return redirect()->route('student.register');
         }
 
         $student = Student::find($studentId);
 
-        if (!$student) {
+        if (! $student) {
             return redirect()->route('student.register');
         }
 

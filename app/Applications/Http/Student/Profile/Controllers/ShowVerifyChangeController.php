@@ -13,7 +13,7 @@ final class ShowVerifyChangeController
         $type = $request->query('type');
         $contact = $type === 'email' ? session('pending_email') : session('pending_phone');
 
-        if (!$contact || !in_array($type, ['email', 'phone'])) {
+        if (! $contact || ! in_array($type, ['email', 'phone'])) {
             return redirect()->route('student.profile.show');
         }
 

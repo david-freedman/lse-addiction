@@ -18,13 +18,13 @@ final class ResendCodeController
         $type = $request->input('type');
         $studentId = session('student_id');
 
-        if (!$studentId) {
+        if (! $studentId) {
             return redirect()->route('student.register');
         }
 
         $contact = $type === 'email' ? session('student_email') : session('student_phone');
 
-        if (!$contact) {
+        if (! $contact) {
             return back()->withErrors(['type' => __('messages.errors.contact_not_found')]);
         }
 

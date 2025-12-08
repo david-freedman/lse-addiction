@@ -14,19 +14,19 @@ final class ResendVerificationCodeController
     {
         $studentId = session('verification_student_id') ?? Auth::id();
 
-        if (!$studentId) {
+        if (! $studentId) {
             return redirect()->route('student.login');
         }
 
         $student = Student::find($studentId);
 
-        if (!$student) {
+        if (! $student) {
             return redirect()->route('student.login');
         }
 
         $requirePhone = config('verification.require_phone', true);
 
-        $verificationStep = ($requirePhone && !$student->hasVerifiedPhone())
+        $verificationStep = ($requirePhone && ! $student->hasVerifiedPhone())
             ? 'phone'
             : 'email';
         $contact = $verificationStep === 'phone'

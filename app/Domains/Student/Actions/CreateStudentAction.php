@@ -8,7 +8,6 @@ use App\Domains\ActivityLog\Enums\ActivitySubject;
 use App\Domains\ActivityLog\Enums\ActivityType;
 use App\Domains\Student\Data\CreateStudentData;
 use App\Domains\Student\Models\Student;
-use Illuminate\Support\Facades\Storage;
 
 class CreateStudentAction
 {

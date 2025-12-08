@@ -19,7 +19,7 @@ final class ResendVerificationCodeJsonController
         $contactKey = $type === 'email' ? 'registration_email' : 'registration_phone';
         $contact = session($contactKey);
 
-        if (!$contact) {
+        if (! $contact) {
             return response()->json([
                 'success' => false,
                 'message' => 'Спочатку відправте код верифікації',

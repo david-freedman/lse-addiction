@@ -21,7 +21,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     require __DIR__.'/admin/auth.php';
     require __DIR__.'/admin/dashboard.php';
     require __DIR__.'/admin/courses.php';
+    require __DIR__.'/admin/modules.php';
+    require __DIR__.'/admin/lessons.php';
     require __DIR__.'/admin/students.php';
+    require __DIR__.'/admin/student-groups.php';
+    require __DIR__.'/admin/progress.php';
     require __DIR__.'/admin/teachers.php';
     require __DIR__.'/admin/users.php';
     require __DIR__.'/admin/finances.php';

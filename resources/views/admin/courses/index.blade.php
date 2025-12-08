@@ -13,6 +13,86 @@
     </a>
 </div>
 
+{{-- Filters --}}
+<div class="mb-6 rounded-2xl border border-gray-200 bg-white p-4" x-data="{ showFilters: {{ $viewModel->isFiltered() ? 'true' : 'false' }} }">
+    <form method="GET" action="{{ route('admin.courses.index') }}">
+        <div class="flex items-center gap-4">
+            <div class="flex-1">
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ $viewModel->filters()->search }}"
+                    placeholder="Пошук по назві курсу..."
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white"
+                >
+            </div>
+            <button type="button" @click="showFilters = !showFilters" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                </svg>
+                Фільтри
+                @if($viewModel->isFiltered())
+                    <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand-500 text-xs text-white">!</span>
+                @endif
+            </button>
+            <button type="submit" class="rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-brand-600">
+                Шукати
+            </button>
+            @if($viewModel->isFiltered())
+                <a href="{{ route('admin.courses.index') }}" class="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-100">
+                    Скинути
+                </a>
+            @endif
+        </div>
+
+        <div x-show="showFilters" x-collapse class="mt-4 grid grid-cols-1 gap-4 border-t border-gray-200 pt-4 md:grid-cols-4">
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-gray-700">Статус</label>
+                <select name="status" class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white">
+                    <option value="">Всі статуси</option>
+                    @foreach($viewModel->statuses() as $status)
+                        <option value="{{ $status->value }}" {{ $viewModel->filters()->status?->value === $status->value ? 'selected' : '' }}>
+                            {{ $status->label() }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-gray-700">Викладач</label>
+                <select name="teacher_id" class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white">
+                    <option value="">Всі викладачі</option>
+                    @foreach($viewModel->teachers() as $teacher)
+                        <option value="{{ $teacher->id }}" {{ $viewModel->filters()->teacher_id == $teacher->id ? 'selected' : '' }}>
+                            {{ $teacher->full_name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-gray-700">Створено від</label>
+                <input
+                    type="date"
+                    name="created_from"
+                    value="{{ $viewModel->filters()->created_from?->format('Y-m-d') }}"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white"
+                >
+            </div>
+
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-gray-700">Створено до</label>
+                <input
+                    type="date"
+                    name="created_to"
+                    value="{{ $viewModel->filters()->created_to?->format('Y-m-d') }}"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white"
+                >
+            </div>
+        </div>
+    </form>
+</div>
+
 @if($viewModel->hasNoCourses())
     <div class="rounded-2xl border border-gray-200 bg-white p-12 text-center">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,7 +110,8 @@
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Викладач</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ціна</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Статус</th>
-                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Теги</th>
+                        <th class="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Модулів</th>
+                        <th class="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Студентів</th>
                         <th class="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Дії</th>
                     </tr>
                 </thead>
@@ -63,12 +144,11 @@
                                     {{ $course->status->label() }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4">
-                                <div class="flex flex-wrap gap-1">
-                                    @foreach($course->tags as $tag)
-                                        <span class="inline-flex rounded-full bg-brand-50 px-2 py-0.5 text-xs text-brand-700">{{ $tag->name }}</span>
-                                    @endforeach
-                                </div>
+                            <td class="px-6 py-4 text-center text-sm text-gray-700">
+                                {{ $course->modules_count ?? 0 }}
+                            </td>
+                            <td class="px-6 py-4 text-center text-sm text-gray-700">
+                                {{ $course->students_count ?? 0 }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
                                 <div class="flex items-center justify-end gap-2">

@@ -16,11 +16,11 @@ final class VerifyLoginController
 
         $student = VerifyCodeAction::execute($data);
 
-        if (!$student) {
+        if (! $student) {
             return back()->withErrors(['code' => __('messages.errors.invalid_code')]);
         }
 
-        if (!$student->isFullyVerified()) {
+        if (! $student->isFullyVerified()) {
             session()->forget(['login_contact', 'login_type']);
             session(['verification_student_id' => $student->id]);
 

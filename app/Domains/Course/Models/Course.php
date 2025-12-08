@@ -4,19 +4,26 @@ namespace App\Domains\Course\Models;
 
 use App\Domains\Course\Enums\CourseStatus;
 use App\Domains\Course\Enums\CourseType;
+use App\Domains\Lesson\Models\Lesson;
+use App\Domains\Module\Models\Module;
 use App\Domains\Student\Models\Student;
 use App\Domains\Teacher\Models\Teacher;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Course extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'name',
+        'slug',
         'description',
+        'description_short',
         'price',
         'old_price',
         'discount_percentage',
@@ -27,6 +34,7 @@ class Course extends Model
         'type',
         'starts_at',
         'label',
+        'is_sequential',
     ];
 
     protected $casts = [
@@ -35,6 +43,7 @@ class Course extends Model
         'starts_at' => 'datetime',
         'type' => CourseType::class,
         'status' => CourseStatus::class,
+        'is_sequential' => 'boolean',
     ];
 
     public function teacher(): BelongsTo
@@ -59,24 +68,24 @@ class Course extends Model
             ->withPivot(['enrolled_at', 'status']);
     }
 
-    public function isPublished(): bool
+    public function modules(): HasMany
     {
-        return $this->status === CourseStatus::Published;
+        return $this->hasMany(Module::class)->orderBy('order');
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === CourseStatus::Active;
+    }
+
+    public function isHidden(): bool
+    {
+        return $this->status === CourseStatus::Hidden;
     }
 
     public function isDraft(): bool
     {
         return $this->status === CourseStatus::Draft;
-    }
-
-    public function isInProgress(): bool
-    {
-        return $this->status === CourseStatus::InProgress;
-    }
-
-    public function isFinished(): bool
-    {
-        return $this->status === CourseStatus::Finished;
     }
 
     public function isArchived(): bool
@@ -91,7 +100,7 @@ class Course extends Model
 
     public function scopeAvailableForPurchase($query, ?Student $student = null)
     {
-        $query = $query->where('status', CourseStatus::Published);
+        $query = $query->where('status', CourseStatus::Active);
 
         if ($student) {
             $query->whereDoesntHave('students', function ($q) use ($student) {
@@ -194,5 +203,36 @@ class Course extends Model
                     : \Storage::disk('public')->url($this->banner)
                 : null
         );
+    }
+
+    protected function modulesCount(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->modules()->count()
+        );
+    }
+
+    protected function lessonsCount(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => Lesson::whereIn('module_id', $this->modules()->pluck('id'))->count()
+        );
+    }
+
+    protected function totalDuration(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => Lesson::whereIn('module_id', $this->modules()->pluck('id'))
+                ->sum('duration_minutes')
+        );
+    }
+
+    public function canBeEditedBy(User $user): bool
+    {
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        return $this->teacher_id === $user->id || $this->author_id === $user->id;
     }
 }

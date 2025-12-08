@@ -29,7 +29,7 @@ final class VerifyChangeController
         $contactChanged = ($verifyData->type === 'email' && (string) $updatedStudent->email !== (string) $originalStudent->email)
             || ($verifyData->type === 'phone' && (string) $updatedStudent->phone !== (string) $originalStudent->phone);
 
-        if (!$contactChanged) {
+        if (! $contactChanged) {
             return back()->withErrors(['code' => 'Невірний код підтвердження або код застарів. Спробуйте ще раз.']);
         }
 

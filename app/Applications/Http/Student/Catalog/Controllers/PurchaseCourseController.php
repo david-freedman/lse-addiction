@@ -22,7 +22,7 @@ final class PurchaseCourseController
                 ->with('error', 'Ви вже придбали цей курс');
         }
 
-        if (! $course->isPublished()) {
+        if (!$course->isActive()) {
             return redirect()
                 ->back()
                 ->with('error', 'Цей курс недоступний для покупки');

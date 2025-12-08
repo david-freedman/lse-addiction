@@ -15,13 +15,13 @@ final class RegisterController
         $verifiedEmail = session('verified_email');
         $verifiedPhone = session('verified_phone');
 
-        if (!$emailVerified || !$phoneVerified) {
+        if (! $emailVerified || ! $phoneVerified) {
             return redirect()->route('student.register')->withErrors([
                 'error' => 'Будь ласка, підтвердіть email і телефон перед реєстрацією.',
             ]);
         }
 
-        if (!$verifiedEmail || !$verifiedPhone) {
+        if (! $verifiedEmail || ! $verifiedPhone) {
             return redirect()->route('student.register')->withErrors([
                 'error' => 'Помилка реєстрації. Спробуйте ще раз.',
             ]);

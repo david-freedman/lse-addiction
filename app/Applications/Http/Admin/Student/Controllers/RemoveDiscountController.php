@@ -15,7 +15,7 @@ final class RemoveDiscountController
             abort(404);
         }
 
-        if (!$discount->isActive()) {
+        if (! $discount->isActive()) {
             return redirect()
                 ->route('admin.students.show', $student)
                 ->with('error', 'Ця знижка вже використана');

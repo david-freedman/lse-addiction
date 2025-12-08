@@ -19,7 +19,7 @@ final class GetCatalogController
         $search = $request->input('search');
 
         $courses = Course::with(['teacher', 'tags'])
-            ->where('status', CourseStatus::Published)
+            ->where('status', CourseStatus::Active)
             ->when($type, function ($query, $type) {
                 if ($type === 'recorded') {
                     return $query->where('type', CourseType::Recorded);
@@ -47,11 +47,11 @@ final class GetCatalogController
             $course->individual_discount = $discounts->get($course->id);
         });
 
-        $recordedCount = Course::where('status', CourseStatus::Published)
+        $recordedCount = Course::where('status', CourseStatus::Active)
             ->where('type', CourseType::Recorded)
             ->count();
 
-        $upcomingCount = Course::where('status', CourseStatus::Published)
+        $upcomingCount = Course::where('status', CourseStatus::Active)
             ->where('type', CourseType::Upcoming)
             ->count();
 

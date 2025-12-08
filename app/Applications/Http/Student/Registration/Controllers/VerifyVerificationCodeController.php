@@ -20,7 +20,7 @@ final class VerifyVerificationCodeController
         $contactKey = $type === 'email' ? 'registration_email' : 'registration_phone';
         $contact = session($contactKey);
 
-        if (!$contact) {
+        if (! $contact) {
             return response()->json([
                 'success' => false,
                 'message' => 'Спочатку відправте код верифікації',
@@ -35,7 +35,7 @@ final class VerifyVerificationCodeController
 
         $verification = VerifyCodeAction::verifyWithoutStudent($data);
 
-        if (!$verification) {
+        if (! $verification) {
             return response()->json([
                 'success' => false,
                 'message' => 'Невірний код верифікації',

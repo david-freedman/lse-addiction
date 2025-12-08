@@ -39,11 +39,11 @@ final class StudentLoginHistory extends Component
 
     public function parseUserAgent(?string $userAgent): array
     {
-        if (!$userAgent) {
+        if (! $userAgent) {
             return ['os' => '-', 'browser' => '-', 'device' => '-'];
         }
 
-        $agent = new Agent();
+        $agent = new Agent;
         $agent->setUserAgent($userAgent);
 
         $device = match (true) {

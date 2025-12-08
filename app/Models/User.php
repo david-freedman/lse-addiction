@@ -91,7 +91,7 @@ class User extends Authenticatable
 
     public function getTeacherCourseIds(): array
     {
-        if (!$this->isTeacher()) {
+        if (! $this->isTeacher()) {
             return [];
         }
 

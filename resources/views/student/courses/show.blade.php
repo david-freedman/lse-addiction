@@ -115,7 +115,7 @@
                                         class="block w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200">
                                     Купити курс
                                 </button>
-                            @elseif(!$viewModel->isPublished())
+                            @elseif(!$viewModel->isActive())
                                 <div class="w-full bg-gray-100 text-gray-600 font-semibold py-3 px-6 rounded-lg text-center">
                                     Курс недоступний
                                 </div>
@@ -175,7 +175,7 @@
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-600">Статус:</span>
-                            @if($course->status === 'published')
+                            @if($course->status->value === 'active')
                                 <span class="text-green-600 font-semibold text-sm">{{ $viewModel->statusLabel() }}</span>
                             @else
                                 <span class="text-gray-600 font-semibold text-sm">{{ $viewModel->statusLabel() }}</span>

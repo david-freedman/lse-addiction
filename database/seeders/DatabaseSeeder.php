@@ -18,12 +18,16 @@ class DatabaseSeeder extends Seeder
             TagSeeder::class,
             CourseSeeder::class,
             CourseTagSeeder::class,
+            ModuleSeeder::class,
+            LessonSeeder::class,
+            QuizSeeder::class,
             StudentSeeder::class,
             CourseStudentSeeder::class,
             AdminUserSeeder::class,
             StudentCourseDiscountSeeder::class,
             TransactionSeeder::class,
             FAQSeeder::class,
+            ProgressSeeder::class,
         ]);
     }
 }

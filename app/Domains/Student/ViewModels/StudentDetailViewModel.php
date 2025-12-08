@@ -114,11 +114,11 @@ readonly class StudentDetailViewModel
 
     public function parseUserAgent(?string $userAgent): array
     {
-        if (!$userAgent) {
+        if (! $userAgent) {
             return ['os' => 'N/A', 'browser' => 'N/A', 'device' => 'N/A'];
         }
 
-        $agent = new Agent();
+        $agent = new Agent;
         $agent->setUserAgent($userAgent);
 
         $device = match (true) {
@@ -228,6 +228,6 @@ readonly class StudentDetailViewModel
 
     public function hasProfileFields(): bool
     {
-        return !empty($this->profileFields());
+        return ! empty($this->profileFields());
     }
 }

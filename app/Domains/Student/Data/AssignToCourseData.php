@@ -35,7 +35,7 @@ class AssignToCourseData extends Data
                 'integer',
                 'exists:users,id',
                 function ($attribute, $value, $fail) {
-                    if ($value && !\App\Models\User::where('id', $value)->where('role', 'teacher')->exists()) {
+                    if ($value && ! \App\Models\User::where('id', $value)->where('role', 'teacher')->exists()) {
                         $fail('Вибраний користувач не є викладачем.');
                     }
                 },

@@ -14,13 +14,13 @@ final class SaveProfileFieldsController
     {
         $studentId = session('student_id');
 
-        if (!$studentId) {
+        if (! $studentId) {
             return redirect()->route('student.register');
         }
 
         $student = Student::find($studentId);
 
-        if (!$student || !$student->isFullyVerified() || !$student->hasContactDetails()) {
+        if (! $student || ! $student->isFullyVerified() || ! $student->hasContactDetails()) {
             return redirect()->route('student.register');
         }
 

@@ -4,6 +4,10 @@ namespace App\Domains\Student\Models;
 
 use App\Domains\Course\Models\Course;
 use App\Domains\Course\Models\CourseStudent;
+use App\Domains\Progress\Models\StudentCourseProgress;
+use App\Domains\Progress\Models\StudentLessonProgress;
+use App\Domains\Progress\Models\StudentModuleProgress;
+use App\Domains\Progress\Models\StudentQuizAttempt;
 use App\Domains\Shared\Casts\EmailCast;
 use App\Domains\Shared\Casts\PhoneCast;
 use App\Domains\Transaction\Models\Transaction;
@@ -17,6 +21,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class Student extends Authenticatable
 {
     use SoftDeletes;
+
     protected $fillable = [
         'email',
         'phone',
@@ -60,6 +65,32 @@ class Student extends Authenticatable
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function groups(): BelongsToMany
+    {
+        return $this->belongsToMany(StudentGroup::class, 'student_group_members', 'student_id', 'group_id')
+            ->withPivot('added_at');
+    }
+
+    public function lessonProgress(): HasMany
+    {
+        return $this->hasMany(StudentLessonProgress::class);
+    }
+
+    public function moduleProgress(): HasMany
+    {
+        return $this->hasMany(StudentModuleProgress::class);
+    }
+
+    public function courseProgress(): HasMany
+    {
+        return $this->hasMany(StudentCourseProgress::class);
+    }
+
+    public function quizAttempts(): HasMany
+    {
+        return $this->hasMany(StudentQuizAttempt::class);
     }
 
     public function markEmailAsVerified(): void
@@ -110,6 +141,11 @@ class Student extends Authenticatable
             ->where('purchasable_id', $course->id)
             ->where('status', \App\Domains\Transaction\Enums\TransactionStatus::Completed)
             ->exists();
+    }
+
+    public function hasAccessToCourse(Course $course): bool
+    {
+        return $this->courses()->where('course_id', $course->id)->exists();
     }
 
     public function getProfilePhotoUrlAttribute(): ?string

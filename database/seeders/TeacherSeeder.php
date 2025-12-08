@@ -70,7 +70,7 @@ class TeacherSeeder extends Seeder
         ];
 
         foreach ($users as $index => $user) {
-            if (!isset($teacherData[$index])) {
+            if (! isset($teacherData[$index])) {
                 break;
             }
 

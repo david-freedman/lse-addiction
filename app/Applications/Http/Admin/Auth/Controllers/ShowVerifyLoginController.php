@@ -11,7 +11,7 @@ final class ShowVerifyLoginController
     {
         $email = session('admin_login_email');
 
-        if (!$email) {
+        if (! $email) {
             return redirect()->route('admin.login');
         }
 

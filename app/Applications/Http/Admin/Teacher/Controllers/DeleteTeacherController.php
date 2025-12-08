@@ -13,7 +13,7 @@ final class DeleteTeacherController
     {
         $viewModel = new TeacherDetailViewModel($teacher);
 
-        if (!$viewModel->canDelete()) {
+        if (! $viewModel->canDelete()) {
             return redirect()
                 ->route('admin.teachers.show', $teacher)
                 ->with('error', $viewModel->deleteBlockedReason());

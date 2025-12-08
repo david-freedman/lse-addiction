@@ -92,12 +92,12 @@ readonly class CourseDetailViewModel
 
     public function canEnroll(): bool
     {
-        return $this->course->isPublished() && ! $this->isEnrolled();
+        return $this->course->isActive() && !$this->isEnrolled();
     }
 
-    public function isPublished(): bool
+    public function isActive(): bool
     {
-        return $this->course->isPublished();
+        return $this->course->isActive();
     }
 
     public function createdAt(): string

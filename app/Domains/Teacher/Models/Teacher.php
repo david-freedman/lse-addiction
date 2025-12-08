@@ -4,12 +4,14 @@ namespace App\Domains\Teacher\Models;
 
 use App\Domains\Course\Models\Course;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Teacher extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'user_id',
         'first_name',
@@ -55,7 +57,7 @@ class Teacher extends Model
 
     public function scopeSearch($query, ?string $search)
     {
-        if (!$search) {
+        if (! $search) {
             return $query;
         }
 

@@ -14,13 +14,13 @@ final class SaveContactDetailsController
     {
         $studentId = session('student_id');
 
-        if (!$studentId) {
+        if (! $studentId) {
             return redirect()->route('student.register');
         }
 
         $student = Student::find($studentId);
 
-        if (!$student || !$student->isFullyVerified()) {
+        if (! $student || ! $student->isFullyVerified()) {
             return redirect()->route('student.register');
         }
 

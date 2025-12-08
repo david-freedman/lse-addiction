@@ -1,0 +1,101 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Domains\Lesson\Enums\LessonStatus;
+use App\Domains\Lesson\Enums\LessonType;
+use App\Domains\Lesson\Models\Lesson;
+use App\Domains\Module\Models\Module;
+use Illuminate\Database\Seeder;
+
+class LessonSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $modules = Module::with('course')->get();
+
+        $lessonTemplates = [
+            [
+                'name' => 'Введення та огляд теми',
+                'description' => 'Огляд основних понять та структури розділу.',
+                'type' => LessonType::Video,
+                'duration_minutes' => 15,
+            ],
+            [
+                'name' => 'Основні концепції',
+                'description' => 'Детальне пояснення ключових концепцій та термінології.',
+                'type' => LessonType::Text,
+                'duration_minutes' => null,
+            ],
+            [
+                'name' => 'Клінічні приклади',
+                'description' => 'Розбір реальних клінічних випадків та практичних ситуацій.',
+                'type' => LessonType::Video,
+                'duration_minutes' => 25,
+            ],
+            [
+                'name' => 'Практичні рекомендації',
+                'description' => 'Конкретні алгоритми дій та рекомендації для клінічної практики.',
+                'type' => LessonType::Text,
+                'duration_minutes' => null,
+            ],
+            [
+                'name' => 'Перевірка знань',
+                'description' => 'Тестування засвоєного матеріалу.',
+                'type' => LessonType::Quiz,
+                'duration_minutes' => 10,
+            ],
+        ];
+
+        $videoUrls = [
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            'https://vimeo.com/123456789',
+            'https://www.youtube.com/watch?v=jNQXAC9IVRw',
+        ];
+
+        $textContent = '<h2>Основний зміст уроку</h2>
+<p>Цей урок охоплює важливі аспекти теми, які необхідно засвоїти для успішного проходження курсу.</p>
+<h3>Ключові моменти</h3>
+<ul>
+<li>Перший важливий аспект теми</li>
+<li>Другий ключовий момент для запам\'ятовування</li>
+<li>Третій пункт, що потребує особливої уваги</li>
+</ul>
+<h3>Практичне застосування</h3>
+<p>Застосування отриманих знань у клінічній практиці є ключовим для розвитку професійних навичок.</p>';
+
+        $totalLessons = 0;
+
+        foreach ($modules as $module) {
+            foreach ($lessonTemplates as $order => $template) {
+                $lessonData = [
+                    'module_id' => $module->id,
+                    'name' => $template['name'],
+                    'description' => $template['description'],
+                    'type' => $template['type'],
+                    'duration_minutes' => $template['duration_minutes'],
+                    'order' => $order + 1,
+                    'status' => LessonStatus::Published,
+                    'is_downloadable' => $template['type'] === LessonType::Video,
+                    'attachments' => null,
+                ];
+
+                if ($template['type'] === LessonType::Video) {
+                    $lessonData['video_url'] = $videoUrls[array_rand($videoUrls)];
+                    $lessonData['content'] = null;
+                } elseif ($template['type'] === LessonType::Text) {
+                    $lessonData['content'] = $textContent;
+                    $lessonData['video_url'] = null;
+                } else {
+                    $lessonData['content'] = null;
+                    $lessonData['video_url'] = null;
+                }
+
+                Lesson::create($lessonData);
+                $totalLessons++;
+            }
+        }
+
+        $this->command->info("Created {$totalLessons} lessons for {$modules->count()} modules");
+    }
+}

@@ -11,7 +11,9 @@ return new class extends Migration
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('slug')->unique();
             $table->text('description');
+            $table->text('description_short')->nullable();
             $table->decimal('price', 10, 2);
             $table->decimal('old_price', 10, 2)->nullable();
             $table->unsignedTinyInteger('discount_percentage')->nullable();
@@ -22,6 +24,7 @@ return new class extends Migration
             $table->string('type')->nullable();
             $table->timestamp('starts_at')->nullable();
             $table->string('label')->nullable();
+            $table->boolean('is_sequential')->default(true);
             $table->timestamps();
 
             $table->index('status');
