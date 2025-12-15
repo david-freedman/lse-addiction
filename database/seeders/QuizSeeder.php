@@ -104,6 +104,35 @@ class QuizSeeder extends Seeder
                     ['text' => 'Нехарактерний симптом', 'is_correct' => false],
                 ],
             ],
+            [
+                'text' => 'Оберіть зображення, що відповідає нормальній картині:',
+                'type' => QuestionType::ImageSelect,
+                'answers' => [
+                    ['text' => 'Норма', 'is_correct' => true, 'image' => 'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=200'],
+                    ['text' => 'Патологія А', 'is_correct' => false, 'image' => 'https://images.unsplash.com/photo-1530497610245-94d3c16cda28?w=200'],
+                    ['text' => 'Патологія Б', 'is_correct' => false, 'image' => 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=200'],
+                ],
+            ],
+            [
+                'text' => 'Розмістіть етапи діагностики в правильному порядку:',
+                'type' => QuestionType::Ordering,
+                'answers' => [
+                    ['text' => '1. Збір анамнезу', 'is_correct' => true, 'order' => 1],
+                    ['text' => '2. Фізикальне обстеження', 'is_correct' => true, 'order' => 2],
+                    ['text' => '3. Лабораторні дослідження', 'is_correct' => true, 'order' => 3],
+                    ['text' => '4. Інструментальні методи', 'is_correct' => true, 'order' => 4],
+                ],
+            ],
+            [
+                'text' => 'Перетягніть симптоми до відповідних категорій захворювань:',
+                'type' => QuestionType::DragDrop,
+                'answers' => [
+                    ['text' => 'Гострий біль', 'is_correct' => true, 'category' => 'Гострий стан'],
+                    ['text' => 'Тупий біль', 'is_correct' => true, 'category' => 'Хронічний стан'],
+                    ['text' => 'Раптовий початок', 'is_correct' => true, 'category' => 'Гострий стан'],
+                    ['text' => 'Поступовий розвиток', 'is_correct' => true, 'category' => 'Хронічний стан'],
+                ],
+            ],
         ];
 
         $createdCount = 0;
@@ -125,10 +154,10 @@ class QuizSeeder extends Seeder
                 QuizAnswer::create([
                     'question_id' => $question->id,
                     'answer_text' => $answerData['text'],
-                    'answer_image' => null,
+                    'answer_image' => $answerData['image'] ?? null,
                     'is_correct' => $answerData['is_correct'],
-                    'category' => null,
-                    'order' => $answerOrder + 1,
+                    'category' => $answerData['category'] ?? null,
+                    'order' => $answerData['order'] ?? $answerOrder + 1,
                 ]);
             }
         }

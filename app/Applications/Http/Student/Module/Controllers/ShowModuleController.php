@@ -24,7 +24,7 @@ final class ShowModuleController
         }
 
         $module->load(['lessons' => function ($query) {
-            $query->published()->ordered();
+            $query->published()->ordered()->with('homework');
         }]);
 
         $viewModel = new ModuleDetailViewModel($module, $course, $student);

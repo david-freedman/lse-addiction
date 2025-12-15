@@ -31,6 +31,6 @@ final class VerifyLoginController
 
         session()->forget(['login_contact', 'login_type']);
 
-        return redirect()->route('student.profile.show');
+        return redirect()->route('home');
     }
 }

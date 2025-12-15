@@ -5,12 +5,13 @@ namespace App\Domains\Course\ViewModels;
 use App\Domains\Course\Models\Course;
 use App\Domains\Lesson\Enums\LessonType;
 use App\Domains\Module\Models\Module;
+use App\Domains\Progress\Data\LessonProgressData;
 use App\Domains\Progress\Data\ModuleProgressData;
 use App\Domains\Progress\Enums\ProgressStatus;
 use App\Domains\Student\Models\Student;
 use Illuminate\Support\Collection;
 
-readonly class StudentDashboardViewModel
+readonly class CourseProgressViewModel
 {
     public function __construct(
         private ?Course $course,
@@ -27,9 +28,14 @@ readonly class StudentDashboardViewModel
         return $this->course?->name ?? '';
     }
 
+    public function courseSlug(): string
+    {
+        return $this->course?->slug ?? '';
+    }
+
     public function courseDescription(): string
     {
-        return 'Керуйте своїми курсами та відстежуйте прогрес навчання';
+        return '';
     }
 
     public function progressPercentage(): int
@@ -100,13 +106,15 @@ readonly class StudentDashboardViewModel
 
         $isUnlocked = $module->isUnlocked($this->student);
 
-        $recentLessons = $module->lessons
-            ->filter(fn ($lesson) => !in_array($lesson->id, $completedLessonIds))
-            ->take(2)
-            ->map(fn ($lesson) => [
-                'id' => $lesson->id,
-                'name' => $lesson->name,
-            ])
+        $lessons = $module->lessons
+            ->map(fn ($lesson) => new LessonProgressData(
+                id: $lesson->id,
+                name: $lesson->name,
+                type: $lesson->type->value,
+                isCompleted: in_array($lesson->id, $completedLessonIds),
+                duration: $lesson->formattedDuration,
+                order: $lesson->order,
+            ))
             ->toArray();
 
         return new ModuleProgressData(
@@ -121,7 +129,7 @@ readonly class StudentDashboardViewModel
             isUnlocked: $isUnlocked,
             unlockMessage: !$isUnlocked ? 'Завершіть попередні модулі, щоб розблокувати' : null,
             iconType: $this->determineIconType($module, $isUnlocked),
-            recentLessons: $recentLessons,
+            lessons: $lessons,
         );
     }
 

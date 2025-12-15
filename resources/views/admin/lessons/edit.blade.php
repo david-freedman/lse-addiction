@@ -59,6 +59,21 @@
                 </div>
             </template>
 
+            <template x-if="type === 'qa_session'">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">URL Q&A сесії *</label>
+                    <input type="url" name="qa_session_url" value="{{ old('qa_session_url', $lesson->qa_session_url) }}"
+                           placeholder="https://zoom.us/... або https://meet.google.com/..."
+                           class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white">
+                    <p class="mt-1 text-xs text-gray-500">Посилання на Zoom, Google Meet або іншу платформу для відеоконференцій</p>
+                    @error('qa_session_url')<p class="mt-1 text-sm text-error-600">{{ $message }}</p>@enderror
+                </div>
+            </template>
+
+            @include('admin.lessons.partials.dicom-settings')
+            @include('admin.lessons.partials.quiz-settings')
+            @include('admin.lessons.partials.homework-settings')
+
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Тривалість (хвилин)</label>
                 <input type="number" name="duration_minutes" value="{{ old('duration_minutes', $lesson->duration_minutes) }}" min="0"

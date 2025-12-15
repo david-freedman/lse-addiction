@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             ProfileFieldSeeder::class,
             UserSeeder::class,
             TeacherSeeder::class,
+            WebinarSeeder::class,
             TagSeeder::class,
             CourseSeeder::class,
             CourseTagSeeder::class,
@@ -23,11 +24,13 @@ class DatabaseSeeder extends Seeder
             QuizSeeder::class,
             StudentSeeder::class,
             CourseStudentSeeder::class,
+            HomeworkSeeder::class,
             AdminUserSeeder::class,
             StudentCourseDiscountSeeder::class,
             TransactionSeeder::class,
             FAQSeeder::class,
             ProgressSeeder::class,
+            CertificateSeeder::class,
         ]);
     }
 }

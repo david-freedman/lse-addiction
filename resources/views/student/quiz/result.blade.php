@@ -7,11 +7,11 @@
     <div class="px-4 sm:px-6 lg:px-8 py-3">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div class="flex items-center gap-4">
-                <a href="{{ $viewModel->backToCourseUrl() }}" class="inline-flex items-center text-gray-600 hover:text-teal-600 transition-colors">
+                <a href="{{ $viewModel->backToModuleUrl() }}" class="inline-flex items-center text-gray-600 hover:text-teal-600 transition-colors">
                     <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
-                    <span class="text-sm font-medium">Назад до курсів</span>
+                    <span class="text-sm font-medium">Назад до модулю</span>
                 </a>
                 <h1 class="hidden lg:block text-lg font-semibold text-gray-900 truncate max-w-xl">
                     {{ $viewModel->courseName() }}
@@ -36,7 +36,15 @@
     <div class="flex-1 lg:pr-0">
         <div class="px-4 sm:px-6 lg:px-8 py-8 max-w-4xl">
             <div class="text-center mb-8">
-                @if($result->passed)
+                @if($viewModel->isSurvey())
+                    <div class="w-20 h-20 mx-auto mb-4 bg-teal-100 rounded-full flex items-center justify-center">
+                        <svg class="w-10 h-10 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Дякуємо за відповіді!</h2>
+                    <p class="text-gray-600">Ваші відповіді успішно збережено</p>
+                @elseif($result->passed)
                     <div class="w-20 h-20 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
                         <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -55,6 +63,7 @@
                 @endif
             </div>
 
+            @if(!$viewModel->isSurvey())
             <div class="bg-gray-50 rounded-xl p-6 mb-8">
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
                     <div>
@@ -83,6 +92,7 @@
                     </div>
                 </div>
             </div>
+            @endif
 
             @if($viewModel->showCorrectAnswers())
                 <div class="mb-8">
@@ -125,7 +135,7 @@
             @endif
 
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                @if($viewModel->canAttempt())
+                @if(!$viewModel->isSurvey() && $viewModel->canAttempt())
                     <a href="{{ route('student.quiz.show', [$course, $lesson]) }}"
                        class="inline-flex items-center justify-center px-6 py-2.5 text-sm font-medium text-white bg-teal-500 rounded-lg hover:bg-teal-600 transition">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

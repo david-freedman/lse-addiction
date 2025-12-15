@@ -1,5 +1,6 @@
 <?php
 
+use App\Applications\Http\Student\Profile\Controllers\DeleteAccountController;
 use App\Applications\Http\Student\Profile\Controllers\EditProfileController;
 use App\Applications\Http\Student\Profile\Controllers\ResendChangeCodeController;
 use App\Applications\Http\Student\Profile\Controllers\ShowProfileController;
@@ -14,6 +15,7 @@ Route::middleware(['auth', 'verified.student'])->group(function () {
     Route::get('profile/edit', EditProfileController::class)->name('profile.edit');
     Route::patch('profile', UpdateProfileController::class)->name('profile.update');
     Route::patch('profile/profile-fields', UpdateProfileFieldsController::class)->name('profile.profile-fields.update');
+    Route::delete('profile', DeleteAccountController::class)->name('profile.delete');
 
     Route::get('verify-change', ShowVerifyChangeController::class)->name('verify-change.show');
     Route::post('verify-change', VerifyChangeController::class)->name('verify-change');

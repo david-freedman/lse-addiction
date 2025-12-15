@@ -2,21 +2,30 @@
 
 namespace App\Domains\Lesson\Models;
 
+use App\Domains\Homework\Models\Homework;
+use App\Domains\Lesson\Enums\DicomSourceType;
 use App\Domains\Lesson\Enums\LessonStatus;
 use App\Domains\Lesson\Enums\LessonType;
 use App\Domains\Module\Models\Module;
 use App\Domains\Progress\Models\StudentLessonProgress;
 use App\Domains\Quiz\Models\Quiz;
+use Database\Factories\LessonFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Lesson extends Model
 {
     use HasFactory;
+
+    protected static function newFactory(): LessonFactory
+    {
+        return LessonFactory::new();
+    }
     protected $fillable = [
         'module_id',
         'name',
@@ -24,7 +33,11 @@ class Lesson extends Model
         'content',
         'type',
         'video_url',
-        'dicom_file',
+        'dicom_source_type',
+        'dicom_file_path',
+        'dicom_url',
+        'dicom_metadata',
+        'qa_session_url',
         'duration_minutes',
         'order',
         'status',
@@ -37,6 +50,8 @@ class Lesson extends Model
         return [
             'type' => LessonType::class,
             'status' => LessonStatus::class,
+            'dicom_source_type' => DicomSourceType::class,
+            'dicom_metadata' => 'array',
             'is_downloadable' => 'boolean',
             'attachments' => 'array',
         ];
@@ -65,6 +80,21 @@ class Lesson extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(LessonComment::class)->whereNull('parent_id');
+    }
+
+    public function homework(): HasOne
+    {
+        return $this->hasOne(Homework::class);
+    }
+
+    public function hasHomework(): bool
+    {
+        return $this->homework !== null;
+    }
+
+    public function hasRequiredHomework(): bool
+    {
+        return $this->homework?->is_required ?? false;
     }
 
     public function scopePublished($query)
@@ -100,6 +130,20 @@ class Lesson extends Model
     {
         return Attribute::make(
             get: fn () => $this->type === LessonType::Dicom
+        );
+    }
+
+    protected function isQaSession(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->type === LessonType::QaSession
+        );
+    }
+
+    protected function isSurvey(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->type === LessonType::Survey
         );
     }
 

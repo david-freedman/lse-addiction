@@ -3,7 +3,7 @@
 @section('title', $viewModel->name())
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div>
     <div class="mb-6">
         <a href="{{ route('student.catalog.index') }}" class="inline-flex items-center text-teal-600 hover:text-teal-700 transition-colors duration-200">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

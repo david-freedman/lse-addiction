@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Domains\Lesson\Enums\DicomSourceType;
 use App\Domains\Lesson\Enums\LessonStatus;
 use App\Domains\Lesson\Enums\LessonType;
 use App\Domains\Lesson\Models\Lesson;
@@ -45,6 +46,37 @@ class LessonSeeder extends Seeder
                 'type' => LessonType::Quiz,
                 'duration_minutes' => 10,
             ],
+            [
+                'name' => 'Аналіз медичних зображень',
+                'description' => 'Інтерактивний перегляд та аналіз діагностичних знімків.',
+                'type' => LessonType::Dicom,
+                'duration_minutes' => 15,
+                'dicom_source_type' => DicomSourceType::Url,
+                'dicom_url' => 'https://raw.githubusercontent.com/nicktackes/DICOM-Samples/refs/heads/main/MG/MG-AB.dcm',
+                'dicom_metadata' => ['modality' => 'MG', 'is_multiframe' => false, 'frame_count' => 1],
+            ],
+            [
+                'name' => 'Практичний розбір знімків',
+                'description' => 'Детальний розбір діагностичних зображень з коментарями.',
+                'type' => LessonType::Dicom,
+                'duration_minutes' => 20,
+                'dicom_source_type' => DicomSourceType::Url,
+                'dicom_url' => 'https://raw.githubusercontent.com/nicktackes/DICOM-Samples/refs/heads/main/MR-Brain/MR-brain.dcm',
+                'dicom_metadata' => ['modality' => 'MR', 'is_multiframe' => false, 'frame_count' => 1],
+            ],
+            [
+                'name' => 'Q&A сесія з викладачем',
+                'description' => 'Інтерактивна сесія питань та відповідей з можливістю обговорення складних випадків.',
+                'type' => LessonType::QaSession,
+                'duration_minutes' => 60,
+                'qa_session_url' => 'https://zoom.us/j/123456789',
+            ],
+            [
+                'name' => 'Опитування студентів',
+                'description' => 'Опитування для зворотного зв\'язку та оцінки засвоєння матеріалу.',
+                'type' => LessonType::Survey,
+                'duration_minutes' => 5,
+            ],
         ];
 
         $videoUrls = [
@@ -85,6 +117,20 @@ class LessonSeeder extends Seeder
                     $lessonData['content'] = null;
                 } elseif ($template['type'] === LessonType::Text) {
                     $lessonData['content'] = $textContent;
+                    $lessonData['video_url'] = null;
+                } elseif ($template['type'] === LessonType::Dicom) {
+                    $lessonData['dicom_source_type'] = $template['dicom_source_type'];
+                    $lessonData['dicom_url'] = $template['dicom_url'] ?? null;
+                    $lessonData['dicom_file_path'] = $template['dicom_file_path'] ?? null;
+                    $lessonData['dicom_metadata'] = $template['dicom_metadata'] ?? null;
+                    $lessonData['content'] = null;
+                    $lessonData['video_url'] = null;
+                } elseif ($template['type'] === LessonType::QaSession) {
+                    $lessonData['qa_session_url'] = $template['qa_session_url'] ?? null;
+                    $lessonData['content'] = null;
+                    $lessonData['video_url'] = null;
+                } elseif ($template['type'] === LessonType::Survey) {
+                    $lessonData['content'] = null;
                     $lessonData['video_url'] = null;
                 } else {
                     $lessonData['content'] = null;

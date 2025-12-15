@@ -5,8 +5,8 @@
 @section('content')
 <div class="flex items-center justify-between mb-6">
     <div>
-        <a href="{{ route('admin.courses.edit', $course) }}" class="text-sm text-gray-500 hover:text-gray-700">
-            ← Назад до курсу
+        <a href="{{ route('admin.modules.index', $course) }}" class="text-sm text-gray-500 hover:text-gray-700">
+            ← Назад до модулів
         </a>
         <h1 class="text-title-xl font-bold text-gray-900 mt-1">Уроки модуля: {{ $module->name }}</h1>
     </div>
@@ -37,6 +37,9 @@
                         {{ $lesson->type->label() }}
                         @if($lesson->duration_minutes)
                             • {{ $lesson->formatted_duration }}
+                        @endif
+                        @if($lesson->hasHomework())
+                            • <span class="text-amber-600">ДЗ</span>
                         @endif
                     </p>
                 </div>

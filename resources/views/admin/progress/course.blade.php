@@ -135,7 +135,7 @@
                             <td class="px-4 py-3">
                                 <div class="flex justify-end">
                                     @if($progress->student)
-                                        <a href="{{ route('admin.progress.student', $progress->student) }}" class="text-sm font-medium text-brand-600 hover:text-brand-700">
+                                        <a href="{{ route('admin.progress.tree', ['course_id' => $course->id, 'student_id' => $progress->student->id]) }}" class="text-sm font-medium text-brand-600 hover:text-brand-700">
                                             Детальніше
                                         </a>
                                     @endif

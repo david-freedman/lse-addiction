@@ -59,20 +59,16 @@
             </div>
         @endif
 
-        <div class="border-t pt-4 flex items-center justify-between">
+        <div class="border-t border-gray-300 pt-4 flex items-center justify-between">
             <div class="flex-1">
                 @if(($course->has_discount || $individualDiscount) && !(isset($course->is_purchased) && $course->is_purchased))
                     <div class="flex items-baseline gap-2 flex-wrap">
                         <span class="text-2xl font-bold text-teal-600">{{ number_format($finalPrice, 0, ',', ' ') }} ₴</span>
-                        <span class="text-sm text-gray-500 line-through">{{ $course->formatted_price }}</span>
+                        <span class="text-sm text-gray-500 line-through">{{ $course->has_discount ? $course->formatted_old_price : $course->formatted_price }}</span>
                     </div>
                     @if($individualDiscount)
                         <div class="text-xs text-brand-600 font-semibold mt-1">
                             Персональна знижка: {{ $individualDiscount->formattedValue() }}
-                        </div>
-                    @elseif($course->has_discount)
-                        <div class="text-xs text-green-600 font-semibold mt-1">
-                            Економія: {{ $course->formatted_discount_amount }}
                         </div>
                     @endif
                 @else

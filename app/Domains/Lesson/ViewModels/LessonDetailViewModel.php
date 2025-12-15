@@ -3,6 +3,9 @@
 namespace App\Domains\Lesson\ViewModels;
 
 use App\Domains\Course\Models\Course;
+use App\Domains\Homework\Models\Homework;
+use App\Domains\Homework\Models\HomeworkSubmission;
+use App\Domains\Lesson\Enums\DicomSourceType;
 use App\Domains\Lesson\Enums\LessonType;
 use App\Domains\Lesson\Models\Lesson;
 use App\Domains\Module\Models\Module;
@@ -35,7 +38,7 @@ readonly class LessonDetailViewModel
 
     public function moduleNumber(): int
     {
-        return $this->lesson->module->order;
+        return $this->lesson->module->order + 1;
     }
 
     public function lessonNumber(): int
@@ -217,7 +220,7 @@ readonly class LessonDetailViewModel
             ->orderBy('order')
             ->first();
 
-        if ($nextModule) {
+        if ($nextModule && $nextModule->isUnlocked($this->student)) {
             return $nextModule->lessons()
                 ->published()
                 ->orderBy('order')
@@ -265,7 +268,7 @@ readonly class LessonDetailViewModel
             ->active()
             ->ordered()
             ->with(['lessons' => function ($query) {
-                $query->published()->ordered();
+                $query->published()->ordered()->with('homework');
             }])
             ->get()
             ->map(function (Module $module) {
@@ -283,6 +286,7 @@ readonly class LessonDetailViewModel
                         'isCompleted' => $progress?->status === ProgressStatus::Completed,
                         'isCurrent' => $lesson->id === $this->lesson->id,
                         'url' => route('student.lessons.show', [$this->course, $lesson]),
+                        'hasHomework' => $lesson->homework !== null,
                     ];
                 });
 
@@ -291,6 +295,8 @@ readonly class LessonDetailViewModel
                     'name' => $module->name,
                     'order' => $module->order,
                     'lessons' => $lessonsWithProgress,
+                    'isUnlocked' => $module->isUnlocked($this->student),
+                    'isCurrent' => $module->id === $this->lesson->module_id,
                 ];
             });
     }
@@ -327,6 +333,11 @@ readonly class LessonDetailViewModel
         return route('student.my-courses');
     }
 
+    public function backToModuleUrl(): string
+    {
+        return route('student.modules.show', [$this->course, $this->lesson->module]);
+    }
+
     public function lessonType(): LessonType
     {
         return $this->lesson->type;
@@ -337,8 +348,125 @@ readonly class LessonDetailViewModel
         return $this->lesson->type === LessonType::Video;
     }
 
+    public function isDicom(): bool
+    {
+        return $this->lesson->type === LessonType::Dicom;
+    }
+
+    public function isQaSession(): bool
+    {
+        return $this->lesson->type === LessonType::QaSession;
+    }
+
+    public function isSurvey(): bool
+    {
+        return $this->lesson->type === LessonType::Survey;
+    }
+
+    public function qaSessionUrl(): ?string
+    {
+        return $this->lesson->qa_session_url;
+    }
+
+    public function dicomUrl(): ?string
+    {
+        if (!$this->isDicom()) {
+            return null;
+        }
+
+        if ($this->lesson->dicom_source_type === DicomSourceType::Url) {
+            return $this->lesson->dicom_url;
+        }
+
+        return route('student.lessons.dicom', [$this->course, $this->lesson]);
+    }
+
+    public function dicomMetadata(): ?array
+    {
+        return $this->lesson->dicom_metadata;
+    }
+
+    public function isCineLoop(): bool
+    {
+        $metadata = $this->lesson->dicom_metadata;
+
+        return ($metadata['is_multiframe'] ?? false) && ($metadata['frame_count'] ?? 1) > 1;
+    }
+
+    public function dicomSourceType(): ?DicomSourceType
+    {
+        return $this->lesson->dicom_source_type;
+    }
+
     public function isDownloadable(): bool
     {
         return $this->lesson->is_downloadable;
+    }
+
+    public function hasHomework(): bool
+    {
+        return $this->lesson->homework !== null;
+    }
+
+    public function homework(): ?Homework
+    {
+        return $this->lesson->homework;
+    }
+
+    public function homeworkSubmissions(): Collection
+    {
+        if (!$this->hasHomework()) {
+            return collect();
+        }
+
+        return $this->lesson->homework->submissions()
+            ->where('student_id', $this->student->id)
+            ->orderByDesc('attempt_number')
+            ->get();
+    }
+
+    public function latestSubmission(): ?HomeworkSubmission
+    {
+        return $this->homeworkSubmissions()->first();
+    }
+
+    public function canSubmitHomework(): bool
+    {
+        if (!$this->hasHomework()) {
+            return false;
+        }
+
+        return $this->lesson->homework->canStudentSubmit($this->student->id);
+    }
+
+    public function homeworkAttemptsRemaining(): ?int
+    {
+        if (!$this->hasHomework()) {
+            return null;
+        }
+
+        $homework = $this->lesson->homework;
+
+        if ($homework->max_attempts === null) {
+            return null;
+        }
+
+        $attempts = $homework->getStudentAttempts($this->student->id);
+
+        return max(0, $homework->max_attempts - $attempts);
+    }
+
+    public function isHomeworkRequired(): bool
+    {
+        return $this->lesson->hasRequiredHomework();
+    }
+
+    public function isHomeworkPassed(): bool
+    {
+        if (!$this->hasHomework()) {
+            return true;
+        }
+
+        return $this->lesson->homework->hasApprovedSubmission($this->student->id);
     }
 }

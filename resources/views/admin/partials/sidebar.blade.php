@@ -97,6 +97,31 @@
                         </a>
                     </li>
 
+                    {{-- Menu Item Webinars --}}
+                    <li>
+                        <a
+                            href="{{ route('admin.webinars.index') }}"
+                            class="menu-item group {{ request()->routeIs('admin.webinars.*') ? 'menu-item-active' : 'menu-item-inactive' }}"
+                        >
+                            <svg
+                                class="{{ request()->routeIs('admin.webinars.*') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+                            </svg>
+
+                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                Вебінари
+                            </span>
+                        </a>
+                    </li>
+
                     {{-- Menu Item Students --}}
                     <li>
                         <a
@@ -124,13 +149,40 @@
 
                     @can('access-student-groups')
                     {{-- Menu Item Student Groups --}}
+{{--                    <li>--}}
+{{--                        <a--}}
+{{--                            href="{{ route('admin.student-groups.index') }}"--}}
+{{--                            class="menu-item group {{ request()->routeIs('admin.student-groups.*') ? 'menu-item-active' : 'menu-item-inactive' }}"--}}
+{{--                        >--}}
+{{--                            <svg--}}
+{{--                                class="{{ request()->routeIs('admin.student-groups.*') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"--}}
+{{--                                width="24"--}}
+{{--                                height="24"--}}
+{{--                                viewBox="0 0 24 24"--}}
+{{--                                fill="none"--}}
+{{--                                stroke="currentColor"--}}
+{{--                                stroke-width="1.5"--}}
+{{--                                xmlns="http://www.w3.org/2000/svg"--}}
+{{--                            >--}}
+{{--                                <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />--}}
+{{--                            </svg>--}}
+
+{{--                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">--}}
+{{--                                Групи студентів--}}
+{{--                            </span>--}}
+{{--                        </a>--}}
+{{--                    </li>--}}
+                    @endcan
+
+                    @can('access-progress')
+                    {{-- Menu Item Progress Tree --}}
                     <li>
                         <a
-                            href="{{ route('admin.student-groups.index') }}"
-                            class="menu-item group {{ request()->routeIs('admin.student-groups.*') ? 'menu-item-active' : 'menu-item-inactive' }}"
+                            href="{{ route('admin.progress.tree') }}"
+                            class="menu-item group {{ request()->routeIs('admin.progress.tree') ? 'menu-item-active' : 'menu-item-inactive' }}"
                         >
                             <svg
-                                class="{{ request()->routeIs('admin.student-groups.*') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"
+                                class="{{ request()->routeIs('admin.progress.tree') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"
                                 width="24"
                                 height="24"
                                 viewBox="0 0 24 24"
@@ -139,25 +191,73 @@
                                 stroke-width="1.5"
                                 xmlns="http://www.w3.org/2000/svg"
                             >
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" />
                             </svg>
 
                             <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
-                                Групи студентів
+                                Прогрес студентів
                             </span>
                         </a>
                     </li>
-                    @endcan
 
-                    @can('access-progress')
-                    {{-- Menu Item Progress --}}
+                    {{-- Menu Item Homework --}}
+                    <li>
+                        <a
+                            href="{{ route('admin.homework.index') }}"
+                            class="menu-item group {{ request()->routeIs('admin.homework.*') ? 'menu-item-active' : 'menu-item-inactive' }}"
+                        >
+                            <svg
+                                class="{{ request()->routeIs('admin.homework.*') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75" />
+                            </svg>
+
+                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                Домашні завдання
+                            </span>
+                        </a>
+                    </li>
+
+                    {{-- Menu Item Certificates --}}
+                    <li>
+                        <a
+                            href="{{ route('admin.certificates.index') }}"
+                            class="menu-item group {{ request()->routeIs('admin.certificates.*') ? 'menu-item-active' : 'menu-item-inactive' }}"
+                        >
+                            <svg
+                                class="{{ request()->routeIs('admin.certificates.*') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+                            </svg>
+
+                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                Сертифікати
+                            </span>
+                        </a>
+                    </li>
+
+                    {{-- Menu Item Statistics --}}
                     <li>
                         <a
                             href="{{ route('admin.progress.dashboard') }}"
-                            class="menu-item group {{ request()->routeIs('admin.progress.*') ? 'menu-item-active' : 'menu-item-inactive' }}"
+                            class="menu-item group {{ request()->routeIs('admin.progress.dashboard') || request()->routeIs('admin.progress.course') || request()->routeIs('admin.progress.student') ? 'menu-item-active' : 'menu-item-inactive' }}"
                         >
                             <svg
-                                class="{{ request()->routeIs('admin.progress.*') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"
+                                class="{{ request()->routeIs('admin.progress.dashboard') || request()->routeIs('admin.progress.course') || request()->routeIs('admin.progress.student') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"
                                 width="24"
                                 height="24"
                                 viewBox="0 0 24 24"

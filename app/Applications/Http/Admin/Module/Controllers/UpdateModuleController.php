@@ -27,7 +27,7 @@ final class UpdateModuleController
         }
 
         return redirect()
-            ->route('admin.courses.edit', $course)
+            ->route('admin.modules.index', $course)
             ->with('success', 'Модуль успішно оновлено');
     }
 

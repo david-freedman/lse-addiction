@@ -18,7 +18,15 @@ final class CreateLessonController
         $lessonTypes = LessonType::cases();
         $lessonStatuses = LessonStatus::cases();
 
-        return view('admin.lessons.create', compact('course', 'module', 'lessonTypes', 'lessonStatuses'));
+        $breadcrumbs = [
+            ['title' => 'Курси', 'url' => route('admin.courses.index')],
+            ['title' => $course->name, 'url' => route('admin.courses.show', $course)],
+            ['title' => $module->name, 'url' => route('admin.modules.edit', [$course, $module])],
+            ['title' => 'Уроки', 'url' => route('admin.lessons.index', [$course, $module])],
+            ['title' => 'Створити'],
+        ];
+
+        return view('admin.lessons.create', compact('course', 'module', 'lessonTypes', 'lessonStatuses', 'breadcrumbs'));
     }
 
     private function authorize(string $ability, array $arguments): void

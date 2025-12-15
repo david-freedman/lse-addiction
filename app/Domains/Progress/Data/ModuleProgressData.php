@@ -4,6 +4,9 @@ namespace App\Domains\Progress\Data;
 
 readonly class ModuleProgressData
 {
+    /**
+     * @param array<LessonProgressData> $lessons
+     */
     public function __construct(
         public int $id,
         public int $courseId,
@@ -16,6 +19,6 @@ readonly class ModuleProgressData
         public bool $isUnlocked,
         public ?string $unlockMessage,
         public string $iconType,
-        public array $recentLessons,
+        public array $lessons,
     ) {}
 }

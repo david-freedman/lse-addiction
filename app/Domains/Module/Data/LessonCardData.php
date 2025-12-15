@@ -15,5 +15,6 @@ readonly class LessonCardData
         public bool $isCompleted,
         public string $url,
         public array $colorScheme,
+        public bool $hasHomework = false,
     ) {}
 }

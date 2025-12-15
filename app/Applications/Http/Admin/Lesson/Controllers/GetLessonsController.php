@@ -15,7 +15,14 @@ final class GetLessonsController
 
         $viewModel = new ModuleLessonsViewModel($course, $module);
 
-        return view('admin.lessons.index', compact('viewModel', 'course', 'module'));
+        $breadcrumbs = [
+            ['title' => 'Курси', 'url' => route('admin.courses.index')],
+            ['title' => $course->name, 'url' => route('admin.courses.show', $course)],
+            ['title' => $module->name, 'url' => route('admin.modules.edit', [$course, $module])],
+            ['title' => 'Уроки'],
+        ];
+
+        return view('admin.lessons.index', compact('viewModel', 'course', 'module', 'breadcrumbs'));
     }
 
     private function authorize(string $ability, array $arguments): void

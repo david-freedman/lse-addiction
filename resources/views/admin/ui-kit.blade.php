@@ -1842,7 +1842,7 @@
         <div>
             <h3 class="mb-3 text-sm font-medium text-gray-700">Список описів</h3>
             <x-admin.list type="description" :items="[
-                ['term' => 'Назва продукту', 'description' => 'LSE Addiction Platform'],
+                ['term' => 'Назва продукту', 'description' => 'LifeScanEducation'],
                 ['term' => 'Версія', 'description' => '1.0.0'],
                 ['term' => 'Розробник', 'description' => 'LSE Team'],
                 ['term' => 'Ліцензія', 'description' => 'MIT License']

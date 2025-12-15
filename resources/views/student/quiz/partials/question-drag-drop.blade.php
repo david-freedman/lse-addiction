@@ -5,7 +5,9 @@
     $items = $question->answers->map(fn($a) => ['id' => $a->id, 'text' => $a->answer_text, 'image' => $a->answer_image])->toArray();
 @endphp
 
-<div x-data="dragDropQuestion({{ json_encode($items) }}, {{ json_encode($categories) }}, {{ $question->id }})" class="space-y-6">
+<div x-data="dragDropQuestion({{ json_encode($items) }}, {{ json_encode($categories) }}, {{ $question->id }})"
+     x-init="syncToParent()"
+     class="space-y-6">
     <div class="mb-4">
         <p class="text-sm text-gray-600 mb-3">Елементи:</p>
         <div class="flex flex-wrap gap-2" x-ref="itemsContainer">
@@ -51,14 +53,6 @@
             </div>
         @endforeach
     </div>
-
-    <template x-for="(items, category) in categoryItems" :key="category">
-        <template x-for="item in items" :key="item.id">
-            <input type="hidden"
-                   :name="'answers[{{ $question->id }}][categories][' + category + '][]'"
-                   :value="item.id">
-        </template>
-    </template>
 </div>
 
 @once
@@ -72,6 +66,20 @@ function dragDropQuestion(items, categories, questionId) {
         categoryItems: Object.fromEntries(categories.map(c => [c, []])),
         draggedItem: null,
         isDragOver: null,
+        questionId: questionId,
+
+        syncToParent() {
+            const categoriesData = {};
+            Object.entries(this.categoryItems).forEach(([category, items]) => {
+                categoriesData[category] = items.map(item => item.id);
+            });
+
+            if (typeof this.setDragDropAnswer === 'function') {
+                this.setDragDropAnswer(this.questionId, categoriesData);
+            } else if (this.$parent && typeof this.$parent.setDragDropAnswer === 'function') {
+                this.$parent.setDragDropAnswer(this.questionId, categoriesData);
+            }
+        },
 
         dragStart(event, item) {
             this.draggedItem = item;
@@ -108,6 +116,8 @@ function dragDropQuestion(items, categories, questionId) {
 
             this.categoryItems[category].push(this.draggedItem);
             this.draggedItem = null;
+
+            this.syncToParent();
         },
 
         getCategoryItems(category) {
@@ -117,6 +127,7 @@ function dragDropQuestion(items, categories, questionId) {
         removeFromCategory(item, category) {
             this.categoryItems[category] = this.categoryItems[category].filter(i => i.id !== item.id);
             this.availableItems.push(item);
+            this.syncToParent();
         }
     }
 }

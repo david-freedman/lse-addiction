@@ -118,7 +118,7 @@
         </div>
 
         <h3 class="text-lg font-bold text-gray-900 mb-1">
-            Модуль {{ $module->order }}: {{ $module->name }}
+            Модуль {{ $module->order + 1 }}: {{ $module->name }}
         </h3>
 
         @if($module->description)

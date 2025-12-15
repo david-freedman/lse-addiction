@@ -23,11 +23,17 @@
         </div>
 
         @foreach($modules as $module)
-            <div class="mb-4" x-data="{ open: {{ ($module['isCurrent'] ?? false) || ($module['id'] ?? null) === ($currentModuleId ?? null) ? 'true' : 'false' }} }">
+            @php $isUnlocked = $module['isUnlocked'] ?? true; @endphp
+            <div class="mb-4 {{ !$isUnlocked ? 'opacity-60' : '' }}" x-data="{ open: {{ ($module['isCurrent'] ?? false) || ($module['id'] ?? null) === ($currentModuleId ?? null) ? 'true' : 'false' }} }">
                 <button @click="open = !open"
                         class="w-full flex items-center justify-between p-3 {{ ($module['isCurrent'] ?? false) ? 'bg-teal-50 border-teal-200' : 'bg-white border-gray-200' }} rounded-lg border hover:border-gray-300 transition">
-                    <span class="text-sm font-medium {{ ($module['isCurrent'] ?? false) ? 'text-teal-700' : 'text-gray-900' }} text-left">
-                        Модуль {{ $module['order'] }}: {{ $module['name'] }}
+                    <span class="text-sm font-medium {{ ($module['isCurrent'] ?? false) ? 'text-teal-700' : 'text-gray-900' }} text-left flex items-center gap-2">
+                        @if(!$isUnlocked)
+                            <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        @endif
+                        Модуль {{ $module['order'] + 1 }}: {{ $module['name'] }}
                     </span>
                     <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 text-gray-500 transition-transform flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -36,8 +42,12 @@
 
                 <div x-show="open" x-cloak class="mt-2 space-y-1">
                     @foreach($module['lessons'] as $lessonItem)
+                        @if($isUnlocked)
                         <a href="{{ $lessonItem['url'] }}"
                            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition {{ $lessonItem['isCurrent'] ?? false ? 'bg-teal-50 text-teal-700' : 'hover:bg-white text-gray-700' }}">
+                        @else
+                        <span class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 cursor-not-allowed">
+                        @endif
                             <div class="flex-shrink-0">
                                 @if($lessonItem['isCompleted'] ?? false)
                                     <div class="w-5 h-5 flex items-center justify-center rounded-full bg-green-500 text-white">
@@ -97,10 +107,20 @@
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm truncate {{ ($lessonItem['isCurrent'] ?? false) ? 'font-medium' : '' }}">{{ $lessonItem['name'] }}</p>
                             </div>
+                            @if($lessonItem['hasHomework'] ?? false)
+                                <svg class="w-4 h-4 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" title="Домашнє завдання">
+                                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                                </svg>
+                            @endif
                             @if($lessonItem['duration'] ?? null)
                                 <span class="text-xs text-gray-500 flex-shrink-0">{{ $lessonItem['duration'] }}</span>
                             @endif
+                        @if($isUnlocked)
                         </a>
+                        @else
+                        </span>
+                        @endif
                     @endforeach
                 </div>
             </div>

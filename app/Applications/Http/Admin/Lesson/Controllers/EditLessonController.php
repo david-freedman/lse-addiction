@@ -15,10 +15,19 @@ final class EditLessonController
     {
         $this->authorize('update', $lesson);
 
+        $lesson->load(['quiz', 'homework']);
+
         $lessonTypes = LessonType::cases();
         $lessonStatuses = LessonStatus::cases();
 
-        return view('admin.lessons.edit', compact('course', 'module', 'lesson', 'lessonTypes', 'lessonStatuses'));
+        $breadcrumbs = [
+            ['title' => 'Курси', 'url' => route('admin.courses.index')],
+            ['title' => $course->name, 'url' => route('admin.courses.show', $course)],
+            ['title' => $module->name, 'url' => route('admin.modules.edit', [$course, $module])],
+            ['title' => $lesson->name],
+        ];
+
+        return view('admin.lessons.edit', compact('course', 'module', 'lesson', 'lessonTypes', 'lessonStatuses', 'breadcrumbs'));
     }
 
     private function authorize(string $ability, $model): void

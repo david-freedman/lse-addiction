@@ -144,8 +144,10 @@
                                     {{ $course->status->label() }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-center text-sm text-gray-700">
-                                {{ $course->modules_count ?? 0 }}
+                            <td class="px-6 py-4 text-center text-sm">
+                                <a href="{{ route('admin.modules.index', $course) }}" class="text-brand-600 hover:text-brand-700 hover:underline">
+                                    {{ $course->modules_count ?? 0 }}
+                                </a>
                             </td>
                             <td class="px-6 py-4 text-center text-sm text-gray-700">
                                 {{ $course->students_count ?? 0 }}
@@ -155,13 +157,23 @@
                                     <a href="{{ route('admin.courses.edit', $course) }}" class="rounded-lg px-3 py-1.5 text-xs font-medium text-brand-600 transition hover:bg-brand-50">
                                         Редагувати
                                     </a>
-                                    <form action="{{ route('admin.courses.destroy', $course) }}" method="POST" class="inline" onsubmit="return confirm('Ви впевнені, що хочете видалити цей курс?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="rounded-lg px-3 py-1.5 text-xs font-medium text-error-600 transition hover:bg-error-50">
-                                            Видалити
-                                        </button>
-                                    </form>
+                                    @if($course->status !== \App\Domains\Course\Enums\CourseStatus::Archived)
+                                        <form action="{{ route('admin.courses.archive', $course) }}" method="POST" class="inline" onsubmit="return confirm('Архівувати курс «{{ $course->name }}»?')">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="rounded-lg px-3 py-1.5 text-xs font-medium text-warning-600 transition hover:bg-warning-50">
+                                                Архівувати
+                                            </button>
+                                        </form>
+                                    @else
+                                        <form action="{{ route('admin.courses.restore', $course) }}" method="POST" class="inline" onsubmit="return confirm('Відновити курс «{{ $course->name }}»?')">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="rounded-lg px-3 py-1.5 text-xs font-medium text-success-600 transition hover:bg-success-50">
+                                                Відновити
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

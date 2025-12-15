@@ -14,10 +14,12 @@ class QuizAnswer extends Model
         'is_correct',
         'category',
         'order',
+        'correct_order',
     ];
 
     protected $casts = [
         'is_correct' => 'boolean',
+        'correct_order' => 'integer',
     ];
 
     public function question(): BelongsTo

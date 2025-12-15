@@ -8,6 +8,7 @@ enum QuestionType: string
     case MultipleChoice = 'multiple_choice';
     case ImageSelect = 'image_select';
     case DragDrop = 'drag_drop';
+    case Ordering = 'ordering';
 
     public function label(): string
     {
@@ -16,6 +17,7 @@ enum QuestionType: string
             self::MultipleChoice => 'Кілька правильних відповідей',
             self::ImageSelect => 'Вибір зображення',
             self::DragDrop => 'Перетягування',
+            self::Ordering => 'Впорядкування',
         };
     }
 
@@ -26,6 +28,7 @@ enum QuestionType: string
             self::MultipleChoice => 'Студент може обрати кілька відповідей',
             self::ImageSelect => 'Студент обирає правильне зображення',
             self::DragDrop => 'Студент перетягує елементи до категорій',
+            self::Ordering => 'Студент розміщує елементи в правильному порядку',
         };
     }
 }

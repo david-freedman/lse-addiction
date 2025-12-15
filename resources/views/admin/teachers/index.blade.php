@@ -97,8 +97,8 @@
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3">
                                 <a href="{{ route('admin.teachers.show', $teacher) }}" class="flex items-center gap-3 hover:opacity-80">
-                                    @if($teacher->user->photo)
-                                        <img src="{{ str_starts_with($teacher->user->photo, 'http') ? $teacher->user->photo : (str_starts_with($teacher->user->photo, 'img/') ? asset($teacher->user->photo) : Storage::url($teacher->user->photo)) }}" alt="{{ $teacher->full_name }}" class="h-10 w-10 rounded-full object-cover">
+                                    @if($teacher->avatar_url)
+                                        <img src="{{ $teacher->avatar_url }}" alt="{{ $teacher->full_name }}" class="h-10 w-10 rounded-full object-cover">
                                     @else
                                         <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-sm font-bold text-gray-600">
                                             {{ mb_substr($teacher->last_name, 0, 1) }}

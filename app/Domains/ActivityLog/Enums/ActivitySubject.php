@@ -8,6 +8,9 @@ enum ActivitySubject: string
     case User = 'user';
     case Teacher = 'teacher';
     case Course = 'course';
+    case Webinar = 'webinar';
     case Transaction = 'transaction';
+    case Homework = 'homework';
+    case HomeworkSubmission = 'homework_submission';
     case System = 'system';
 }

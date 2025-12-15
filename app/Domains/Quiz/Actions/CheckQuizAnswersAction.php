@@ -13,6 +13,10 @@ final class CheckQuizAnswersAction
     {
         $quiz->load('questions.answers');
 
+        if ($quiz->isSurvey()) {
+            return $this->handleSurvey($quiz, $answers);
+        }
+
         $totalScore = 0;
         $maxScore = 0;
         $questionResults = [];
@@ -26,17 +30,40 @@ final class CheckQuizAnswersAction
 
             if ($result['correct']) {
                 $totalScore += $question->points;
+            } elseif (isset($result['partial_score'])) {
+                $totalScore += (int) round($question->points * $result['partial_score']);
             }
         }
 
         $passed = $maxScore > 0
             ? ($totalScore / $maxScore * 100) >= $quiz->passing_score
-            : false;
+            : true;
 
         return new CheckQuizResult(
             score: $totalScore,
             maxScore: $maxScore,
             passed: $passed,
+            questionResults: $questionResults
+        );
+    }
+
+    private function handleSurvey(Quiz $quiz, array $answers): CheckQuizResult
+    {
+        $questionResults = [];
+
+        foreach ($quiz->questions as $question) {
+            $questionAnswer = $answers[$question->id] ?? null;
+            $questionResults[$question->id] = [
+                'correct' => true,
+                'selected' => $questionAnswer['selected'] ?? $questionAnswer['categories'] ?? [],
+                'correctAnswers' => [],
+            ];
+        }
+
+        return new CheckQuizResult(
+            score: 0,
+            maxScore: 0,
+            passed: true,
             questionResults: $questionResults
         );
     }
@@ -56,6 +83,7 @@ final class CheckQuizAnswersAction
             QuestionType::MultipleChoice => $this->checkMultipleChoice($question, $answer),
             QuestionType::ImageSelect => $this->checkImageSelect($question, $answer),
             QuestionType::DragDrop => $this->checkDragDrop($question, $answer),
+            QuestionType::Ordering => $this->checkOrdering($question, $answer),
         };
     }
 
@@ -139,6 +167,34 @@ final class CheckQuizAnswersAction
             'correct' => $allCorrect,
             'selected' => $categories,
             'correctAnswers' => $correctMapping,
+        ];
+    }
+
+    private function checkOrdering(QuizQuestion $question, array $answer): array
+    {
+        $userOrder = array_map('intval', $answer['order'] ?? []);
+        $correctAnswers = $question->answers()
+            ->orderBy('correct_order')
+            ->pluck('id')
+            ->toArray();
+
+        $totalItems = count($correctAnswers);
+        $correctPositions = 0;
+
+        foreach ($userOrder as $position => $answerId) {
+            if (isset($correctAnswers[$position]) && $answerId === $correctAnswers[$position]) {
+                $correctPositions++;
+            }
+        }
+
+        $isFullyCorrect = $correctPositions === $totalItems && $totalItems > 0;
+        $partialScore = $totalItems > 0 ? $correctPositions / $totalItems : 0;
+
+        return [
+            'correct' => $isFullyCorrect,
+            'partial_score' => $isFullyCorrect ? null : $partialScore,
+            'selected' => $userOrder,
+            'correctAnswers' => $correctAnswers,
         ];
     }
 }

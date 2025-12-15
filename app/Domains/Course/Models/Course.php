@@ -6,6 +6,7 @@ use App\Domains\Course\Enums\CourseStatus;
 use App\Domains\Course\Enums\CourseType;
 use App\Domains\Lesson\Models\Lesson;
 use App\Domains\Module\Models\Module;
+use App\Domains\Quiz\Models\Quiz;
 use App\Domains\Student\Models\Student;
 use App\Domains\Teacher\Models\Teacher;
 use App\Models\User;
@@ -19,6 +20,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Course extends Model
 {
     use HasFactory;
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     protected $fillable = [
         'name',
         'slug',
@@ -234,5 +241,25 @@ class Course extends Model
         }
 
         return $this->teacher_id === $user->id || $this->author_id === $user->id;
+    }
+
+    public function hasFinalQuiz(): bool
+    {
+        $moduleIds = $this->modules()->pluck('id');
+
+        return Quiz::where('quizzable_type', Module::class)
+            ->whereIn('quizzable_id', $moduleIds)
+            ->where('is_final', true)
+            ->exists();
+    }
+
+    public function getFinalQuiz(): ?Quiz
+    {
+        $moduleIds = $this->modules()->pluck('id');
+
+        return Quiz::where('quizzable_type', Module::class)
+            ->whereIn('quizzable_id', $moduleIds)
+            ->where('is_final', true)
+            ->first();
     }
 }

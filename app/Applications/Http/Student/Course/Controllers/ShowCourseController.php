@@ -4,7 +4,7 @@ namespace App\Applications\Http\Student\Course\Controllers;
 
 use App\Domains\Course\Models\Course;
 use App\Domains\Course\ViewModels\CourseDetailViewModel;
-use App\Domains\Course\ViewModels\StudentDashboardViewModel;
+use App\Domains\Course\ViewModels\CourseProgressViewModel;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -20,9 +20,9 @@ final class ShowCourseController
                     ->with(['lessons' => fn ($l) => $l->published()->ordered()]),
             ]);
 
-            $viewModel = new StudentDashboardViewModel($course, $student);
+            $viewModel = new CourseProgressViewModel($course, $student);
 
-            return view('student.dashboard', compact('viewModel'));
+            return view('student.courses.progress', compact('viewModel'));
         }
 
         $course->load(['teacher', 'author', 'tags']);

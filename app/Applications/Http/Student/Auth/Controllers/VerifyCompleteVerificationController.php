@@ -29,6 +29,6 @@ final class VerifyCompleteVerificationController
         AuthenticateStudentAction::execute($student);
         session()->forget('verification_student_id');
 
-        return redirect()->route('student.profile.show');
+        return redirect()->route('home');
     }
 }

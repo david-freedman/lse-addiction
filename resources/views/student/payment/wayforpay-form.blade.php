@@ -39,11 +39,14 @@
                 <span class="font-bold text-2xl text-teal-600">{{ number_format($paymentData->amount, 2) }} {{ $paymentData->currency }}</span>
             </div>
             <div class="border-t border-gray-200 mt-4 pt-4">
-                <p class="text-sm text-gray-600 mb-2">Товари:</p>
+                <p class="text-sm text-gray-600 mb-3">Товари:</p>
                 @foreach($paymentData->products as $product)
-                    <div class="flex justify-between text-sm mb-1">
-                        <span class="text-gray-700">{{ $product->name }} × {{ $product->count }}</span>
-                        <span class="text-gray-900">{{ number_format($product->price, 2) }} {{ $paymentData->currency }}</span>
+                    <div class="bg-white rounded-lg p-3 border border-gray-100 mb-2">
+                        <p class="text-gray-900 font-medium mb-1">{{ $product->name }}</p>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">{{ $product->count }} {{ trans_choice('місце|місця|місць', $product->count) }}</span>
+                            <span class="text-gray-900 font-semibold">{{ number_format($product->price, 2) }} {{ $paymentData->currency }}</span>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -96,9 +99,6 @@
             @endforeach
 
             <div class="space-y-4">
-                <p class="text-sm text-gray-600 text-center mb-4">
-                    Після натискання кнопки "Перейти до оплати" ви будете перенаправлені на безпечну сторінку оплати WayForPay
-                </p>
 
                 <button type="submit" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 px-6 rounded-lg transition flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

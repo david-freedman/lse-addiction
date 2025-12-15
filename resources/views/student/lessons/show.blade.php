@@ -8,11 +8,11 @@
         <div class="px-4 sm:px-6 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <a href="{{ $viewModel->backToCourseUrl() }}" class="inline-flex items-center text-gray-600 hover:text-teal-600 transition-colors">
+                    <a href="{{ $viewModel->backToModuleUrl() }}" class="inline-flex items-center text-gray-600 hover:text-teal-600 transition-colors">
                         <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                         </svg>
-                        <span class="text-sm font-medium">Назад до курсів</span>
+                        <span class="text-sm font-medium">Назад до модулю</span>
                     </a>
                     <h1 class="hidden lg:block text-lg font-semibold text-gray-900 truncate max-w-xl">
                         {{ $viewModel->courseName() }}
@@ -31,14 +31,40 @@
 
         @if($viewModel->isVideo() && $viewModel->embedUrl())
             <div class="bg-black">
-                <div class="relative w-full" style="padding-top: 56.25%;">
-                    <iframe
-                        src="{{ $viewModel->embedUrl() }}"
-                        class="absolute inset-0 w-full h-full"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen>
-                    </iframe>
+                <div class="max-w-4xl mx-auto">
+                    <div class="relative w-full" style="padding-top: 56.25%;">
+                        <iframe
+                            src="{{ $viewModel->embedUrl() }}"
+                            class="absolute inset-0 w-full h-full"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        @elseif($viewModel->isDicom() && $viewModel->dicomUrl())
+            <div class="px-4 sm:px-6 py-4">
+                @include('student.lessons.partials.dicom-viewer')
+            </div>
+        @elseif($viewModel->isQaSession() && $viewModel->qaSessionUrl())
+            <div class="px-4 sm:px-6 py-8">
+                <div class="max-w-2xl mx-auto text-center">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-teal-100 rounded-full mb-6">
+                        <svg class="w-10 h-10 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Q&A Сесія</h3>
+                    <p class="text-gray-600 mb-6">Натисніть кнопку нижче, щоб приєднатися до живої сесії питань та відповідей з викладачем.</p>
+                    <a href="{{ $viewModel->qaSessionUrl() }}" target="_blank" rel="noopener noreferrer"
+                       class="inline-flex items-center gap-2 px-8 py-3 text-base font-medium text-white bg-teal-500 rounded-lg hover:bg-teal-600 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                        Перейти до сесії
+                    </a>
+                    <p class="text-sm text-gray-500 mt-4">Відкриється в новій вкладці</p>
                 </div>
             </div>
         @endif
@@ -111,7 +137,7 @@
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
-                            Позначити як завершене
+                            Позначити як завершений
                         </button>
                     </form>
                 @endif
@@ -126,6 +152,74 @@
                     </a>
                 @endif
             </div>
+
+            @if($viewModel->hasHomework())
+                <div class="mb-6 rounded-xl bg-white border border-gray-200 {{ $viewModel->isHomeworkRequired() && !$viewModel->isHomeworkPassed() ? 'border-l-4 border-l-amber-400' : '' }} p-5">
+                    <div class="flex items-start gap-4">
+                        <div class="bg-amber-50 text-amber-500 rounded-lg p-3 hidden sm:flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+
+                        <div class="flex-1 min-w-0">
+                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                                <h3 class="font-semibold text-gray-900">Домашнє завдання</h3>
+                                @if($viewModel->isHomeworkRequired())
+                                    <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+                                        Обов'язкове
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+                                        Необов'язкове
+                                    </span>
+                                @endif
+                                @if($viewModel->isHomeworkPassed())
+                                    <span class="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                                        Виконано
+                                    </span>
+                                @elseif($viewModel->latestSubmission()?->status->value === 'revision_requested')
+                                    <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">
+                                        Потребує допрацювання
+                                    </span>
+                                @endif
+                            </div>
+
+                            @if($viewModel->isHomeworkRequired() && !$viewModel->isHomeworkPassed())
+                                @if($viewModel->latestSubmission()?->status->value === 'revision_requested')
+                                    <p class="text-sm text-blue-600">Допрацюйте завдання згідно коментарів викладача</p>
+                                @else
+                                    <p class="text-sm text-gray-600">Виконайте завдання для завершення уроку</p>
+                                @endif
+                            @elseif($viewModel->homework()->description)
+                                <p class="text-sm text-gray-600">{{ Str::limit($viewModel->homework()->description, 100) }}</p>
+                            @endif
+
+                            <div class="flex flex-wrap gap-3 mt-2 text-xs text-gray-500">
+                                <span>Балів: {{ $viewModel->homework()->max_points }}</span>
+                                @if($viewModel->homework()->deadline_at)
+                                    <span class="{{ $viewModel->homework()->isDeadlinePassed() ? 'text-red-600' : '' }}">
+                                        Дедлайн: {{ $viewModel->homework()->deadline_at->format('d.m.Y') }}
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <button @click="activeTab = 'homework'"
+                                class="{{ $viewModel->isHomeworkPassed() ? 'bg-teal-500 hover:bg-teal-600' : ($viewModel->latestSubmission()?->status->value === 'pending' ? 'bg-amber-500 hover:bg-amber-600' : ($viewModel->latestSubmission()?->status->value === 'revision_requested' ? 'bg-blue-500 hover:bg-blue-600' : 'bg-teal-500 hover:bg-teal-600')) }} text-white px-4 py-2 rounded-lg text-sm font-medium transition shrink-0">
+                            @if($viewModel->isHomeworkPassed())
+                                Переглянути
+                            @elseif($viewModel->latestSubmission()?->status->value === 'pending')
+                                На перевірці
+                            @elseif($viewModel->latestSubmission()?->status->value === 'revision_requested')
+                                Допрацювати
+                            @else
+                                Виконати
+                            @endif
+                        </button>
+                    </div>
+                </div>
+            @endif
 
             <div class="border-t border-gray-200 pt-6">
                 <div class="flex gap-4 border-b border-gray-200 mb-4">
@@ -145,6 +239,21 @@
                         </svg>
                         Коментарі
                     </button>
+                    @if($viewModel->hasHomework())
+                        <button @click="activeTab = 'homework'"
+                                :class="activeTab === 'homework' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                                class="flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Домашнє завдання
+                            @if($viewModel->isHomeworkPassed())
+                                <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            @endif
+                        </button>
+                    @endif
                 </div>
 
                 <div x-show="activeTab === 'notes'" x-cloak>
@@ -180,6 +289,12 @@
                         <p class="text-sm">Поки немає коментарів. Будьте першим!</p>
                     </div>
                 </div>
+
+                @if($viewModel->hasHomework())
+                    <div x-show="activeTab === 'homework'" x-cloak>
+                        @include('student.homework.partials.homework-section')
+                    </div>
+                @endif
             </div>
         </div>
     </div>

@@ -32,6 +32,6 @@ final class SaveProfileFieldsController
 
         session()->forget(['student_id', 'student_email', 'student_phone', 'phone_code_expires_at', 'email_code_expires_at']);
 
-        return redirect()->route('student.profile.show')->with('success', __('messages.profile_fields.saved'));
+        return redirect()->route('home')->with('success', __('messages.profile_fields.saved'));
     }
 }

@@ -37,7 +37,7 @@ readonly class ModuleDetailViewModel
 
     public function moduleNumber(): int
     {
-        return $this->module->order;
+        return $this->module->order + 1;
     }
 
     public function progressPercentage(): int
@@ -106,6 +106,7 @@ readonly class ModuleDetailViewModel
                     isCompleted: $isCompleted,
                     url: route('student.lessons.show', [$this->course, $lesson]),
                     colorScheme: $this->getColorScheme($iconType),
+                    hasHomework: $lesson->homework !== null,
                 );
             })
             ->values();
@@ -236,7 +237,7 @@ readonly class ModuleDetailViewModel
             ->active()
             ->ordered()
             ->with(['lessons' => function ($query) {
-                $query->published()->ordered();
+                $query->published()->ordered()->with('homework');
             }])
             ->get()
             ->map(function (Module $module) {
@@ -254,6 +255,7 @@ readonly class ModuleDetailViewModel
                         'isCompleted' => $progress?->status === ProgressStatus::Completed,
                         'isCurrent' => false,
                         'url' => route('student.lessons.show', [$this->course, $lesson]),
+                        'hasHomework' => $lesson->homework !== null,
                     ];
                 });
 

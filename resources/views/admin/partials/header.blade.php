@@ -104,7 +104,7 @@
                                 {{ auth()->user()->name }}
                             </span>
                             <span class="block text-xs text-gray-500">
-                                {{ auth()->user()->role->label() }}
+                                {{ auth()->user()->role?->label() ?? 'Користувач' }}
                             </span>
                         </span>
 

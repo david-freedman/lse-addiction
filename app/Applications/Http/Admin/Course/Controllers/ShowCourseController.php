@@ -18,6 +18,10 @@ final class ShowCourseController
             'course' => $course,
             'tree' => $viewModel->tree(),
             'statistics' => $viewModel->statistics(),
+            'breadcrumbs' => [
+                ['title' => 'Курси', 'url' => route('admin.courses.index')],
+                ['title' => $course->name],
+            ],
         ]);
     }
 }

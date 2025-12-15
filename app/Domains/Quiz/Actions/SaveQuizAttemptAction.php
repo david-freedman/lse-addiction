@@ -21,7 +21,7 @@ final class SaveQuizAttemptAction
             ->where('quiz_id', $quiz->id)
             ->count() + 1;
 
-        $timeSpent = now()->diffInSeconds($startedAt);
+        $timeSpent = (int) max(0, $startedAt->diffInSeconds(now()));
 
         return StudentQuizAttempt::create([
             'student_id' => $student->id,

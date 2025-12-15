@@ -16,7 +16,11 @@ return new class extends Migration
             $table->longText('content')->nullable();
             $table->string('type')->default('text');
             $table->string('video_url')->nullable();
-            $table->string('dicom_file')->nullable();
+            $table->string('dicom_source_type')->nullable();
+            $table->string('dicom_file_path')->nullable();
+            $table->string('dicom_url')->nullable();
+            $table->json('dicom_metadata')->nullable();
+            $table->string('qa_session_url')->nullable();
             $table->unsignedInteger('duration_minutes')->nullable();
             $table->unsignedInteger('order')->default(0);
             $table->string('status')->default('draft');

@@ -1,5 +1,6 @@
 import './bootstrap';
 import './countdown';
+import './dicom-viewer';
 import Alpine from 'alpinejs';
 import flatpickr from 'flatpickr';
 import { Ukrainian } from 'flatpickr/dist/l10n/uk.js';

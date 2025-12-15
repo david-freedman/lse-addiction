@@ -1,11 +1,15 @@
 <?php
 
+use App\Applications\Http\Public\Controllers\VerifyCertificateController;
 use App\Applications\Http\Student\Dashboard\Controllers\ShowDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', ShowDashboardController::class)
     ->middleware(['auth', 'verified.student'])
     ->name('home');
+
+Route::get('verify/{certificateNumber}', VerifyCertificateController::class)
+    ->name('certificate.verify');
 
 Route::prefix('student')->name('student.')->group(function () {
     require __DIR__.'/student/auth.php';
@@ -15,6 +19,9 @@ Route::prefix('student')->name('student.')->group(function () {
     require __DIR__.'/student/catalog.php';
     require __DIR__.'/student/transactions.php';
     require __DIR__.'/student/payment.php';
+    require __DIR__.'/student/certificates.php';
+    require __DIR__.'/student/webinars.php';
+    require __DIR__.'/student/homework.php';
 });
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -29,4 +36,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     require __DIR__.'/admin/teachers.php';
     require __DIR__.'/admin/users.php';
     require __DIR__.'/admin/finances.php';
+    require __DIR__.'/admin/certificates.php';
+    require __DIR__.'/admin/webinars.php';
+    require __DIR__.'/admin/quizzes.php';
+    require __DIR__.'/admin/homework.php';
 });

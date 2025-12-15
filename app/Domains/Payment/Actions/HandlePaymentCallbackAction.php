@@ -8,6 +8,8 @@ use App\Domains\ActivityLog\Enums\ActivitySubject;
 use App\Domains\ActivityLog\Enums\ActivityType;
 use App\Domains\Course\Actions\CompleteCoursePurchaseAction;
 use App\Domains\Course\Models\Course;
+use App\Domains\Webinar\Actions\CompleteWebinarRegistrationAction;
+use App\Domains\Webinar\Models\Webinar;
 use App\Domains\Payment\Contracts\PaymentGatewayInterface;
 use App\Domains\Payment\Enums\PaymentProvider;
 use App\Domains\Payment\Gateways\WayForPayGateway;
@@ -50,6 +52,10 @@ class HandlePaymentCallbackAction
 
             if ($transaction->purchasable_type === Course::class) {
                 CompleteCoursePurchaseAction::execute($transaction);
+            }
+
+            if ($transaction->purchasable_type === Webinar::class) {
+                CompleteWebinarRegistrationAction::execute($transaction);
             }
 
             LogActivityAction::execute(ActivityLogData::from([

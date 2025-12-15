@@ -34,7 +34,7 @@ final class SubmitQuizController
             throw new NotFoundHttpException('Урок не належить до цього курсу');
         }
 
-        if ($lesson->type !== LessonType::Quiz) {
+        if (!in_array($lesson->type, [LessonType::Quiz, LessonType::Survey])) {
             return redirect()->route('student.lessons.show', [$course, $lesson]);
         }
 

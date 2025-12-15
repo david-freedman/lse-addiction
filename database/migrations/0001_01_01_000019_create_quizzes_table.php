@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedInteger('max_attempts')->nullable();
             $table->unsignedInteger('time_limit_minutes')->nullable();
             $table->boolean('show_correct_answers')->default(true);
+            $table->boolean('is_final')->default(false);
+            $table->boolean('is_survey')->default(false);
             $table->timestamps();
         });
 
@@ -40,6 +42,7 @@ return new class extends Migration
             $table->boolean('is_correct')->default(false);
             $table->string('category')->nullable();
             $table->unsignedInteger('order')->default(0);
+            $table->unsignedInteger('correct_order')->nullable();
             $table->timestamps();
 
             $table->index('question_id');

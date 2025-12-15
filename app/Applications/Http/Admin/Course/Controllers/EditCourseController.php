@@ -23,11 +23,17 @@ final class EditCourseController
         $moduleStatuses = ModuleStatus::cases();
         $moduleUnlockRules = ModuleUnlockRule::cases();
 
+        $breadcrumbs = [
+            ['title' => 'Курси', 'url' => route('admin.courses.index')],
+            ['title' => $course->name],
+        ];
+
         return view('admin.courses.edit', compact(
             'course',
             'teachers',
             'moduleStatuses',
-            'moduleUnlockRules'
+            'moduleUnlockRules',
+            'breadcrumbs'
         ));
     }
 }

@@ -178,12 +178,12 @@
                 <thead class="border-b border-gray-200 bg-gray-50">
                     <tr>
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Номер</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Дата</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Студент</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Курс</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Курс / Вебінар</th>
                         <th class="px-4 py-3 text-right text-xs font-semibold uppercase text-gray-600">Сума</th>
                         <th class="px-4 py-3 text-center text-xs font-semibold uppercase text-gray-600">Статус</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Метод</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Дата</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
@@ -193,9 +193,14 @@
                                 <span class="font-mono text-sm text-gray-900">{{ $transaction->transaction_number }}</span>
                             </td>
                             <td class="px-4 py-3">
+                                <span class="text-sm text-gray-600">{{ $transaction->created_at->format('d.m.Y H:i') }}</span>
+                            </td>
+                            <td class="px-4 py-3">
                                 @if($transaction->student)
                                     <div>
-                                        <p class="font-medium text-gray-900">{{ $transaction->student->name }} {{ $transaction->student->surname }}</p>
+                                        <a href="{{ route('admin.students.show', $transaction->student) }}" class="font-medium text-gray-900 hover:underline">
+                                            {{ $transaction->student->name }} {{ $transaction->student->surname }}
+                                        </a>
                                         <p class="text-sm text-gray-500">{{ $transaction->student->email->value }}</p>
                                     </div>
                                 @else
@@ -203,7 +208,17 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3">
-                                <span class="text-sm text-gray-900">{{ $transaction->purchasable?->name ?? '—' }}</span>
+                                @if($transaction->purchasable instanceof \App\Domains\Course\Models\Course)
+                                    <a href="{{ route('admin.courses.show', $transaction->purchasable) }}" class="text-sm text-gray-900 hover:underline">
+                                        {{ $transaction->purchasable->name }}
+                                    </a>
+                                @elseif($transaction->purchasable instanceof \App\Domains\Webinar\Models\Webinar)
+                                    <a href="{{ route('admin.webinars.edit', $transaction->purchasable) }}" class="text-sm text-gray-900 hover:underline">
+                                        {{ $transaction->purchasable->name }}
+                                    </a>
+                                @else
+                                    <span class="text-gray-400">—</span>
+                                @endif
                             </td>
                             <td class="px-4 py-3 text-right">
                                 <span class="font-medium text-gray-900">{{ $transaction->formatted_amount }}</span>
@@ -221,9 +236,6 @@
                             </td>
                             <td class="px-4 py-3">
                                 <span class="text-sm text-gray-600">{{ $transaction->payment_method?->label() ?? '—' }}</span>
-                            </td>
-                            <td class="px-4 py-3">
-                                <span class="text-sm text-gray-600">{{ $transaction->created_at->format('d.m.Y H:i') }}</span>
                             </td>
                         </tr>
                     @endforeach

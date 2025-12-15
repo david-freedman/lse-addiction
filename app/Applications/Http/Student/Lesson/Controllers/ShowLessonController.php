@@ -25,11 +25,15 @@ final class ShowLessonController
             throw new NotFoundHttpException('Урок не належить до цього курсу');
         }
 
-        if ($lesson->type === LessonType::Quiz) {
+        if (!$lesson->module->isUnlocked($student)) {
+            abort(403, 'Цей модуль ще заблоковано');
+        }
+
+        if ($lesson->type === LessonType::Quiz || $lesson->type === LessonType::Survey) {
             return redirect()->route('student.quiz.show', [$course, $lesson]);
         }
 
-        $lesson->load(['module']);
+        $lesson->load(['module', 'homework']);
 
         $viewModel = new LessonDetailViewModel($lesson, $course, $student);
 

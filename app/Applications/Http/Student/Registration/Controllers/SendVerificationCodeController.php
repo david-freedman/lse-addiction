@@ -31,20 +31,28 @@ final class SendVerificationCodeController
         $contact = $type === 'email' ? $validated['email'] : $validated['phone'];
 
         if ($type === 'email') {
-            $exists = Student::where('email', $contact)->exists();
-            if ($exists) {
-                return response()->json([
-                    'success' => false,
-                    'message' => __('validation.custom.email.unique'),
-                ], 422);
+            $existingStudent = Student::where('email', $contact)->first();
+            if ($existingStudent) {
+                if ($existingStudent->name === null) {
+                    $existingStudent->delete();
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => __('validation.custom.email.unique'),
+                    ], 422);
+                }
             }
         } else {
-            $exists = Student::where('phone', $contact)->exists();
-            if ($exists) {
-                return response()->json([
-                    'success' => false,
-                    'message' => __('validation.custom.phone.unique'),
-                ], 422);
+            $existingStudent = Student::where('phone', $contact)->first();
+            if ($existingStudent) {
+                if ($existingStudent->name === null) {
+                    $existingStudent->delete();
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => __('validation.custom.phone.unique'),
+                    ], 422);
+                }
             }
         }
 

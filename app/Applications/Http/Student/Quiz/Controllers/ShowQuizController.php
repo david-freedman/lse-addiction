@@ -24,14 +24,18 @@ final class ShowQuizController
             throw new NotFoundHttpException('Урок не належить до цього курсу');
         }
 
-        if ($lesson->type !== LessonType::Quiz) {
+        if (!$lesson->module->isUnlocked($student)) {
+            abort(403, 'Цей модуль ще заблоковано');
+        }
+
+        if (!in_array($lesson->type, [LessonType::Quiz, LessonType::Survey])) {
             return redirect()->route('student.lessons.show', [$course, $lesson]);
         }
 
         $quiz = $lesson->quiz;
 
-        if (! $quiz) {
-            throw new NotFoundHttpException('Квіз не знайдено');
+        if (!$quiz) {
+            throw new NotFoundHttpException($lesson->type === LessonType::Survey ? 'Опитування не знайдено' : 'Квіз не знайдено');
         }
 
         $lesson->load(['module']);

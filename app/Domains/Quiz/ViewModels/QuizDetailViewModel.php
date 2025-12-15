@@ -33,6 +33,16 @@ readonly class QuizDetailViewModel
         return $this->quiz->title ?? $this->lesson->name;
     }
 
+    public function isSurvey(): bool
+    {
+        return $this->quiz->isSurvey();
+    }
+
+    public function title(): string
+    {
+        return $this->isSurvey() ? 'Опитування' : 'Квіз';
+    }
+
     public function questions(): Collection
     {
         return $this->quiz->questions()
@@ -219,6 +229,11 @@ readonly class QuizDetailViewModel
     public function backToCourseUrl(): string
     {
         return $this->lessonViewModel->backToCourseUrl();
+    }
+
+    public function backToModuleUrl(): string
+    {
+        return $this->lessonViewModel->backToModuleUrl();
     }
 
     public function submitUrl(): string
