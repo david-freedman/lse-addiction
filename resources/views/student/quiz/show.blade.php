@@ -18,37 +18,36 @@
     ])->values()->toArray();
 @endphp
 
-<div class="bg-white border-b border-gray-200">
-    <div class="px-4 sm:px-6 lg:px-8 py-3">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div class="flex items-center gap-4">
-                <a href="{{ $viewModel->backToModuleUrl() }}" class="inline-flex items-center text-gray-600 hover:text-teal-600 transition-colors">
-                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+<div class="flex flex-col lg:flex-row" x-data="{ sidebarOpen: false, showQuizForm: {{ $viewModel->hasPassed() ? 'false' : 'true' }} }">
+    <div class="flex-1 lg:pr-0">
+        <div class="px-4 sm:px-6 py-4">
+            <div class="flex items-center justify-between">
+                <nav class="flex items-center gap-2 text-sm text-gray-600">
+                    <a href="{{ route('student.my-courses') }}" class="hover:text-teal-600 transition-colors">Мої курси</a>
+                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
-                    <span class="text-sm font-medium">Назад до модулю</span>
-                </a>
-                <h1 class="hidden lg:block text-lg font-semibold text-gray-900 truncate max-w-xl">
-                    {{ $viewModel->courseName() }}
-                </h1>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-600">Прогрес курсу:</span>
-                <div class="flex items-center gap-2">
+                    <a href="{{ $viewModel->courseUrl() }}" class="hover:text-teal-600 transition-colors truncate max-w-32">{{ $viewModel->courseName() }}</a>
+                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                    <a href="{{ $viewModel->backToModuleUrl() }}" class="hover:text-teal-600 transition-colors truncate max-w-40">Модуль {{ $viewModel->moduleNumber() }}</a>
+                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                    <span class="text-gray-900 font-medium truncate max-w-48">Урок {{ $viewModel->lessonNumber() }}</span>
+                </nav>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-600">Прогрес курсу:</span>
                     <span class="text-sm font-semibold text-teal-600">{{ $viewModel->courseProgressPercent() }}%</span>
-                    <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div class="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div class="h-full bg-teal-500 rounded-full transition-all duration-300"
                              style="width: {{ $viewModel->courseProgressPercent() }}%"></div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<div class="flex flex-col lg:flex-row" x-data="{ sidebarOpen: false, showQuizForm: {{ $viewModel->hasPassed() ? 'false' : 'true' }} }">
-    <div class="flex-1 lg:pr-0">
         <div class="px-4 sm:px-6 lg:px-8 py-6 max-w-4xl">
             <div class="mb-6">
                 <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ $viewModel->lessonName() }}</h2>

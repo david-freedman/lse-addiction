@@ -28,6 +28,12 @@ final class PurchaseCourseController
                 ->with('error', 'Цей курс недоступний для покупки');
         }
 
+        if (!$course->isAvailableByDate()) {
+            return redirect()
+                ->back()
+                ->with('error', 'Цей курс ще не доступний для покупки');
+        }
+
         $existingTransaction = Transaction::where('student_id', $student->id)
             ->where('purchasable_type', Course::class)
             ->where('purchasable_id', $course->id)

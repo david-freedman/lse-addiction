@@ -54,8 +54,6 @@ class CreateLessonData extends Data
 
         public readonly LessonStatus $status = LessonStatus::Draft,
 
-        public readonly bool $is_downloadable = false,
-
         #[Nullable]
         public readonly ?array $attachments = null,
 

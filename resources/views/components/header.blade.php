@@ -1,14 +1,14 @@
 <header class="header">
     <div class="header__container">
         <div class="header__logo">
-            <a href="{{ route('home') }}">
+            <a href="{{ route('student.dashboard') }}">
                 <img src="{{ asset('img/logo.svg') }}" alt="LifeScanEducation" class="ibg ibg--contain">
             </a>
         </div>
         <div class="header__menu menu">
             <nav class="menu__body">
                 <ul data-spoilers="1199.98, max">
-                    <li><a href="{{ route('home') }}#about">Про нас</a></li>
+                    <li><a href="{{ route('student.dashboard') }}#about">Про нас</a></li>
                     <li>
                         <details>
                             <summary>
@@ -63,8 +63,8 @@
                             </ul>
                         </details>
                     </li>
-                    <li><a href="{{ route('home') }}#speakers">Наші лектори</a></li>
-                    <li><a href="{{ route('home') }}#faq">FAQ</a></li>
+                    <li><a href="{{ route('student.dashboard') }}#speakers">Наші лектори</a></li>
+                    <li><a href="{{ route('student.dashboard') }}#faq">FAQ</a></li>
                 </ul>
                 <a href="#" class="header__search-btn _icon-search">Пошук</a>
                 @auth

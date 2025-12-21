@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'LifeScanEducation')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -17,7 +18,7 @@
             <aside class="hidden lg:flex lg:flex-shrink-0">
                 <div class="flex flex-col w-64 bg-white border-r border-gray-200">
                     <div class="flex items-center justify-center h-16 px-6 border-b border-gray-200">
-                        <a href="{{ route('home') }}" class="flex items-center">
+                        <a href="{{ route('student.dashboard') }}" class="flex items-center">
                             <svg class="w-8 h-8 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
@@ -26,7 +27,7 @@
                     </div>
 
                     <nav class="flex-1 py-6 space-y-1 overflow-y-auto">
-                        <a href="{{ route('home') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition {{ request()->routeIs('home') ? 'bg-teal-50 text-teal-600 font-medium' : '' }}">
+                        <a href="{{ route('student.dashboard') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition {{ request()->routeIs('home') ? 'bg-teal-50 text-teal-600 font-medium' : '' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                             </svg>
@@ -122,7 +123,7 @@
                                     </svg>
                                     Мої курси
                                 </a>
-                                <button type="button" onclick="openCalendarModal()" class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">
+                                <button type="button" onclick="openCalendarModal()" class="cursor-pointer flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
@@ -153,19 +154,21 @@
                 </header>
 
                 <main class="flex-1 overflow-y-auto bg-gray-50 p-6">
-                    @if (session('success'))
-                        <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-                            {{ session('success') }}
-                        </div>
-                    @endif
+                    <div class="max-w-screen-2xl mx-auto">
+                        @if (session('success'))
+                            <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+                                {{ session('success') }}
+                            </div>
+                        @endif
 
-                    @if (session('error'))
-                        <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                            {{ session('error') }}
-                        </div>
-                    @endif
+                        @if (session('error'))
+                            <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                                {{ session('error') }}
+                            </div>
+                        @endif
 
-                    @yield('content')
+                        @yield('content')
+                    </div>
                 </main>
             </div>
         </div>
@@ -174,7 +177,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
                     <div class="flex items-center">
-                        <a href="{{ route('home') }}" class="text-xl font-semibold text-gray-900 hover:text-teal-600 transition">LifeScanEducation</a>
+                        <a href="{{ route('student.dashboard') }}" class="text-xl font-semibold text-gray-900 hover:text-teal-600 transition">LifeScanEducation</a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <a href="{{ route('student.login') }}" class="text-gray-700 hover:text-gray-900">Вхід</a>

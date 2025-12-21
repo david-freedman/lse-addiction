@@ -26,6 +26,6 @@ final class SkipProfileFieldsController
 
         session()->forget(['student_id', 'student_email', 'student_phone', 'phone_code_expires_at', 'email_code_expires_at']);
 
-        return redirect()->route('home')->with('info', __('messages.profile_fields.skipped'));
+        return redirect()->route('student.dashboard')->with('info', __('messages.profile_fields.skipped'));
     }
 }

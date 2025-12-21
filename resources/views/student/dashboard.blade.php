@@ -93,7 +93,7 @@
                             <p class="text-sm text-gray-500">{{ $viewModel->webinarsCount() }} майбутніх подій</p>
                         </div>
                     </div>
-                    <button onclick="openCalendarModal()" class="text-sm font-medium text-gray-500 hover:text-teal-500 px-3 py-1.5 rounded-lg border border-gray-200 hover:border-teal-200 transition">
+                    <button onclick="openCalendarModal()" class="cursor-pointer text-sm font-medium text-gray-500 hover:text-teal-500 px-3 py-1.5 rounded-lg border border-gray-200 hover:border-teal-200 transition">
                         Календар
                     </button>
                 </div>

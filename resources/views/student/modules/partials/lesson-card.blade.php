@@ -2,8 +2,8 @@
     /** @var \App\Domains\Module\Data\LessonCardData $lesson */
 @endphp
 
-<a href="{{ $lesson->url }}" class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow block">
-    <div class="flex flex-col items-center text-center">
+<a href="{{ $lesson->url }}" class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow block h-full min-h-[280px]">
+    <div class="flex flex-col items-center text-center h-full">
         <div class="mb-4">
             <div class="w-12 h-12 rounded-full {{ $lesson->colorScheme['icon_bg'] }} flex items-center justify-center">
                 @switch($lesson->iconType)
@@ -60,11 +60,14 @@
             </span>
         @endif
 
-        @if($lesson->description)
-            <p class="text-sm text-gray-500 mb-4">{{ Str::limit($lesson->description, 50) }}</p>
-        @endif
+        <div class="flex-1">
+            @if($lesson->description)
+                <p class="text-sm text-gray-500">{{ Str::limit($lesson->description, 50) }}</p>
+            @endif
+        </div>
 
-        <div class="flex items-center gap-3 mb-4">
+        <div class="mt-auto w-full">
+        <div class="flex items-center justify-center gap-3 mb-4">
             @if($lesson->isCompleted)
                 <div class="flex items-center gap-2 text-green-600">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,10 +85,11 @@
             @endif
         </div>
 
-        <span class="w-full {{ $lesson->colorScheme['button_bg'] }} text-white font-medium py-3 px-4 rounded-full transition flex items-center justify-center gap-2">
+        <span class="w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-full transition flex items-center justify-center gap-2">
             @if($lesson->isCompleted)
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
                 Переглянути
             @else
@@ -96,5 +100,6 @@
                 Розпочати
             @endif
         </span>
+        </div>
     </div>
 </a>

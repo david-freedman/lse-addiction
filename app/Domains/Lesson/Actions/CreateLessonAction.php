@@ -26,7 +26,6 @@ class CreateLessonAction
             'duration_minutes' => $data->duration_minutes,
             'order' => $data->order ?: $module->lessons()->max('order') + 1,
             'status' => $data->status,
-            'is_downloadable' => $data->is_downloadable,
             'attachments' => $data->attachments,
         ]);
 

@@ -264,6 +264,7 @@ readonly class ModuleDetailViewModel
                     'name' => $module->name,
                     'order' => $module->order,
                     'isCurrent' => $module->id === $this->module->id,
+                    'isUnlocked' => $module->isUnlocked($this->student),
                     'lessons' => $lessonsWithProgress,
                 ];
             });

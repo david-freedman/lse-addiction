@@ -2,7 +2,10 @@
 
 namespace App\Domains\Dashboard\ViewModels;
 
+use App\Domains\Calendar\Data\CalendarCourseData;
 use App\Domains\Calendar\Data\CalendarWebinarData;
+use App\Domains\Course\Enums\CourseType;
+use App\Domains\Course\Enums\CourseStatus;
 use App\Domains\Course\Models\Course;
 use App\Domains\Dashboard\Data\DashboardCourseData;
 use App\Domains\Dashboard\Data\DashboardStatsData;
@@ -45,20 +48,22 @@ readonly class StudentDashboardViewModel
         $weekStart = now()->startOfWeek();
 
         $coursesInProgress = $this->student->courses()
+            ->where('courses.status', '!=', CourseStatus::Hidden)
             ->wherePivot('status', 'active')
             ->count();
 
         $coursesInProgressDelta = $this->student->courses()
+            ->where('courses.status', '!=', CourseStatus::Hidden)
             ->wherePivot('status', 'active')
             ->wherePivot('enrolled_at', '>=', $weekStart)
             ->count();
 
-        $completedCourses = $this->student->courses()
-            ->wherePivot('status', 'completed')
+        $completedCourses = $this->student->courseProgress()
+            ->where('status', ProgressStatus::Completed)
             ->count();
 
         $completedCoursesDelta = $this->student->courseProgress()
-            ->where('status', 'completed')
+            ->where('status', ProgressStatus::Completed)
             ->where('completed_at', '>=', $weekStart)
             ->count();
 
@@ -67,7 +72,7 @@ readonly class StudentDashboardViewModel
 
         $certificates = $this->student->certificates()->count();
         $certificatesDelta = $this->student->certificates()
-            ->whereNull('viewed_at')
+            ->where('issued_at', '>=', $weekStart)
             ->count();
 
         return new DashboardStatsData(
@@ -101,6 +106,7 @@ readonly class StudentDashboardViewModel
     public function courses(): Collection
     {
         $courses = $this->student->courses()
+            ->where('courses.status', '!=', CourseStatus::Hidden)
             ->wherePivot('status', 'active')
             ->with([
                 'modules' => fn ($q) => $q->active()->ordered()
@@ -116,6 +122,7 @@ readonly class StudentDashboardViewModel
     public function coursesCount(): int
     {
         return $this->student->courses()
+            ->where('courses.status', '!=', CourseStatus::Hidden)
             ->wherePivot('status', 'active')
             ->count();
     }
@@ -151,8 +158,19 @@ readonly class StudentDashboardViewModel
      */
     public function upcomingWebinars(): Collection
     {
+        $myWebinars = $this->student->webinars()
+            ->whereIn('status', [WebinarStatus::Upcoming, WebinarStatus::Live])
+            ->ordered()
+            ->with('teacher')
+            ->limit(2)
+            ->get();
+
+        if ($myWebinars->isNotEmpty()) {
+            return $myWebinars->map(fn (Webinar $webinar) => $this->buildWebinarData($webinar, [$webinar->id]));
+        }
+
         $webinars = Webinar::query()
-            ->upcoming()
+            ->whereIn('status', [WebinarStatus::Upcoming, WebinarStatus::Live])
             ->ordered()
             ->with('teacher')
             ->limit(2)
@@ -188,6 +206,9 @@ readonly class StudentDashboardViewModel
             participantsCount: $webinar->participantsCount(),
             isStartingSoon: $webinar->is_starting_soon,
             isRegistered: in_array($webinar->id, $registeredIds),
+            isLive: $webinar->status === WebinarStatus::Live,
+            isUpcoming: $webinar->status === WebinarStatus::Upcoming,
+            isCompleted: $webinar->status === WebinarStatus::Completed,
             status: $webinar->status,
             price: $webinar->price > 0 ? number_format($webinar->price, 0, '', ' ') . ' грн' : 'Безкоштовно',
             isFree: $webinar->is_free,
@@ -200,15 +221,24 @@ readonly class StudentDashboardViewModel
     {
         $registeredIds = $this->student->webinars()->pluck('webinars.id')->toArray();
 
-        $currentMonth = now();
-        $nextMonth = now()->addMonth();
-        $thirdMonth = now()->addMonths(2);
+        $months = collect(range(0, 5))->map(fn (int $i) => now()->addMonths($i));
+        $lastMonth = $months->last();
 
         $webinars = Webinar::query()
             ->upcoming()
             ->ordered()
             ->with('teacher')
-            ->where('starts_at', '<=', $thirdMonth->endOfMonth())
+            ->where('starts_at', '<=', $lastMonth->endOfMonth())
+            ->get();
+
+        $courses = Course::query()
+            ->where('status', CourseStatus::Active)
+            ->where('type', CourseType::Upcoming)
+            ->whereNotNull('starts_at')
+            ->where('starts_at', '>', now())
+            ->where('starts_at', '<=', $lastMonth->endOfMonth())
+            ->orderBy('starts_at')
+            ->with('teacher')
             ->get();
 
         $webinarsByDate = [];
@@ -225,21 +255,40 @@ readonly class StudentDashboardViewModel
             $webinarsByDate[$dateKey][] = $this->buildCalendarWebinarData($webinar, $registeredIds);
         }
 
-        $months = [
-            $this->buildMonthData($currentMonth->year, $currentMonth->month),
-            $this->buildMonthData($nextMonth->year, $nextMonth->month),
-            $this->buildMonthData($thirdMonth->year, $thirdMonth->month),
-        ];
+        $coursesByDate = [];
+        $datesWithCourses = [];
+
+        foreach ($courses as $course) {
+            $dateKey = $course->starts_at->format('Y-m-d');
+
+            if (!isset($coursesByDate[$dateKey])) {
+                $coursesByDate[$dateKey] = [];
+                $datesWithCourses[] = $dateKey;
+            }
+
+            $coursesByDate[$dateKey][] = $this->buildCalendarCourseData($course);
+        }
+
+        $monthsData = $months->map(
+            fn ($date) => $this->buildMonthData($date->year, $date->month)
+        )->values()->all();
 
         $upcomingWebinars = $webinars->take(2)->map(
             fn (Webinar $webinar) => $this->buildCalendarWebinarData($webinar, $registeredIds)
         )->values()->all();
 
+        $upcomingCourses = $courses->take(2)->map(
+            fn (Course $course) => $this->buildCalendarCourseData($course)
+        )->values()->all();
+
         return [
-            'months' => $months,
+            'months' => $monthsData,
             'webinarsByDate' => $webinarsByDate,
             'datesWithWebinars' => $datesWithWebinars,
             'upcomingWebinars' => $upcomingWebinars,
+            'coursesByDate' => $coursesByDate,
+            'datesWithCourses' => $datesWithCourses,
+            'upcomingCourses' => $upcomingCourses,
         ];
     }
 
@@ -268,6 +317,20 @@ readonly class StudentDashboardViewModel
             formattedDuration: $webinar->formatted_duration,
             participantsCount: $webinar->participantsCount(),
             isRegistered: in_array($webinar->id, $registeredIds),
+        );
+    }
+
+    private function buildCalendarCourseData(Course $course): CalendarCourseData
+    {
+        return new CalendarCourseData(
+            id: $course->id,
+            name: $course->name,
+            slug: $course->slug,
+            teacherName: $course->teacher->full_name,
+            teacherPhotoUrl: $course->teacher->avatar_url,
+            date: $course->starts_at->format('Y-m-d'),
+            formattedDate: $course->formatted_date,
+            label: $course->label_text,
         );
     }
 }

@@ -58,9 +58,6 @@ class UpdateLessonData extends Data
         public readonly ?LessonStatus $status = null,
 
         #[Nullable]
-        public readonly ?bool $is_downloadable = null,
-
-        #[Nullable]
         public readonly ?array $attachments = null,
 
         #[Nullable, Min(0), Max(100)]

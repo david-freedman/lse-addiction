@@ -1,8 +1,8 @@
 const dwvApps = new Map();
 
-function dicomViewerCDN(config) {
+export default function dicomViewerCDN(config) {
     const instanceId = 'dwv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    const layerContainerId = 'layerGroup0';
+    const layerContainerId = 'layerGroup_' + instanceId;
 
     return {
         url: config.url,
@@ -20,6 +20,7 @@ function dicomViewerCDN(config) {
         currentFrame: 1,
         frameRate: 15,
         playInterval: null,
+        isFullscreen: false,
 
         getApp() {
             return dwvApps.get(this.instanceId);
@@ -60,6 +61,13 @@ function dicomViewerCDN(config) {
 
                 app.addEventListener('load', function() {
                     self.loading = false;
+
+                    try {
+                        app.fitToContainer();
+                    } catch (e) {
+                        console.warn('Could not fit to container:', e);
+                    }
+
                     app.setTool('WindowLevel');
 
                     try {
@@ -82,6 +90,32 @@ function dicomViewerCDN(config) {
                     }
                 });
 
+                window.addEventListener('resize', function() {
+                    const currentApp = dwvApps.get(self.instanceId);
+                    if (currentApp) {
+                        try {
+                            currentApp.fitToContainer();
+                        } catch (e) {
+                            console.warn('Could not fit to container on resize:', e);
+                        }
+                    }
+                });
+
+                document.addEventListener('fullscreenchange', function() {
+                    self.isFullscreen = !!document.fullscreenElement;
+                    setTimeout(function() {
+                        window.dispatchEvent(new Event('resize'));
+                        const currentApp = dwvApps.get(self.instanceId);
+                        if (currentApp) {
+                            try {
+                                currentApp.fitToContainer();
+                            } catch (e) {
+                                console.warn('Could not fit to container on fullscreen:', e);
+                            }
+                        }
+                    }, 300);
+                });
+
                 app.addEventListener('error', function(event) {
                     console.error('DICOM load error:', event);
                     self.loading = false;
@@ -96,26 +130,12 @@ function dicomViewerCDN(config) {
             }
         },
 
-        async loadDicom() {
+        loadDicom() {
             const app = this.getApp();
             if (!app) return;
 
             try {
-                let loadUrl = this.url;
-
-                if (this.url.includes('/dicom')) {
-                    const response = await fetch(this.url);
-                    const contentType = response.headers.get('content-type');
-
-                    if (contentType && contentType.includes('application/json')) {
-                        const data = await response.json();
-                        if (data.type === 'url') {
-                            loadUrl = data.url;
-                        }
-                    }
-                }
-
-                app.loadURLs([loadUrl]);
+                app.loadURLs([this.url]);
             } catch (e) {
                 console.error('Failed to load DICOM:', e);
                 this.loading = false;
@@ -229,9 +249,13 @@ function dicomViewerCDN(config) {
         toggleFullscreen() {
             const container = this.$el;
             if (!document.fullscreenElement) {
-                container.requestFullscreen();
+                container.requestFullscreen().catch(function(err) {
+                    console.warn('Fullscreen request failed:', err);
+                });
             } else {
-                document.exitFullscreen();
+                document.exitFullscreen().catch(function(err) {
+                    console.warn('Exit fullscreen failed:', err);
+                });
             }
         },
 
@@ -245,5 +269,3 @@ function dicomViewerCDN(config) {
         }
     };
 }
-
-window.dicomViewerCDN = dicomViewerCDN;

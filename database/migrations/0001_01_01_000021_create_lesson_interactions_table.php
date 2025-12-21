@@ -20,7 +20,8 @@ return new class extends Migration
 
         Schema::create('lesson_comments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('student_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('lesson_id')->constrained()->cascadeOnDelete();
             $table->foreignId('parent_id')->nullable()->constrained('lesson_comments')->cascadeOnDelete();
             $table->text('content');

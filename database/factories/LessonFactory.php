@@ -30,7 +30,6 @@ class LessonFactory extends Factory
             'duration_minutes' => fake()->optional()->numberBetween(5, 90),
             'order' => 0,
             'status' => LessonStatus::Draft,
-            'is_downloadable' => fake()->boolean(20),
             'attachments' => null,
         ];
     }

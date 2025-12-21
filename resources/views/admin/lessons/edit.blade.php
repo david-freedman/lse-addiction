@@ -92,13 +92,6 @@
                 </select>
             </div>
 
-            <div class="md:col-span-2">
-                <label class="flex items-center gap-2">
-                    <input type="checkbox" name="is_downloadable" value="1" {{ $lesson->is_downloadable ? 'checked' : '' }}
-                           class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
-                    <span class="text-sm text-gray-700">Дозволити завантаження</span>
-                </label>
-            </div>
         </div>
 
         <div class="flex gap-3 mt-6">

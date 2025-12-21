@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('transactions:cancel-abandoned')->everyFiveMinutes();
+Schedule::command('webinars:update-statuses')->everyMinute();

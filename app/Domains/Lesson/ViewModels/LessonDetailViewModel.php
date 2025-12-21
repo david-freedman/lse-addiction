@@ -8,6 +8,7 @@ use App\Domains\Homework\Models\HomeworkSubmission;
 use App\Domains\Lesson\Enums\DicomSourceType;
 use App\Domains\Lesson\Enums\LessonType;
 use App\Domains\Lesson\Models\Lesson;
+use App\Domains\Lesson\Models\LessonComment;
 use App\Domains\Module\Models\Module;
 use App\Domains\Progress\Enums\ProgressStatus;
 use App\Domains\Student\Models\Student;
@@ -53,22 +54,11 @@ readonly class LessonDetailViewModel
 
     public function duration(): string
     {
-        if (!$this->lesson->duration_minutes) {
-            return '';
-        }
-
-        $hours = intdiv($this->lesson->duration_minutes, 60);
-        $minutes = $this->lesson->duration_minutes % 60;
-
-        return sprintf('%d:%02d', $hours, $minutes);
+        return $this->lesson->formatted_duration ?? '';
     }
 
     public function durationFormatted(): string
     {
-        if (! $this->lesson->duration_minutes) {
-            return '';
-        }
-
         return $this->duration();
     }
 
@@ -333,6 +323,11 @@ readonly class LessonDetailViewModel
         return route('student.my-courses');
     }
 
+    public function courseUrl(): string
+    {
+        return route('student.courses.show', $this->course);
+    }
+
     public function backToModuleUrl(): string
     {
         return route('student.modules.show', [$this->course, $this->lesson->module]);
@@ -378,7 +373,10 @@ readonly class LessonDetailViewModel
             return $this->lesson->dicom_url;
         }
 
-        return route('student.lessons.dicom', [$this->course, $this->lesson]);
+        $url = route('student.lessons.dicom', [$this->course, $this->lesson]);
+        $version = $this->lesson->updated_at?->timestamp ?? time();
+
+        return $url . '?v=' . $version;
     }
 
     public function dicomMetadata(): ?array
@@ -398,11 +396,6 @@ readonly class LessonDetailViewModel
         return $this->lesson->dicom_source_type;
     }
 
-    public function isDownloadable(): bool
-    {
-        return $this->lesson->is_downloadable;
-    }
-
     public function hasHomework(): bool
     {
         return $this->lesson->homework !== null;
@@ -415,7 +408,7 @@ readonly class LessonDetailViewModel
 
     public function homeworkSubmissions(): Collection
     {
-        if (!$this->hasHomework()) {
+        if (! $this->hasHomework()) {
             return collect();
         }
 
@@ -432,7 +425,7 @@ readonly class LessonDetailViewModel
 
     public function canSubmitHomework(): bool
     {
-        if (!$this->hasHomework()) {
+        if (! $this->hasHomework()) {
             return false;
         }
 
@@ -441,7 +434,7 @@ readonly class LessonDetailViewModel
 
     public function homeworkAttemptsRemaining(): ?int
     {
-        if (!$this->hasHomework()) {
+        if (! $this->hasHomework()) {
             return null;
         }
 
@@ -463,10 +456,48 @@ readonly class LessonDetailViewModel
 
     public function isHomeworkPassed(): bool
     {
-        if (!$this->hasHomework()) {
+        if (! $this->hasHomework()) {
             return true;
         }
 
         return $this->lesson->homework->hasApprovedSubmission($this->student->id);
+    }
+
+    public function studentNote(): string
+    {
+        $note = $this->lesson->notes()
+            ->where('student_id', $this->student->id)
+            ->first();
+
+        return $note?->content ?? '';
+    }
+
+    public function saveNoteUrl(): string
+    {
+        return route('student.lessons.notes.save', [$this->course, $this->lesson]);
+    }
+
+    public function comments(): Collection
+    {
+        return LessonComment::query()
+            ->where('lesson_id', $this->lesson->id)
+            ->whereNull('parent_id')
+            ->with(['student', 'user', 'replies' => function ($query) {
+                $query->with(['student', 'user'])->orderBy('created_at');
+            }])
+            ->orderByDesc('created_at')
+            ->get();
+    }
+
+    public function commentsCount(): int
+    {
+        return LessonComment::query()
+            ->where('lesson_id', $this->lesson->id)
+            ->count();
+    }
+
+    public function storeCommentUrl(): string
+    {
+        return route('student.lessons.comments.store', [$this->course, $this->lesson]);
     }
 }

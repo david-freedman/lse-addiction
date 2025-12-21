@@ -50,6 +50,23 @@ class QuizSeeder extends Seeder
             $questionCount += $this->createQuestionsForQuiz($quiz, 3);
         }
 
+        $surveyLessons = Lesson::where('type', LessonType::Survey)->get();
+        foreach ($surveyLessons as $lesson) {
+            $quiz = Quiz::create([
+                'quizzable_type' => Lesson::class,
+                'quizzable_id' => $lesson->id,
+                'title' => null,
+                'passing_score' => 0,
+                'max_attempts' => null,
+                'time_limit_minutes' => null,
+                'show_correct_answers' => false,
+                'is_survey' => true,
+            ]);
+            $quizCount++;
+
+            $questionCount += $this->createSurveyQuestions($quiz);
+        }
+
         $this->command->info("Created {$quizCount} quizzes with {$questionCount} questions");
     }
 
@@ -158,6 +175,71 @@ class QuizSeeder extends Seeder
                     'is_correct' => $answerData['is_correct'],
                     'category' => $answerData['category'] ?? null,
                     'order' => $answerData['order'] ?? $answerOrder + 1,
+                ]);
+            }
+        }
+
+        return $createdCount;
+    }
+
+    private function createSurveyQuestions(Quiz $quiz): int
+    {
+        $surveyQuestions = [
+            [
+                'text' => 'Оцініть якість матеріалу модуля',
+                'type' => QuestionType::SingleChoice,
+                'answers' => [
+                    ['text' => '⭐ 1 - Погано', 'is_correct' => true],
+                    ['text' => '⭐⭐ 2 - Незадовільно', 'is_correct' => true],
+                    ['text' => '⭐⭐⭐ 3 - Задовільно', 'is_correct' => true],
+                    ['text' => '⭐⭐⭐⭐ 4 - Добре', 'is_correct' => true],
+                    ['text' => '⭐⭐⭐⭐⭐ 5 - Відмінно', 'is_correct' => true],
+                ],
+            ],
+            [
+                'text' => 'Що найбільше сподобалось у цьому модулі?',
+                'type' => QuestionType::MultipleChoice,
+                'answers' => [
+                    ['text' => 'Якість відеоматеріалів', 'is_correct' => true],
+                    ['text' => 'Практичні приклади', 'is_correct' => true],
+                    ['text' => 'Структура подачі матеріалу', 'is_correct' => true],
+                    ['text' => 'Додаткові матеріали', 'is_correct' => true],
+                ],
+            ],
+            [
+                'text' => 'Чи порекомендували б ви цей курс колегам?',
+                'type' => QuestionType::SingleChoice,
+                'answers' => [
+                    ['text' => 'Так, обов\'язково', 'is_correct' => true],
+                    ['text' => 'Скоріше так', 'is_correct' => true],
+                    ['text' => 'Можливо', 'is_correct' => true],
+                    ['text' => 'Скоріше ні', 'is_correct' => true],
+                    ['text' => 'Ні', 'is_correct' => true],
+                ],
+            ],
+        ];
+
+        $createdCount = 0;
+
+        foreach ($surveyQuestions as $i => $template) {
+            $question = QuizQuestion::create([
+                'quiz_id' => $quiz->id,
+                'type' => $template['type'],
+                'question_text' => $template['text'],
+                'question_image' => null,
+                'order' => $i + 1,
+                'points' => 0,
+            ]);
+            $createdCount++;
+
+            foreach ($template['answers'] as $answerOrder => $answerData) {
+                QuizAnswer::create([
+                    'question_id' => $question->id,
+                    'answer_text' => $answerData['text'],
+                    'answer_image' => null,
+                    'is_correct' => $answerData['is_correct'],
+                    'category' => null,
+                    'order' => $answerOrder + 1,
                 ]);
             }
         }

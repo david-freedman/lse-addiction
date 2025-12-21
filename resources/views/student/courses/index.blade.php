@@ -80,8 +80,8 @@
             <div class="grid gap-6" style="grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));">
                 @foreach($viewModel->courses() as $course)
                     @php
-                        $isCompleted = $course->pivot->status === 'completed';
                         $progress = $viewModel->getCourseProgress($course->id);
+                        $isCompleted = $progress->progressPercentage === 100;
                     @endphp
                     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition group">
                         @if($course->banner)
@@ -99,22 +99,22 @@
                         @endif
 
                         <div class="p-5">
-                            <h3 class="text-lg font-bold text-gray-900 mb-1">{{ $course->name }}</h3>
+                            <h3 class="text-lg font-bold text-gray-900 mb-1 line-clamp-2">{{ $course->name }}</h3>
 
                             <div class="flex items-center text-sm text-gray-600 mb-4">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
-                                Викладач: {{ $course->teacher?->full_name ?? 'Не вказано' }}
+                                {{ $course->teacher?->full_name ?? 'Не вказано' }}
                             </div>
 
                             <div class="mb-4">
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-sm text-gray-600">Прогрес</span>
-                                    <span class="text-sm font-semibold text-teal-600">{{ $progress->progressPercentage }}%</span>
+                                    <span class="text-sm font-semibold {{ $isCompleted ? 'text-emerald-600' : 'text-teal-600' }}">{{ $progress->progressPercentage }}%</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-{{ $isCompleted ? 'green' : 'teal' }}-500 h-2 rounded-full transition-all duration-300"
+                                    <div class="{{ $isCompleted ? 'bg-emerald-500' : 'bg-teal-500' }} h-2 rounded-full transition-all duration-300"
                                          style="width: {{ $progress->progressPercentage }}%"></div>
                                 </div>
                             </div>
@@ -127,16 +127,14 @@
                             </div>
 
                             <a href="{{ route('student.courses.show', $course) }}"
-                               class="block w-full text-center px-4 py-2.5 rounded-lg font-medium transition
-                                      {{ $isCompleted
-                                         ? 'bg-green-500 hover:bg-green-600 text-white'
-                                         : 'bg-teal-500 hover:bg-teal-600 text-white' }}">
+                               class="block w-full text-center px-4 py-2.5 rounded-lg font-medium transition bg-teal-500 hover:bg-teal-600 text-white">
                                 <span class="flex items-center justify-center">
                                     @if($isCompleted)
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                         </svg>
-                                        Переглянути курс
+                                        Переглянути
                                     @else
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />

@@ -51,8 +51,8 @@ class LessonSeeder extends Seeder
                 'description' => 'Інтерактивний перегляд та аналіз діагностичних знімків.',
                 'type' => LessonType::Dicom,
                 'duration_minutes' => 15,
-                'dicom_source_type' => DicomSourceType::Url,
-                'dicom_url' => 'https://raw.githubusercontent.com/nicktackes/DICOM-Samples/refs/heads/main/MG/MG-AB.dcm',
+                'dicom_source_type' => DicomSourceType::File,
+                'dicom_file_path' => 'dicom/dwv-test-simple.dcm',
                 'dicom_metadata' => ['modality' => 'MG', 'is_multiframe' => false, 'frame_count' => 1],
             ],
             [
@@ -60,8 +60,8 @@ class LessonSeeder extends Seeder
                 'description' => 'Детальний розбір діагностичних зображень з коментарями.',
                 'type' => LessonType::Dicom,
                 'duration_minutes' => 20,
-                'dicom_source_type' => DicomSourceType::Url,
-                'dicom_url' => 'https://raw.githubusercontent.com/nicktackes/DICOM-Samples/refs/heads/main/MR-Brain/MR-brain.dcm',
+                'dicom_source_type' => DicomSourceType::File,
+                'dicom_file_path' => 'dicom/bbmri-53323131.dcm',
                 'dicom_metadata' => ['modality' => 'MR', 'is_multiframe' => false, 'frame_count' => 1],
             ],
             [
@@ -108,7 +108,6 @@ class LessonSeeder extends Seeder
                     'duration_minutes' => $template['duration_minutes'],
                     'order' => $order + 1,
                     'status' => LessonStatus::Published,
-                    'is_downloadable' => $template['type'] === LessonType::Video,
                     'attachments' => null,
                 ];
 

@@ -11,6 +11,10 @@ final class ShowCatalogCourseController
 {
     public function __invoke(Course $course): View
     {
+        if ($course->isDraft() || $course->isHidden()) {
+            abort(404);
+        }
+
         $course->load(['teacher', 'author', 'tags']);
 
         $individualDiscount = null;

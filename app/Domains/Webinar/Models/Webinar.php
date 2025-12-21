@@ -206,6 +206,11 @@ class Webinar extends Model
         return $this->starts_at->diffInHours(now()) >= 24;
     }
 
+    public function isDraft(): bool
+    {
+        return $this->status === WebinarStatus::Draft;
+    }
+
     public function getMeetingUrlForStudent(Student $student): ?string
     {
         if (!$this->isRegistered($student)) {

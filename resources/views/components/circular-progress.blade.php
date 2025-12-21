@@ -15,6 +15,7 @@
 
     $strokeColor = match($color) {
         'teal' => 'text-teal-500',
+        'emerald' => 'text-emerald-500',
         'purple' => 'text-purple-500',
         'blue' => 'text-blue-500',
         'rose' => 'text-rose-500',
@@ -26,6 +27,7 @@
 
     $textColor = match($color) {
         'teal' => 'text-teal-600',
+        'emerald' => 'text-emerald-600',
         'purple' => 'text-purple-600',
         'blue' => 'text-blue-600',
         'rose' => 'text-rose-600',

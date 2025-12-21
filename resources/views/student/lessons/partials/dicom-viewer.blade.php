@@ -35,7 +35,8 @@
     </template>
 
     <div x-ref="layerContainer"
-         class="w-full aspect-video bg-black"
+         class="w-full bg-black"
+         :style="isFullscreen ? 'height: 100vh; overflow: hidden;' : 'height: 500px; overflow: hidden;'"
          @wheel="handleScroll($event)">
     </div>
 

@@ -56,10 +56,6 @@ class UpdateLessonAction
             $updateData['status'] = $data->status;
         }
 
-        if ($data->is_downloadable !== null) {
-            $updateData['is_downloadable'] = $data->is_downloadable;
-        }
-
         if ($data->attachments !== null) {
             $updateData['attachments'] = $data->attachments;
         }

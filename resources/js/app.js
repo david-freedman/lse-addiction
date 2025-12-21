@@ -1,6 +1,6 @@
 import './bootstrap';
 import './countdown';
-import './dicom-viewer';
+import dicomViewerCDN from './dicom-viewer';
 import Alpine from 'alpinejs';
 import flatpickr from 'flatpickr';
 import { Ukrainian } from 'flatpickr/dist/l10n/uk.js';
@@ -49,4 +49,5 @@ document.addEventListener('alpine:init', () => {
     });
 });
 
+Alpine.data('dicomViewerCDN', dicomViewerCDN);
 Alpine.start();

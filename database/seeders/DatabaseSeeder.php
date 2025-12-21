@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             LessonSeeder::class,
             QuizSeeder::class,
             StudentSeeder::class,
+            WebinarStudentSeeder::class,
             CourseStudentSeeder::class,
             HomeworkSeeder::class,
             AdminUserSeeder::class,

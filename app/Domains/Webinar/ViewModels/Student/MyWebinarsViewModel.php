@@ -24,6 +24,7 @@ readonly class MyWebinarsViewModel
         $baseQuery = $student->webinars()
             ->wherePivotNull('cancelled_at')
             ->where('status', '!=', WebinarStatus::Cancelled)
+            ->where('status', '!=', WebinarStatus::Draft)
             ->with('teacher')
             ->orderBy('starts_at', 'desc');
 
@@ -78,6 +79,11 @@ readonly class MyWebinarsViewModel
         return $this->allWebinars->where('starts_at', '<=', now())->count();
     }
 
+    public function liveCount(): int
+    {
+        return $this->allWebinars->where('status', WebinarStatus::Live)->count();
+    }
+
     public function currentStatus(): ?string
     {
         return $this->currentStatus;
@@ -111,6 +117,9 @@ readonly class MyWebinarsViewModel
             'formattedDatetime' => $webinar->formattedDate . ' о ' . $webinar->formattedTime,
             'participantsCount' => $webinar->participantsCount(),
             'isStartingSoon' => $webinar->isStartingSoon,
+            'isLive' => $webinar->status === WebinarStatus::Live,
+            'isCompleted' => $webinar->status === WebinarStatus::Completed,
+            'isUpcoming' => $webinar->status === WebinarStatus::Upcoming,
             'isRegistered' => true,
             'isPast' => $webinar->starts_at <= now(),
             'bannerUrl' => $webinar->bannerUrl,

@@ -121,7 +121,7 @@ readonly class QuizDetailViewModel
     {
         $attempt = $this->bestAttempt();
 
-        if (! $attempt || $attempt->max_score === 0) {
+        if (!$attempt || (float) $attempt->max_score === 0.0) {
             return null;
         }
 
@@ -229,6 +229,11 @@ readonly class QuizDetailViewModel
     public function backToCourseUrl(): string
     {
         return $this->lessonViewModel->backToCourseUrl();
+    }
+
+    public function courseUrl(): string
+    {
+        return $this->lessonViewModel->courseUrl();
     }
 
     public function backToModuleUrl(): string

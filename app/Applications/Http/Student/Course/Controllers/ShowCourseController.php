@@ -13,8 +13,17 @@ final class ShowCourseController
     public function __invoke(Request $request, Course $course): View
     {
         $student = $request->user();
+        $isEnrolled = $student->courses()->where('course_id', $course->id)->exists();
 
-        if ($student->courses()->where('course_id', $course->id)->exists()) {
+        if ($course->isDraft() || $course->isHidden()) {
+            abort(404);
+        }
+
+        if ($course->isArchived() && !$isEnrolled) {
+            abort(404);
+        }
+
+        if ($isEnrolled) {
             $course->load([
                 'modules' => fn ($q) => $q->active()->ordered()
                     ->with(['lessons' => fn ($l) => $l->published()->ordered()]),

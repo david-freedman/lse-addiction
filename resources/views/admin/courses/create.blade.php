@@ -243,16 +243,18 @@
 
             <div>
                 <label for="label" class="mb-2 block text-sm font-medium text-gray-700">Мітка (Label)</label>
-                <input
-                    type="text"
+                <select
                     name="label"
                     id="label"
-                    value="{{ old('label') }}"
-                    placeholder="наприклад: BESTSELLER, NEW"
-                    maxlength="50"
                     class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('label') border-error-500 @enderror"
                 >
-                <p class="mt-1 text-xs text-gray-500">Макс. 50 символів</p>
+                    <option value="">Без мітки</option>
+                    @foreach(\App\Domains\Course\Enums\CourseLabel::cases() as $labelOption)
+                        <option value="{{ $labelOption->value }}" {{ old('label') === $labelOption->value ? 'selected' : '' }}>
+                            {{ $labelOption->label() }}
+                        </option>
+                    @endforeach
+                </select>
                 @error('label')
                     <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
                 @enderror

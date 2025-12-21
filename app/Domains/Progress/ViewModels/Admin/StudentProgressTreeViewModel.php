@@ -54,6 +54,36 @@ readonly class StudentProgressTreeViewModel
         return $this->course !== null && $this->student !== null;
     }
 
+    public function hasCourseSelection(): bool
+    {
+        return $this->course !== null;
+    }
+
+    public function studentsProgress(): Collection
+    {
+        if (!$this->course) {
+            return collect();
+        }
+
+        $students = $this->course->students()
+            ->orderBy('surname')
+            ->orderBy('name')
+            ->get(['students.id', 'name', 'surname', 'email']);
+
+        $progressMap = StudentCourseProgress::query()
+            ->where('course_id', $this->course->id)
+            ->whereIn('student_id', $students->pluck('id'))
+            ->get()
+            ->keyBy('student_id');
+
+        return $students->map(fn ($student) => [
+            'student' => $student,
+            'progress_percentage' => $progressMap->get($student->id)?->progress_percentage ?? 0,
+            'status' => $progressMap->get($student->id)?->status ?? ProgressStatus::NotStarted,
+            'last_activity_at' => $progressMap->get($student->id)?->updated_at,
+        ]);
+    }
+
     public function progressTree(): ?array
     {
         if (!$this->course || !$this->student) {

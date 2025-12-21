@@ -15,6 +15,10 @@ final class RegisterWebinarController
 {
     public function __invoke(Webinar $webinar): RedirectResponse
     {
+        if ($webinar->isDraft()) {
+            abort(404);
+        }
+
         if ($webinar->status === WebinarStatus::Cancelled) {
             return redirect()
                 ->back()

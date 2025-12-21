@@ -35,7 +35,22 @@ readonly class CourseProgressViewModel
 
     public function courseDescription(): string
     {
-        return '';
+        return $this->course?->description_short ?? $this->course?->description ?? '';
+    }
+
+    public function teacherName(): ?string
+    {
+        return $this->course?->teacher?->full_name;
+    }
+
+    public function totalModules(): int
+    {
+        return $this->course?->modules->count() ?? 0;
+    }
+
+    public function bannerUrl(): ?string
+    {
+        return $this->course?->banner_url;
     }
 
     public function progressPercentage(): int
@@ -143,11 +158,26 @@ readonly class CourseProgressViewModel
             return 'quiz';
         }
 
-        $primaryType = $module->lessons->first()?->type;
+        if ($module->lessons->isEmpty()) {
+            return 'video';
+        }
+
+        $typeCounts = $module->lessons->countBy(fn ($lesson) => $lesson->type->value);
+        $maxCount = $typeCounts->max();
+        $dominantTypes = $typeCounts->filter(fn ($count) => $count === $maxCount)->keys();
+
+        $primaryType = $module->lessons
+            ->sortBy('order')
+            ->first(fn ($lesson) => $dominantTypes->contains($lesson->type->value))
+            ?->type;
 
         return match ($primaryType) {
             LessonType::Quiz => 'quiz',
             LessonType::Video => 'video',
+            LessonType::Text => 'text',
+            LessonType::Dicom => 'dicom',
+            LessonType::Survey => 'survey',
+            LessonType::QaSession => 'qa_session',
             default => 'video',
         };
     }

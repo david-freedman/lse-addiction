@@ -21,15 +21,6 @@
     </div>
 
     <div class="p-5 flex flex-col flex-1">
-        <div class="flex items-center gap-2 mb-3 min-h-[1.75rem]">
-            @if($webinar->is_starting_soon)
-                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-600">
-                    <span class="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse"></span>
-                    Скоро почнеться
-                </span>
-            @endif
-        </div>
-
         <a href="{{ route('student.webinar.show', $webinar->slug) }}" class="block">
             <h3 class="font-semibold text-gray-900 mb-3 line-clamp-2 min-h-[3rem] hover:text-teal-600 transition-colors">{{ $webinar->title }}</h3>
         </a>

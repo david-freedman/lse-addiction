@@ -2,6 +2,7 @@
 
 namespace App\Domains\Course\Models;
 
+use App\Domains\Course\Enums\CourseLabel;
 use App\Domains\Course\Enums\CourseStatus;
 use App\Domains\Course\Enums\CourseType;
 use App\Domains\Lesson\Models\Lesson;
@@ -105,14 +106,23 @@ class Course extends Model
         return $this->students()->where('student_id', $student->id)->exists();
     }
 
+    public function isAvailableByDate(): bool
+    {
+        return $this->starts_at === null || $this->starts_at->isPast() || $this->starts_at->isToday();
+    }
+
     public function scopeAvailableForPurchase($query, ?Student $student = null)
     {
-        $query = $query->where('status', CourseStatus::Active);
+        $query->where('status', CourseStatus::Active)
+            ->where(function ($q) {
+                $q->whereNull('starts_at')
+                    ->orWhere('starts_at', '<=', now());
+            });
 
         if ($student) {
-            $query->whereDoesntHave('students', function ($q) use ($student) {
-                $q->where('student_id', $student->id);
-            });
+            $query->whereDoesntHave('students', fn ($q) =>
+                $q->where('student_id', $student->id)
+            );
         }
 
         return $query;
@@ -212,6 +222,15 @@ class Course extends Model
         );
     }
 
+    protected function labelText(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->label
+                ? CourseLabel::tryFrom($this->label)?->label()
+                : null
+        );
+    }
+
     protected function modulesCount(): Attribute
     {
         return Attribute::make(
@@ -231,6 +250,28 @@ class Course extends Model
         return Attribute::make(
             get: fn () => Lesson::whereIn('module_id', $this->modules()->pluck('id'))
                 ->sum('duration_minutes')
+        );
+    }
+
+    protected function formattedDuration(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $minutes = $this->total_duration;
+                if (!$minutes) {
+                    return null;
+                }
+                $hours = intdiv($minutes, 60);
+                $mins = $minutes % 60;
+                if ($hours && $mins) {
+                    return "{$hours} год {$mins} хв";
+                }
+                if ($hours) {
+                    return "{$hours} год";
+                }
+
+                return "{$mins} хв";
+            }
         );
     }
 

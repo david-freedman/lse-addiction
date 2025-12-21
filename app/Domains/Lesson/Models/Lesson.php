@@ -41,7 +41,6 @@ class Lesson extends Model
         'duration_minutes',
         'order',
         'status',
-        'is_downloadable',
         'attachments',
     ];
 
@@ -52,7 +51,6 @@ class Lesson extends Model
             'status' => LessonStatus::class,
             'dicom_source_type' => DicomSourceType::class,
             'dicom_metadata' => 'array',
-            'is_downloadable' => 'boolean',
             'attachments' => 'array',
         ];
     }
@@ -158,7 +156,15 @@ class Lesson extends Model
                 $hours = intdiv($this->duration_minutes, 60);
                 $minutes = $this->duration_minutes % 60;
 
-                return sprintf('%d:%02d', $hours, $minutes);
+                if ($hours > 0 && $minutes > 0) {
+                    return "{$hours} год {$minutes} хв";
+                }
+
+                if ($hours > 0) {
+                    return "{$hours} " . trans_choice('година|години|годин', $hours);
+                }
+
+                return "{$minutes} хв";
             }
         );
     }

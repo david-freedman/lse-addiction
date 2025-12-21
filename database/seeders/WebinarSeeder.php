@@ -127,6 +127,20 @@ class WebinarSeeder extends Seeder
             'price' => 900,
         ]);
 
-        $this->command->info('Created 8 webinars (5 Upcoming, 1 Draft, 1 Completed, 1 Cancelled)');
+        Webinar::create([
+            'title' => 'Онкологічна візуалізація: LIVE сесія',
+            'slug' => Str::slug('onkologichna-vizualizatsiya-live'),
+            'description' => 'Пряма трансляція з розбором клінічних випадків онкологічної візуалізації. Інтерактивна сесія з відповідями на запитання.',
+            'banner' => 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070',
+            'teacher_id' => $teachers->random()->id,
+            'starts_at' => now()->subMinutes(30),
+            'duration_minutes' => 120,
+            'status' => WebinarStatus::Live,
+            'max_participants' => 100,
+            'price' => 800,
+            'meeting_url' => 'https://zoom.us/j/1234567890',
+        ]);
+
+        $this->command->info('Created 9 webinars (5 Upcoming, 1 Draft, 1 Completed, 1 Cancelled, 1 Live)');
     }
 }

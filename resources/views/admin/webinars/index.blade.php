@@ -128,7 +128,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-gray-700">
                                 <div class="text-sm">{{ $webinar->starts_at->format('d.m.Y') }}</div>
-                                <div class="text-xs text-gray-500">{{ $webinar->starts_at->format('H:i') }} ({{ $webinar->duration_minutes }} хв)</div>
+                                <div class="text-xs text-gray-500">{{ $webinar->starts_at->format('H:i') }} ({{ $webinar->formatted_duration }})</div>
                             </td>
                             <td class="px-6 py-4 text-center text-sm">
                                 <a href="{{ route('admin.webinars.show', $webinar) }}" class="text-brand-600 hover:text-brand-700 hover:underline">

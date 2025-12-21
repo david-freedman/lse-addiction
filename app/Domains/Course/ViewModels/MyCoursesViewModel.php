@@ -3,6 +3,7 @@
 namespace App\Domains\Course\ViewModels;
 
 use App\Domains\Course\Data\CourseProgressData;
+use App\Domains\Course\Enums\CourseStatus;
 use App\Domains\Course\Models\Course;
 use App\Domains\Progress\Enums\ProgressStatus;
 use App\Domains\Student\Models\Student;
@@ -26,12 +27,14 @@ readonly class MyCoursesViewModel
         $this->currentStatus = $status;
 
         $this->allCourses = $student->courses()
+            ->where('courses.status', '!=', CourseStatus::Hidden)
             ->withPivot(['enrolled_at', 'status'])
             ->with(['teacher', 'tags', 'modules.lessons'])
             ->orderBy('course_student.enrolled_at', 'desc')
             ->get();
 
         $query = $student->courses()
+            ->where('courses.status', '!=', CourseStatus::Hidden)
             ->withPivot(['enrolled_at', 'status'])
             ->with(['teacher', 'tags', 'modules.lessons'])
             ->orderBy('course_student.enrolled_at', 'desc');

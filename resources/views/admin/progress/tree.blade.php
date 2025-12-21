@@ -64,12 +64,12 @@
             </select>
         </div>
 
-        <button type="submit" :disabled="!courseId || !studentId"
+        <button type="submit" :disabled="!courseId"
                 class="rounded-lg bg-brand-500 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed">
             Показати прогрес
         </button>
 
-        @if($viewModel->hasSelection())
+        @if($viewModel->hasCourseSelection())
             <a href="{{ route('admin.progress.tree') }}"
                class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50">
                 Скинути
@@ -78,7 +78,67 @@
     </form>
 </div>
 
-@if($viewModel->hasSelection())
+@if($viewModel->hasCourseSelection() && !$viewModel->selectedStudent())
+    <div class="rounded-2xl border border-gray-200 bg-white overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">
+                Студенти курсу: {{ $viewModel->selectedCourse()->name }}
+            </h2>
+            <p class="text-sm text-gray-500 mt-1">
+                {{ $viewModel->studentsProgress()->count() }} {{ trans_choice('студент|студенти|студентів', $viewModel->studentsProgress()->count()) }}
+            </p>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Студент</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Прогрес</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Статус</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Остання активність</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach($viewModel->studentsProgress() as $data)
+                        <tr class="hover:bg-gray-50 cursor-pointer"
+                            onclick="window.location='{{ route('admin.progress.tree', ['course_id' => $viewModel->selectedCourse()->id, 'student_id' => $data['student']->id]) }}'">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="font-medium text-gray-900">{{ $data['student']->surname }} {{ $data['student']->name }}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $data['student']->email }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                        <div class="h-full bg-brand-500" style="width: {{ $data['progress_percentage'] }}%"></div>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-600">{{ round($data['progress_percentage'], 1) }}%</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    {{ $data['status']->color() === 'green' ? 'bg-green-100 text-green-800' : '' }}
+                                    {{ $data['status']->color() === 'blue' ? 'bg-blue-100 text-blue-800' : '' }}
+                                    {{ $data['status']->color() === 'gray' ? 'bg-gray-100 text-gray-800' : '' }}">
+                                    {{ $data['status']->label() }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                @if($data['last_activity_at'])
+                                    {{ $data['last_activity_at']->format('d.m.Y H:i') }}
+                                @else
+                                    <span class="text-gray-400">—</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+@elseif($viewModel->hasSelection())
     @php $tree = $viewModel->progressTree(); @endphp
 
     @if($tree)
@@ -179,7 +239,7 @@
                                         <div class="flex items-center gap-6 text-sm">
                                             @if($lessonData['quiz']['exists'])
                                                 <div class="flex items-center gap-2">
-                                                    <span class="text-gray-500">Quiz:</span>
+                                                    <span class="text-gray-500">Тест:</span>
                                                     @if($lessonData['quiz']['attempt_id'])
                                                         <a href="{{ route('admin.quiz-attempts.show', $lessonData['quiz']['attempt_id']) }}"
                                                            class="inline-flex items-center gap-1 font-medium {{ $lessonData['quiz']['passed'] ? 'text-green-600' : 'text-red-600' }} hover:underline">
@@ -203,7 +263,7 @@
 
                                             @if($lessonData['homework']['exists'])
                                                 <div class="flex items-center gap-2">
-                                                    <span class="text-gray-500">HW{{ $lessonData['homework']['is_required'] ? '*' : '' }}:</span>
+                                                    <span class="text-gray-500">ДЗ{{ $lessonData['homework']['is_required'] ? '*' : '' }}:</span>
                                                     @if($lessonData['homework']['submission_id'])
                                                         <a href="{{ route('admin.homework.submissions.show', $lessonData['homework']['submission_id']) }}"
                                                            class="inline-flex items-center gap-1 font-medium text-{{ $lessonData['homework']['status']->color() }}-600 hover:underline">
@@ -244,8 +304,8 @@
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
         </svg>
-        <h3 class="mt-4 text-lg font-medium text-gray-900">Оберіть курс та студента</h3>
-        <p class="mt-2 text-gray-500">Щоб переглянути детальний прогрес, оберіть курс та студента у фільтрах вище</p>
+        <h3 class="mt-4 text-lg font-medium text-gray-900">Оберіть курс</h3>
+        <p class="mt-2 text-gray-500">Щоб переглянути прогрес студентів, оберіть курс у фільтрах вище</p>
     </div>
 @endif
 @endsection

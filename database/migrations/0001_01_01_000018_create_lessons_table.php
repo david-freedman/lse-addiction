@@ -24,7 +24,6 @@ return new class extends Migration
             $table->unsignedInteger('duration_minutes')->nullable();
             $table->unsignedInteger('order')->default(0);
             $table->string('status')->default('draft');
-            $table->boolean('is_downloadable')->default(false);
             $table->json('attachments')->nullable();
             $table->timestamps();
 

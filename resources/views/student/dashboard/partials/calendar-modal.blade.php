@@ -15,7 +15,7 @@
                         <p class="text-sm text-gray-500">Перегляньте розклад вебінарів та нових курсів</p>
                     </div>
                 </div>
-                <button onclick="closeCalendarModal()" class="text-gray-400 hover:text-gray-600 transition">
+                <button onclick="closeCalendarModal()" class="cursor-pointer text-gray-400 hover:text-gray-600 transition">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -26,13 +26,13 @@
         <div class="flex-1 flex overflow-hidden">
             <div class="w-3/5 p-6 overflow-y-auto border-r border-gray-200">
                 <div class="flex items-center justify-between mb-6">
-                    <button onclick="previousMonth()" class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition">
+                    <button onclick="previousMonth()" class="cursor-pointer p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
                     <h3 class="text-lg font-bold text-gray-900" id="calendar-month-name"></h3>
-                    <button onclick="nextMonth()" class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition">
+                    <button onclick="nextMonth()" class="cursor-pointer p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                         </svg>
@@ -55,12 +55,24 @@
             <div class="w-2/5 p-6 overflow-y-auto bg-gray-50">
                 <div id="selected-date-section" class="hidden mb-6">
                     <h4 class="text-sm font-medium text-gray-500 mb-3" id="selected-date-title"></h4>
+                    <div id="selected-date-courses" class="space-y-3 mb-3"></div>
                     <div id="selected-date-webinars" class="space-y-3"></div>
                 </div>
 
                 <div id="no-events-message" class="hidden mb-6 p-4 bg-white rounded-lg border border-gray-200">
                     <p class="text-sm text-gray-500" id="no-events-text"></p>
                 </div>
+
+                @if(!empty($calendarData['upcomingCourses']))
+                    <div class="mb-6">
+                        <h3 class="text-base font-bold text-gray-900 mb-4">Найближчі курси</h3>
+                        <div class="space-y-3" id="upcoming-courses-list">
+                            @foreach($calendarData['upcomingCourses'] as $course)
+                                <x-student.calendar-course-card :course="$course" />
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
 
                 <div>
                     <h3 class="text-base font-bold text-gray-900 mb-4">Найближчі вебінари</h3>
@@ -126,8 +138,9 @@
             selectedCell.classList.add('ring-2', 'ring-teal-500', 'bg-teal-50');
         }
 
+        const courses = calendarData.coursesByDate[dateStr] || [];
         const webinars = calendarData.webinarsByDate[dateStr] || [];
-        updateSelectedDateSection(dateStr, webinars);
+        updateSelectedDateSection(dateStr, courses, webinars);
     };
 
     function renderCalendar() {
@@ -155,6 +168,7 @@
 
         for (let day = 1; day <= daysInMonth; day++) {
             const dateStr = `${year}-${String(monthNum + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const hasCourses = calendarData.datesWithCourses.includes(dateStr);
             const hasWebinars = calendarData.datesWithWebinars.includes(dateStr);
             const isToday = dateStr === today;
             const isSelected = dateStr === selectedDate;
@@ -169,9 +183,17 @@
                 cellClasses += ' ring-2 ring-teal-500 bg-teal-50';
             }
 
-            const indicator = hasWebinars
-                ? '<div class="w-1.5 h-1.5 bg-teal-500 rounded-full mt-1"></div>'
-                : '<div class="w-1.5 h-1.5 mt-1"></div>';
+            let indicator = '<div class="flex gap-0.5 mt-1">';
+            if (hasCourses) {
+                indicator += '<div class="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>';
+            }
+            if (hasWebinars) {
+                indicator += '<div class="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>';
+            }
+            if (!hasCourses && !hasWebinars) {
+                indicator += '<div class="w-1.5 h-1.5"></div>';
+            }
+            indicator += '</div>';
 
             grid.innerHTML += `
                 <button
@@ -186,57 +208,103 @@
         }
     }
 
-    function updateSelectedDateSection(dateStr, webinars) {
+    function updateSelectedDateSection(dateStr, courses, webinars) {
         const selectedSection = document.getElementById('selected-date-section');
         const noEventsMessage = document.getElementById('no-events-message');
         const dateTitle = document.getElementById('selected-date-title');
+        const coursesList = document.getElementById('selected-date-courses');
         const webinarsList = document.getElementById('selected-date-webinars');
 
         const formattedDate = formatDateUkrainian(dateStr);
 
-        if (webinars.length === 0) {
+        if (courses.length === 0 && webinars.length === 0) {
             selectedSection.classList.add('hidden');
             noEventsMessage.classList.remove('hidden');
             document.getElementById('no-events-text').textContent = `Немає подій на ${formattedDate}`;
-            showAllUpcomingWebinars();
+            showAllUpcoming();
         } else {
             noEventsMessage.classList.add('hidden');
             selectedSection.classList.remove('hidden');
             dateTitle.textContent = formattedDate;
 
+            coursesList.innerHTML = courses.map(course => renderCourseCard(course)).join('');
             webinarsList.innerHTML = webinars.map(webinar => renderWebinarCard(webinar)).join('');
-            filterUpcomingWebinars(webinars.map(w => w.id));
+            filterUpcoming(courses.map(c => c.id), webinars.map(w => w.id));
         }
     }
 
     function hideSelectedDateSection() {
         document.getElementById('selected-date-section').classList.add('hidden');
         document.getElementById('no-events-message').classList.add('hidden');
-        showAllUpcomingWebinars();
+        showAllUpcoming();
     }
 
-    function filterUpcomingWebinars(webinarIds) {
-        const upcomingList = document.getElementById('upcoming-webinars-list');
-        upcomingList.querySelectorAll('[data-webinar-id]').forEach(card => {
+    function filterUpcoming(courseIds, webinarIds) {
+        const upcomingCoursesList = document.getElementById('upcoming-courses-list');
+        if (upcomingCoursesList) {
+            upcomingCoursesList.querySelectorAll('[data-course-id]').forEach(card => {
+                const cardId = parseInt(card.dataset.courseId);
+                card.classList.toggle('hidden', courseIds.includes(cardId));
+            });
+        }
+
+        const upcomingWebinarsList = document.getElementById('upcoming-webinars-list');
+        upcomingWebinarsList.querySelectorAll('[data-webinar-id]').forEach(card => {
             const cardId = parseInt(card.dataset.webinarId);
             card.classList.toggle('hidden', webinarIds.includes(cardId));
         });
     }
 
-    function showAllUpcomingWebinars() {
-        const upcomingList = document.getElementById('upcoming-webinars-list');
-        upcomingList.querySelectorAll('[data-webinar-id]').forEach(card => {
+    function showAllUpcoming() {
+        const upcomingCoursesList = document.getElementById('upcoming-courses-list');
+        if (upcomingCoursesList) {
+            upcomingCoursesList.querySelectorAll('[data-course-id]').forEach(card => {
+                card.classList.remove('hidden');
+            });
+        }
+
+        const upcomingWebinarsList = document.getElementById('upcoming-webinars-list');
+        upcomingWebinarsList.querySelectorAll('[data-webinar-id]').forEach(card => {
             card.classList.remove('hidden');
         });
+    }
+
+    function renderCourseCard(course) {
+        const avatarHtml = course.teacherPhotoUrl
+            ? `<img src="${course.teacherPhotoUrl}" alt="${course.teacherName}" class="w-8 h-8 rounded-full object-cover">`
+            : `<div class="w-8 h-8 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center text-xs font-medium">${course.teacherName.charAt(0)}</div>`;
+
+        const labelHtml = course.label
+            ? `<span class="px-2 py-0.5 text-xs font-medium bg-teal-100 text-teal-700 rounded">${course.label}</span>`
+            : '';
+
+        return `
+            <div class="bg-white rounded-lg p-4 border-2 border-teal-500 hover:bg-teal-50 transition cursor-pointer" onclick="window.location.href='/student/catalog/${course.slug}'">
+                ${labelHtml ? `<div class="mb-2">${labelHtml}</div>` : ''}
+                <h4 class="text-sm font-semibold text-gray-900 mb-3 line-clamp-2">${course.name}</h4>
+                <div class="flex items-center gap-2 mb-3">
+                    ${avatarHtml}
+                    <span class="text-xs text-gray-600">${course.teacherName}</span>
+                </div>
+                <div class="flex items-center gap-4 text-xs text-gray-500">
+                    <span class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        ${course.formattedDate}
+                    </span>
+                </div>
+            </div>
+        `;
     }
 
     function renderWebinarCard(webinar) {
         const avatarHtml = webinar.teacherPhotoUrl
             ? `<img src="${webinar.teacherPhotoUrl}" alt="${webinar.teacherName}" class="w-8 h-8 rounded-full object-cover">`
-            : `<div class="w-8 h-8 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center text-xs font-medium">${webinar.teacherName.charAt(0)}</div>`;
+            : `<div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-medium">${webinar.teacherName.charAt(0)}</div>`;
 
         return `
-            <div class="bg-white rounded-lg p-4 ring-2 ring-teal-500 hover:bg-teal-50 transition cursor-pointer" onclick="window.location.href='/student/webinars/${webinar.slug}'">
+            <div class="bg-white rounded-lg p-4 border-2 border-purple-500 hover:bg-purple-50 transition cursor-pointer" onclick="window.location.href='/student/webinars/${webinar.slug}'">
                 <h4 class="text-sm font-semibold text-gray-900 mb-3 line-clamp-2">${webinar.title}</h4>
                 <div class="flex items-center gap-2 mb-3">
                     ${avatarHtml}

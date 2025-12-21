@@ -49,6 +49,11 @@ class ProgressSeeder extends Seeder
                 ]);
                 $courseProgressCount++;
 
+                DB::table('course_student')
+                    ->where('student_id', $student->id)
+                    ->where('course_id', $course->id)
+                    ->update(['status' => $status === ProgressStatus::Completed ? 'completed' : 'active']);
+
                 if ($status === ProgressStatus::NotStarted) {
                     continue;
                 }
@@ -164,5 +169,36 @@ class ProgressSeeder extends Seeder
         $this->command->info("  - Module progress: {$moduleProgressCount}");
         $this->command->info("  - Lesson progress: {$lessonProgressCount}");
         $this->command->info("  - Quiz attempts: {$quizAttemptCount}");
+
+        $this->ensureTestStudentHasCompletedProgress();
+    }
+
+    private function ensureTestStudentHasCompletedProgress(): void
+    {
+        $testStudent = Student::where('email', 'an.zhovna@gmail.com')->first();
+
+        if (!$testStudent) {
+            return;
+        }
+
+        $hasCompleted = StudentCourseProgress::where('student_id', $testStudent->id)
+            ->where('status', ProgressStatus::Completed)
+            ->exists();
+
+        if ($hasCompleted) {
+            return;
+        }
+
+        $progress = StudentCourseProgress::where('student_id', $testStudent->id)->first();
+
+        if ($progress) {
+            $progress->update([
+                'status' => ProgressStatus::Completed,
+                'progress_percentage' => 100,
+                'completed_at' => now()->subDays(5),
+            ]);
+
+            $this->command->info('Ensured an.zhovna@gmail.com has completed progress for certificate');
+        }
     }
 }

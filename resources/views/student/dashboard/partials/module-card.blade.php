@@ -130,7 +130,7 @@
                 :percentage="$module->progressPercentage"
                 :size="100"
                 :stroke-width="6"
-                :color="$colorScheme['progress_color']"
+                :color="$module->progressPercentage === 100 ? 'emerald' : $colorScheme['progress_color']"
                 :locked="!$module->isUnlocked"
             />
         </div>

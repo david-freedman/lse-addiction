@@ -9,6 +9,10 @@ final class ShowWebinarController
 {
     public function __invoke(Webinar $webinar): View
     {
+        if ($webinar->isDraft()) {
+            abort(404);
+        }
+
         $webinar->load('teacher');
 
         $student = auth()->user();

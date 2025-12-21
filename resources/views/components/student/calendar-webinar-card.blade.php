@@ -1,13 +1,13 @@
 @props(['webinar'])
 
-<div data-webinar-id="{{ $webinar->id }}" class="bg-white rounded-lg p-4 border border-gray-200 hover:border-teal-300 transition cursor-pointer" onclick="window.location.href='{{ route('student.webinar.show', $webinar->slug) }}'">
+<div data-webinar-id="{{ $webinar->id }}" class="bg-white rounded-lg p-4 border border-gray-200 hover:border-purple-300 transition cursor-pointer" onclick="window.location.href='{{ route('student.webinar.show', $webinar->slug) }}'">
     <h4 class="text-sm font-semibold text-gray-900 mb-3 line-clamp-2">{{ $webinar->title }}</h4>
 
     <div class="flex items-center gap-2 mb-3">
         @if($webinar->teacherPhotoUrl)
             <img src="{{ $webinar->teacherPhotoUrl }}" alt="{{ $webinar->teacherName }}" class="w-8 h-8 rounded-full object-cover">
         @else
-            <div class="w-8 h-8 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center text-xs font-medium">
+            <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-medium">
                 {{ mb_substr($webinar->teacherName, 0, 1) }}
             </div>
         @endif

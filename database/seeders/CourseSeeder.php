@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Domains\Course\Enums\CourseLabel;
+use App\Domains\Course\Enums\CourseStatus;
 use App\Domains\Course\Models\Course;
 use App\Domains\Teacher\Models\Teacher;
 use App\Models\User;
@@ -27,7 +29,7 @@ class CourseSeeder extends Seeder
             'status' => 'active',
             'type' => 'upcoming',
             'starts_at' => now()->addDays(7),
-            'label' => 'майстер-клас',
+            'label' => CourseLabel::MasterClass->value,
             'banner' => 'https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?q=80&w=2070',
         ]);
 
@@ -41,7 +43,7 @@ class CourseSeeder extends Seeder
             'status' => 'active',
             'type' => 'recorded',
             'starts_at' => now()->subDays(15),
-            'label' => 'курс у записі',
+            'label' => CourseLabel::Recorded->value,
             'banner' => 'https://images.unsplash.com/photo-1559757175-5700dde675bc?q=80&w=2070',
         ]);
 
@@ -55,7 +57,7 @@ class CourseSeeder extends Seeder
             'status' => 'active',
             'type' => 'upcoming',
             'starts_at' => now()->addDays(14),
-            'label' => 'практичний тренінг',
+            'label' => CourseLabel::PracticalTraining->value,
             'banner' => 'https://images.unsplash.com/photo-1551076805-e1869033e561?q=80&w=2064',
         ]);
 
@@ -71,7 +73,7 @@ class CourseSeeder extends Seeder
             'status' => 'active',
             'type' => 'upcoming',
             'starts_at' => now()->addDays(10),
-            'label' => 'інтенсив',
+            'label' => CourseLabel::Intensive->value,
             'banner' => 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?q=80&w=2091',
         ]);
 
@@ -85,7 +87,7 @@ class CourseSeeder extends Seeder
             'status' => 'active',
             'type' => 'recorded',
             'starts_at' => now()->subDays(20),
-            'label' => 'курс у записі',
+            'label' => CourseLabel::Recorded->value,
             'banner' => 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070',
         ]);
 
@@ -99,7 +101,7 @@ class CourseSeeder extends Seeder
             'status' => 'active',
             'type' => 'upcoming',
             'starts_at' => now()->addDays(21),
-            'label' => 'онлайн-курс',
+            'label' => CourseLabel::OnlineCourse->value,
             'banner' => 'https://images.unsplash.com/photo-1579154204601-01588f351e67?q=80&w=2070',
         ]);
 
@@ -115,7 +117,7 @@ class CourseSeeder extends Seeder
             'status' => 'active',
             'type' => 'recorded',
             'starts_at' => now()->subDays(5),
-            'label' => 'відеокурс',
+            'label' => CourseLabel::VideoCourse->value,
             'banner' => 'https://images.unsplash.com/photo-1527689368864-3a821dbccc34?q=80&w=2070',
         ]);
 
@@ -129,7 +131,7 @@ class CourseSeeder extends Seeder
             'status' => 'active',
             'type' => 'upcoming',
             'starts_at' => now()->addDays(28),
-            'label' => 'майстер-клас',
+            'label' => CourseLabel::MasterClass->value,
             'banner' => 'https://images.unsplash.com/photo-1516549655169-df83a0774514?q=80&w=2070',
         ]);
 
@@ -143,7 +145,7 @@ class CourseSeeder extends Seeder
             'status' => 'active',
             'type' => 'recorded',
             'starts_at' => now()->subDays(12),
-            'label' => 'курс у записі',
+            'label' => CourseLabel::Recorded->value,
             'banner' => 'https://images.unsplash.com/photo-1530497610245-94d3c16cda28?q=80&w=2064',
         ]);
 
@@ -157,8 +159,50 @@ class CourseSeeder extends Seeder
             'status' => 'active',
             'type' => 'upcoming',
             'starts_at' => now()->addDays(18),
-            'label' => 'онлайн-курс',
+            'label' => CourseLabel::OnlineCourse->value,
             'banner' => 'https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=2025',
+        ]);
+
+        Course::create([
+            'name' => 'Ультразвукова діагностика серця (чернетка)',
+            'slug' => Str::slug('uzd-sertsya-chernetka'),
+            'description' => 'Курс в процесі розробки. Буде охоплювати базові та розширені техніки ехокардіографії.',
+            'price' => 4000.00,
+            'teacher_id' => $teachers->random()->id,
+            'author_id' => $users->random()->id,
+            'status' => CourseStatus::Draft->value,
+            'type' => 'upcoming',
+            'starts_at' => now()->addDays(60),
+            'label' => CourseLabel::OnlineCourse->value,
+            'banner' => 'https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?q=80&w=2070',
+        ]);
+
+        Course::create([
+            'name' => 'Основи клінічної фармакології (архів)',
+            'slug' => Str::slug('osnovy-klinichnoyi-farmakologiyi-arkhiv'),
+            'description' => 'Архівний курс з клінічної фармакології. Доступний для перегляду записів.',
+            'price' => 2500.00,
+            'teacher_id' => $teachers->random()->id,
+            'author_id' => $users->random()->id,
+            'status' => CourseStatus::Archived->value,
+            'type' => 'recorded',
+            'starts_at' => now()->subMonths(6),
+            'label' => CourseLabel::VideoCourse->value,
+            'banner' => 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?q=80&w=2070',
+        ]);
+
+        Course::create([
+            'name' => 'Тестовий прихований курс',
+            'slug' => Str::slug('testovyi-prykhovanyi-kurs'),
+            'description' => 'Прихований курс для тестування функціоналу.',
+            'price' => 0,
+            'teacher_id' => $teachers->random()->id,
+            'author_id' => $users->random()->id,
+            'status' => CourseStatus::Hidden->value,
+            'type' => 'recorded',
+            'starts_at' => now()->subDays(30),
+            'label' => CourseLabel::Recorded->value,
+            'banner' => 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070',
         ]);
     }
 }

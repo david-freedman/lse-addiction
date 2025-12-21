@@ -5,7 +5,9 @@ use App\Applications\Http\Student\Course\Controllers\GetMyCoursesController;
 use App\Applications\Http\Student\Course\Controllers\ShowCourseController;
 use App\Applications\Http\Student\Course\Controllers\UnenrollCourseController;
 use App\Applications\Http\Student\Lesson\Controllers\CompleteLessonController;
+use App\Applications\Http\Student\Lesson\Controllers\SaveLessonNoteController;
 use App\Applications\Http\Student\Lesson\Controllers\ShowLessonController;
+use App\Applications\Http\Student\Lesson\Controllers\StoreCommentController;
 use App\Applications\Http\Student\Lesson\Controllers\StreamDicomController;
 use App\Applications\Http\Student\Module\Controllers\ShowModuleController;
 use App\Applications\Http\Student\Quiz\Controllers\ShowQuizController;
@@ -22,6 +24,8 @@ Route::middleware(['auth', 'verified.student'])->group(function () {
 
     Route::get('courses/{course}/lessons/{lesson}', ShowLessonController::class)->name('lessons.show');
     Route::post('courses/{course}/lessons/{lesson}/complete', CompleteLessonController::class)->name('lessons.complete');
+    Route::post('courses/{course}/lessons/{lesson}/notes', SaveLessonNoteController::class)->name('lessons.notes.save');
+    Route::post('courses/{course}/lessons/{lesson}/comments', StoreCommentController::class)->name('lessons.comments.store');
     Route::get('courses/{course}/lessons/{lesson}/dicom', StreamDicomController::class)->name('lessons.dicom');
 
     Route::get('courses/{course}/lessons/{lesson}/quiz', ShowQuizController::class)->name('quiz.show');

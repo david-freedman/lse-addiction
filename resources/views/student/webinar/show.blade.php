@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="space-y-6">
-    <a href="{{ route('home') }}" class="inline-flex items-center gap-2 text-gray-500 hover:text-teal-500 font-medium transition">
+    <a href="{{ route('student.dashboard') }}" class="inline-flex items-center gap-2 text-gray-500 hover:text-teal-500 font-medium transition">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
@@ -50,9 +50,6 @@
                     @if($webinar->is_free)
                         <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">Безкоштовно</span>
                     @endif
-                    @if($isRegistered)
-                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-teal-100 text-teal-700">Ви зареєстровані</span>
-                    @endif
                 </div>
                 <h1 class="text-2xl lg:text-3xl font-bold text-gray-900">{{ $webinar->title }}</h1>
             </div>
@@ -79,8 +76,14 @@
                         @endif
                         <div>
                             <p class="font-semibold text-gray-900">{{ $webinar->teacher->full_name }}</p>
+                            @if($webinar->teacher->position)
+                                <p class="text-sm text-gray-500">{{ $webinar->teacher->position }}</p>
+                            @endif
                         </div>
                     </div>
+                    @if($webinar->teacher->description)
+                        <p class="mt-4 text-sm text-gray-600 leading-relaxed">{{ $webinar->teacher->description }}</p>
+                    @endif
                 </div>
 
                 <div class="bg-white rounded-xl shadow-md p-6">
@@ -139,14 +142,41 @@
                 </div>
 
                 <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Реєстрація</h3>
                     @if($isRegistered)
-                        @if($meetingUrl)
-                            <a href="{{ $meetingUrl }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 px-6 rounded-lg transition">
+                        <div class="flex items-center gap-2 text-teal-600 mb-4">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="font-medium">Ви зареєстровані</span>
+                        </div>
+                        @if($webinar->status === \App\Domains\Webinar\Enums\WebinarStatus::Completed)
+                            <div class="w-full inline-flex items-center justify-center gap-2 bg-gray-100 text-gray-500 font-medium py-3 px-6 rounded-lg text-center">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                Приєднатися до вебінару
-                            </a>
+                                <span>Вебінар завершено</span>
+                            </div>
+                        @elseif($meetingUrl)
+                            @if($webinar->status === \App\Domains\Webinar\Enums\WebinarStatus::Live)
+                                <p class="text-sm text-rose-600 font-medium mb-3 text-center">
+                                    Вебінар вже триває {{ (int) $webinar->starts_at->diffInMinutes(now()) }} хв
+                                </p>
+                                <a href="{{ $meetingUrl }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 px-6 rounded-lg transition">
+                                    <span class="relative flex h-3 w-3">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                                    </span>
+                                    Приєднатися до вебінару
+                                </a>
+                            @else
+                                <a href="{{ $meetingUrl }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 px-6 rounded-lg transition">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                    Приєднатися до вебінару
+                                </a>
+                            @endif
                         @else
                             <div class="w-full inline-flex items-center justify-center gap-2 bg-gray-100 text-gray-500 font-medium py-3 px-6 rounded-lg text-center">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
