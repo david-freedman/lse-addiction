@@ -2,12 +2,14 @@
 
 namespace App\Domains\Payment\Gateways;
 
+use App\Domains\Course\Models\Course;
 use App\Domains\Payment\Contracts\PaymentGatewayInterface;
 use App\Domains\Payment\Data\PaymentCallbackData;
 use App\Domains\Payment\Data\PaymentProductData;
 use App\Domains\Payment\Data\PaymentRequestData;
 use App\Domains\Payment\ValueObjects\PaymentSignature;
 use App\Domains\Transaction\Models\Transaction;
+use App\Domains\Webinar\Models\Webinar;
 
 class WayForPayGateway implements PaymentGatewayInterface
 {
@@ -139,9 +141,15 @@ class WayForPayGateway implements PaymentGatewayInterface
     {
         $purchasable = $transaction->purchasable;
 
+        $productName = match (true) {
+            $purchasable instanceof Course => "Курс \"{$purchasable->name}\"",
+            $purchasable instanceof Webinar => "Вебінар \"{$purchasable->title}\"",
+            default => 'Товар',
+        };
+
         return collect([
             PaymentProductData::from([
-                'name' => $purchasable->name ? "Курс \"{$purchasable->name}\"" : 'Course',
+                'name' => $productName,
                 'price' => $transaction->amount,
                 'count' => 1,
             ]),

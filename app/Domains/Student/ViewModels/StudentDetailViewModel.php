@@ -5,11 +5,13 @@ namespace App\Domains\Student\ViewModels;
 use App\Domains\ActivityLog\Enums\ActivitySubject;
 use App\Domains\ActivityLog\Enums\ActivityType;
 use App\Domains\ActivityLog\Models\ActivityLog;
+use App\Domains\Certificate\Models\Certificate;
 use App\Domains\Course\Models\Course;
 use App\Domains\Discount\Models\StudentCourseDiscount;
 use App\Domains\Student\Models\Student;
 use App\Domains\Transaction\Models\Transaction;
-use App\Models\User;
+use App\Domains\Webinar\Enums\WebinarStatus;
+use App\Domains\Webinar\Models\Webinar;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Jenssegers\Agent\Agent;
@@ -22,8 +24,6 @@ readonly class StudentDetailViewModel
 
     private Collection $availableCourses;
 
-    private Collection $teachers;
-
     private LengthAwarePaginator $loginHistory;
 
     private Collection $transactions;
@@ -31,6 +31,12 @@ readonly class StudentDetailViewModel
     private Collection $activeDiscounts;
 
     private Collection $usedDiscounts;
+
+    private Collection $certificates;
+
+    private Collection $registeredWebinars;
+
+    private Collection $availableWebinars;
 
     public function __construct(Student $student)
     {
@@ -55,8 +61,6 @@ readonly class StudentDetailViewModel
         $this->availableCourses = Course::whereNotIn('id', $this->enrolledCourses->pluck('id'))
             ->orderBy('name')
             ->get();
-
-        $this->teachers = User::teachers()->orderBy('name')->get();
 
         $this->loginHistory = ActivityLog::where('subject_type', ActivitySubject::Student)
             ->where('subject_id', $student->id)
@@ -85,6 +89,26 @@ readonly class StudentDetailViewModel
             ->orderBy('used_at', 'desc')
             ->limit(10)
             ->get();
+
+        $this->certificates = Certificate::forStudent($student->id)
+            ->withTrashed()
+            ->with(['course.teacher'])
+            ->orderBy('issued_at', 'desc')
+            ->get();
+
+        $this->registeredWebinars = $student->webinars()
+            ->wherePivotNull('cancelled_at')
+            ->with('teacher')
+            ->orderBy('starts_at', 'desc')
+            ->get();
+
+        $registeredWebinarIds = $this->registeredWebinars->pluck('id');
+
+        $this->availableWebinars = Webinar::where('status', WebinarStatus::Upcoming)
+            ->whereNotIn('id', $registeredWebinarIds)
+            ->with('teacher')
+            ->orderBy('starts_at')
+            ->get();
     }
 
     public function student(): Student
@@ -102,11 +126,6 @@ readonly class StudentDetailViewModel
         return $this->availableCourses;
     }
 
-    public function teachers(): Collection
-    {
-        return $this->teachers;
-    }
-
     public function loginHistory(): LengthAwarePaginator
     {
         return $this->loginHistory;
@@ -114,11 +133,11 @@ readonly class StudentDetailViewModel
 
     public function parseUserAgent(?string $userAgent): array
     {
-        if (!$userAgent) {
+        if (! $userAgent) {
             return ['os' => 'N/A', 'browser' => 'N/A', 'device' => 'N/A'];
         }
 
-        $agent = new Agent();
+        $agent = new Agent;
         $agent->setUserAgent($userAgent);
 
         $device = match (true) {
@@ -228,6 +247,60 @@ readonly class StudentDetailViewModel
 
     public function hasProfileFields(): bool
     {
-        return !empty($this->profileFields());
+        return ! empty($this->profileFields());
+    }
+
+    public function certificates(): Collection
+    {
+        return $this->certificates;
+    }
+
+    public function hasCertificates(): bool
+    {
+        return $this->certificates->isNotEmpty();
+    }
+
+    public function certificatesCount(): int
+    {
+        return $this->certificates->whereNull('deleted_at')->count();
+    }
+
+    public function coursesEligibleForManualCertificate(): Collection
+    {
+        $certifiedCourseIds = $this->certificates->pluck('course_id');
+
+        return $this->enrolledCourses->reject(function ($course) use ($certifiedCourseIds) {
+            return $certifiedCourseIds->contains($course->id);
+        });
+    }
+
+    public function hasCoursesEligibleForManualCertificate(): bool
+    {
+        return $this->coursesEligibleForManualCertificate()->isNotEmpty();
+    }
+
+    public function registeredWebinars(): Collection
+    {
+        return $this->registeredWebinars;
+    }
+
+    public function availableWebinars(): Collection
+    {
+        return $this->availableWebinars;
+    }
+
+    public function hasRegisteredWebinars(): bool
+    {
+        return $this->registeredWebinars->isNotEmpty();
+    }
+
+    public function hasAvailableWebinars(): bool
+    {
+        return $this->availableWebinars->isNotEmpty();
+    }
+
+    public function registeredWebinarsCount(): int
+    {
+        return $this->registeredWebinars->count();
     }
 }

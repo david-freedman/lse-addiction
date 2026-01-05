@@ -4,6 +4,7 @@ namespace App\Domains\Course\ViewModels;
 
 use App\Domains\Course\Models\Course;
 use App\Domains\Student\Models\Student;
+use App\Domains\Teacher\Models\Teacher;
 
 readonly class CourseDetailViewModel
 {
@@ -40,6 +41,26 @@ readonly class CourseDetailViewModel
     public function teacherName(): string
     {
         return $this->course->teacher?->full_name ?? 'Не вказано';
+    }
+
+    public function teacher(): ?Teacher
+    {
+        return $this->course->teacher;
+    }
+
+    public function modulesCount(): int
+    {
+        return $this->course->modules()->count();
+    }
+
+    public function lessonsCount(): int
+    {
+        return $this->course->modules()->withCount('lessons')->get()->sum('lessons_count');
+    }
+
+    public function isFree(): bool
+    {
+        return (float) $this->course->price === 0.0;
     }
 
     public function bannerUrl(): ?string
@@ -92,12 +113,19 @@ readonly class CourseDetailViewModel
 
     public function canEnroll(): bool
     {
-        return $this->course->isPublished() && ! $this->isEnrolled();
+        return $this->course->isActive()
+            && $this->course->isAvailableByDate()
+            && !$this->isEnrolled();
     }
 
-    public function isPublished(): bool
+    public function isAvailableByDate(): bool
     {
-        return $this->course->isPublished();
+        return $this->course->isAvailableByDate();
+    }
+
+    public function isActive(): bool
+    {
+        return $this->course->isActive();
     }
 
     public function createdAt(): string

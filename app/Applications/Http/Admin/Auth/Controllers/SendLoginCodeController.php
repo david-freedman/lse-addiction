@@ -19,7 +19,7 @@ final class SendLoginCodeController
             ->where('is_active', true)
             ->first();
 
-        if (!$user) {
+        if (! $user) {
             return back()->withErrors(['email' => 'Користувача з такою адресою не знайдено, немає прав доступу або обліковий запис деактивовано.']);
         }
 

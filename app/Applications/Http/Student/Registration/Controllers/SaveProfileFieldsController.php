@@ -14,13 +14,13 @@ final class SaveProfileFieldsController
     {
         $studentId = session('student_id');
 
-        if (!$studentId) {
+        if (! $studentId) {
             return redirect()->route('student.register');
         }
 
         $student = Student::find($studentId);
 
-        if (!$student || !$student->isFullyVerified() || !$student->hasContactDetails()) {
+        if (! $student || ! $student->isFullyVerified() || ! $student->hasContactDetails()) {
             return redirect()->route('student.register');
         }
 
@@ -32,6 +32,6 @@ final class SaveProfileFieldsController
 
         session()->forget(['student_id', 'student_email', 'student_phone', 'phone_code_expires_at', 'email_code_expires_at']);
 
-        return redirect()->route('student.profile.show')->with('success', __('messages.profile_fields.saved'));
+        return redirect()->route('student.dashboard')->with('success', __('messages.profile_fields.saved'));
     }
 }

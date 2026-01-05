@@ -11,7 +11,7 @@ final class ShowVerifyPhoneController
     {
         $studentId = session('student_id');
 
-        if (!$studentId) {
+        if (! $studentId) {
             return redirect()->route('student.register');
         }
 

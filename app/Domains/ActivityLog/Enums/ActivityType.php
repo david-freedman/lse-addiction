@@ -29,6 +29,7 @@ enum ActivityType: string
     case StudentCreatedByAdmin = 'admin.student.created';
     case StudentUpdatedByAdmin = 'admin.student.updated';
     case StudentDeletedByAdmin = 'admin.student.deleted';
+    case StudentDeletedSelf = 'student.deleted.self';
     case StudentRestoredByAdmin = 'admin.student.restored';
     case StudentAssignedToCourse = 'admin.student.assigned_to_course';
     case StudentUnenrolledFromCourse = 'admin.student.unenrolled_from_course';
@@ -45,6 +46,15 @@ enum ActivityType: string
     case TransactionCreated = 'transaction.created';
     case TransactionCompleted = 'transaction.completed';
     case TransactionFailed = 'transaction.failed';
+
+    case WebinarCreated = 'webinar.created';
+    case WebinarUpdated = 'webinar.updated';
+    case WebinarDeleted = 'webinar.deleted';
+    case StudentAssignedToWebinar = 'admin.student.assigned_to_webinar';
+    case StudentUnregisteredFromWebinar = 'admin.student.unregistered_from_webinar';
+
+    case HomeworkSubmitted = 'homework.submitted';
+    case HomeworkReviewed = 'homework.reviewed';
 
     case SystemError = 'system.error';
 }

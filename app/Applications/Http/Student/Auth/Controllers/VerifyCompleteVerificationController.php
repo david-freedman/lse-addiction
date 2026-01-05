@@ -16,19 +16,19 @@ final class VerifyCompleteVerificationController
 
         $student = VerifyCodeAction::execute($data);
 
-        if (!$student) {
+        if (! $student) {
             return back()->withErrors(['code' => __('messages.errors.invalid_code')]);
         }
 
         session()->forget('verification_code_sent');
 
-        if (!$student->isFullyVerified()) {
+        if (! $student->isFullyVerified()) {
             return redirect()->route('student.complete-verification');
         }
 
         AuthenticateStudentAction::execute($student);
         session()->forget('verification_student_id');
 
-        return redirect()->route('student.profile.show');
+        return redirect()->route('student.dashboard');
     }
 }

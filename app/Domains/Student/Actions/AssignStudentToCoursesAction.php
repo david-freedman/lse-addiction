@@ -15,7 +15,7 @@ class AssignStudentToCoursesAction
     public static function execute(Student $student, array $assignments): void
     {
         foreach ($assignments as $assignment) {
-            if (!$assignment instanceof AssignToCourseData) {
+            if (! $assignment instanceof AssignToCourseData) {
                 continue;
             }
 

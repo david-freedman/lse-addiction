@@ -15,15 +15,23 @@ class DatabaseSeeder extends Seeder
             ProfileFieldSeeder::class,
             UserSeeder::class,
             TeacherSeeder::class,
+            WebinarSeeder::class,
             TagSeeder::class,
             CourseSeeder::class,
             CourseTagSeeder::class,
+            ModuleSeeder::class,
+            LessonSeeder::class,
+            QuizSeeder::class,
             StudentSeeder::class,
+            WebinarStudentSeeder::class,
             CourseStudentSeeder::class,
+            HomeworkSeeder::class,
             AdminUserSeeder::class,
             StudentCourseDiscountSeeder::class,
             TransactionSeeder::class,
             FAQSeeder::class,
+            ProgressSeeder::class,
+            CertificateSeeder::class,
         ]);
     }
 }

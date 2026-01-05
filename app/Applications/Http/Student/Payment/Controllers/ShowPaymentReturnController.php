@@ -23,7 +23,7 @@ final class ShowPaymentReturnController
                     $provider
                 );
 
-                if (!$isValid) {
+                if (! $isValid) {
                     Log::warning('Invalid signature on return URL', [
                         'orderReference' => $orderReference,
                         'data' => $request->all(),
@@ -37,7 +37,7 @@ final class ShowPaymentReturnController
             }
         }
 
-        if (!$orderReference) {
+        if (! $orderReference) {
             return view('student.payment.return', [
                 'status' => 'error',
                 'message' => 'Не вказано номер замовлення',
@@ -46,7 +46,7 @@ final class ShowPaymentReturnController
 
         $transaction = Transaction::where('transaction_number', $orderReference)->first();
 
-        if (!$transaction) {
+        if (! $transaction) {
             return view('student.payment.return', [
                 'status' => 'error',
                 'message' => 'Транзакцію не знайдено',

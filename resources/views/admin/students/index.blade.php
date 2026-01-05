@@ -175,11 +175,9 @@
                                     <span class="text-sm text-gray-900">{{ $student->courses_count }}</span>
                                 </td>
                                 <td class="px-4 py-3">
-                                    @if($student->courses->isNotEmpty())
+                                    @if($student->courseProgress->isNotEmpty())
                                         @php
-                                            $totalLessons = $student->courses->sum('pivot.total_lessons');
-                                            $completedLessons = $student->courses->sum('pivot.lessons_completed');
-                                            $percentage = $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
+                                            $percentage = round($student->courseProgress->avg('progress_percentage'));
                                         @endphp
                                         <div class="flex items-center gap-2">
                                             <div class="h-2 w-20 overflow-hidden rounded-full bg-gray-200">

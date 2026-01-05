@@ -189,11 +189,11 @@
                     required
                     class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('status') border-error-500 @enderror"
                 >
-                    <option value="draft" {{ old('status', $course->status->value) === 'draft' ? 'selected' : '' }}>Чернетка</option>
-                    <option value="published" {{ old('status', $course->status->value) === 'published' ? 'selected' : '' }}>Опубліковано</option>
-                    <option value="in_progress" {{ old('status', $course->status->value) === 'in_progress' ? 'selected' : '' }}>В процесі</option>
-                    <option value="finished" {{ old('status', $course->status->value) === 'finished' ? 'selected' : '' }}>Завершений</option>
-                    <option value="archived" {{ old('status', $course->status->value) === 'archived' ? 'selected' : '' }}>Архівовано</option>
+                    @foreach(\App\Domains\Course\Enums\CourseStatus::cases() as $status)
+                        <option value="{{ $status->value }}" {{ old('status', $course->status->value) === $status->value ? 'selected' : '' }}>
+                            {{ $status->label() }}
+                        </option>
+                    @endforeach
                 </select>
                 @error('status')
                     <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
@@ -250,16 +250,18 @@
 
             <div>
                 <label for="label" class="mb-2 block text-sm font-medium text-gray-700">Мітка (Label)</label>
-                <input
-                    type="text"
+                <select
                     name="label"
                     id="label"
-                    value="{{ old('label', $course->label) }}"
-                    placeholder="наприклад: BESTSELLER, NEW"
-                    maxlength="50"
                     class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('label') border-error-500 @enderror"
                 >
-                <p class="mt-1 text-xs text-gray-500">Промо-мітка (макс. 50 символів)</p>
+                    <option value="">Без мітки</option>
+                    @foreach(\App\Domains\Course\Enums\CourseLabel::cases() as $labelOption)
+                        <option value="{{ $labelOption->value }}" {{ old('label', $course->label) === $labelOption->value ? 'selected' : '' }}>
+                            {{ $labelOption->label() }}
+                        </option>
+                    @endforeach
+                </select>
                 @error('label')
                     <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
                 @enderror
@@ -270,12 +272,17 @@
             <a href="{{ route('admin.courses.show', $course) }}" class="rounded-lg px-5 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100">
                 Скасувати
             </a>
-            <button
-                type="submit"
-                class="rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-brand-600 focus:outline-none focus:ring-4 focus:ring-brand-500/20"
-            >
-                Оновити курс
-            </button>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('admin.modules.index', $course) }}" class="rounded-lg border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50">
+                    Модулі курсу
+                </a>
+                <button
+                    type="submit"
+                    class="rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-brand-600 focus:outline-none focus:ring-4 focus:ring-brand-500/20"
+                >
+                    Оновити курс
+                </button>
+            </div>
         </div>
     </form>
 </div>

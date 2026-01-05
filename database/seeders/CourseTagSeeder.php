@@ -33,7 +33,7 @@ class CourseTagSeeder extends Seeder
         ];
 
         foreach ($courses as $index => $course) {
-            if (!isset($courseTagMapping[$index])) {
+            if (! isset($courseTagMapping[$index])) {
                 continue;
             }
 

@@ -10,6 +10,7 @@ class StudentSeeder extends Seeder
     public function run(): void
     {
         $students = [
+            ['name' => 'Андрій', 'surname' => 'Жовна', 'email' => 'an.zhovna@gmail.com', 'phone' => '+380963877677', 'city' => 'Київ', 'birthday' => '1990-12-06', 'days_ago' => 0],
             ['name' => 'Олена', 'surname' => 'Бондаренко', 'email' => 'bondarenko@gmail.com', 'phone' => '+380501234501', 'city' => 'Київ', 'birthday' => '1990-03-15', 'days_ago' => 120],
             ['name' => 'Андрій', 'surname' => 'Шевченко', 'email' => 'shevchenko@gmail.com', 'phone' => '+380501234502', 'city' => 'Львів', 'birthday' => '1985-07-22', 'days_ago' => 90],
             ['name' => 'Марія', 'surname' => 'Коваленко', 'email' => 'kovalenko.m@gmail.com', 'phone' => '+380501234503', 'city' => 'Одеса', 'birthday' => '1992-11-08', 'days_ago' => 75],
@@ -52,6 +53,6 @@ class StudentSeeder extends Seeder
             ]);
         }
 
-        $this->command->info('Created 25 verified students');
+        $this->command->info('Created 26 verified students');
     }
 }

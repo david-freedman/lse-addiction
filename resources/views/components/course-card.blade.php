@@ -24,23 +24,23 @@
             </div>
         @endif
 
-        @if($course->label)
+        @if($course->label_text)
             <div class="absolute top-3 left-3 bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full uppercase">
-                {{ $course->label }}
+                {{ $course->label_text }}
             </div>
         @endif
 
-        @if(isset($course->is_purchased) && $course->is_purchased)
-            <div class="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
-                Куплено
-            </div>
-        @endif
     </div>
 
     <div class="p-6">
+        @if($course->tags->isNotEmpty())
+            <div class="flex flex-wrap gap-1 mb-2">
+                @foreach($course->tags->take(2) as $tag)
+                    <span class="px-2 py-0.5 bg-teal-50 text-teal-700 text-xs rounded-full">{{ $tag->name }}</span>
+                @endforeach
+            </div>
+        @endif
+
         <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2 min-h-[56px] group-hover:text-teal-600 transition-colors duration-200">{{ $course->name }}</h3>
 
         <div class="flex items-center text-sm text-gray-600 mb-3">
@@ -51,7 +51,7 @@
         </div>
 
         @if($course->starts_at)
-            <div class="flex items-center text-sm text-gray-600 mb-4">
+            <div class="flex items-center text-sm text-gray-600 mb-3">
                 <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
@@ -59,20 +59,17 @@
             </div>
         @endif
 
-        <div class="border-t pt-4 flex items-center justify-between">
+        <div class="border-t border-gray-300 pt-4 flex items-center justify-between">
             <div class="flex-1">
-                @if(($course->has_discount || $individualDiscount) && !(isset($course->is_purchased) && $course->is_purchased))
+                @if(isset($course->is_purchased) && $course->is_purchased)
+                @elseif($course->has_discount || $individualDiscount)
                     <div class="flex items-baseline gap-2 flex-wrap">
                         <span class="text-2xl font-bold text-teal-600">{{ number_format($finalPrice, 0, ',', ' ') }} ₴</span>
-                        <span class="text-sm text-gray-500 line-through">{{ $course->formatted_price }}</span>
+                        <span class="text-sm text-gray-500 line-through">{{ $course->has_discount ? $course->formatted_old_price : $course->formatted_price }}</span>
                     </div>
                     @if($individualDiscount)
                         <div class="text-xs text-brand-600 font-semibold mt-1">
                             Персональна знижка: {{ $individualDiscount->formattedValue() }}
-                        </div>
-                    @elseif($course->has_discount)
-                        <div class="text-xs text-green-600 font-semibold mt-1">
-                            Економія: {{ $course->formatted_discount_amount }}
                         </div>
                     @endif
                 @else
@@ -80,20 +77,28 @@
                 @endif
             </div>
 
-            @if($showPurchaseButton && !(isset($course->is_purchased) && $course->is_purchased))
+            @if($showPurchaseButton && !(isset($course->is_purchased) && $course->is_purchased) && $course->isAvailableByDate())
                 <button
                     onclick="event.preventDefault(); event.stopPropagation(); openPurchaseModal({{ $course->id }}, '{{ addslashes($course->name) }}', '{{ $course->teacher?->full_name ?? '' }}', '{{ $course->formatted_date ?? '' }}', '{{ $course->formatted_price }}', '{{ $course->has_discount ? $course->formatted_discount_amount : '' }}', '{{ $course->banner_url ?? '' }}', '{{ $individualDiscount?->formattedValue() ?? '' }}', '{{ $individualDiscount ? number_format($finalPrice, 0, ',', ' ') . " ₴" : "" }}')"
                     class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 ml-2 relative z-10"
                 >
                     Купити
                 </button>
+            @elseif($showPurchaseButton && !(isset($course->is_purchased) && $course->is_purchased) && !$course->isAvailableByDate())
+                <span class="bg-amber-100 text-amber-800 font-semibold py-2 px-4 rounded-lg ml-2 text-sm whitespace-nowrap">
+                    з {{ $course->formatted_date }}
+                </span>
+            @elseif(isset($course->is_purchased) && $course->is_purchased)
+                <span class="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition ml-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    Переглянути
+                </span>
             @else
                 <span class="inline-flex items-center gap-2 text-teal-600 font-semibold ml-2">
-                    @if(isset($course->is_purchased) && $course->is_purchased)
-                        Переглянути
-                    @else
-                        Детальніше
-                    @endif
+                    Детальніше
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                     </svg>

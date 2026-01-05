@@ -10,7 +10,7 @@
 <div class="main-page__auth auth" x-data="registrationForm()">
     <div class="auth__main">
         <div class="auth__logo">
-            <a href="{{ route('home') }}">
+            <a href="{{ route('student.dashboard') }}">
                 <img src="{{ asset('img/logo.svg') }}" alt="LifeScanEducation" class="ibg ibg--contain">
             </a>
         </div>

@@ -23,7 +23,7 @@ final class SendLoginCodeController
             ->where($data->isEmail() ? 'email' : 'phone', $data->contact)
             ->first();
 
-        if (!$student) {
+        if (! $student) {
             LogActivityAction::execute(ActivityLogData::from([
                 'subject_type' => ActivitySubject::Student,
                 'subject_id' => null,

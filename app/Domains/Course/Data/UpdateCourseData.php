@@ -2,6 +2,7 @@
 
 namespace App\Domains\Course\Data;
 
+use App\Domains\Course\Enums\CourseLabel;
 use App\Domains\Course\Enums\CourseStatus;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rules\Enum;
@@ -67,6 +68,7 @@ class UpdateCourseData extends Data
             'old_price' => ['nullable', 'numeric', 'min:0', 'gte:price'],
             'discount_percentage' => ['nullable', 'integer', 'min:0', 'max:100'],
             'teacher_id' => ['required', 'integer', 'exists:teachers,id'],
+            'label' => ['nullable', new Enum(CourseLabel::class)],
         ];
     }
 }

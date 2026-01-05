@@ -1,8 +1,12 @@
 import './bootstrap';
 import './countdown';
+import dicomViewerCDN from './dicom-viewer';
+import Alpine from 'alpinejs';
 import flatpickr from 'flatpickr';
 import { Ukrainian } from 'flatpickr/dist/l10n/uk.js';
 import '../css/flatpickr-tailwind.css';
+
+window.Alpine = Alpine;
 
 flatpickr.localize(Ukrainian);
 
@@ -44,3 +48,6 @@ document.addEventListener('alpine:init', () => {
         flatpickr(el, config);
     });
 });
+
+Alpine.data('dicomViewerCDN', dicomViewerCDN);
+Alpine.start();

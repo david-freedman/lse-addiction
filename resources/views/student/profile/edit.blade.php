@@ -3,7 +3,7 @@
 @section('title', 'Профіль та налаштування')
 
 @section('content')
-<div class="max-w-4xl">
+<div>
     <div class="mb-6">
         <h1 class="text-2xl font-semibold text-gray-900">Профіль та налаштування</h1>
         <p class="mt-1 text-sm text-gray-600">Керуйте своїм профілем, безпекою та налаштуваннями</p>

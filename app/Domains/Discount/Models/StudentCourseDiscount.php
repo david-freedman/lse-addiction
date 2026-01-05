@@ -77,6 +77,6 @@ class StudentCourseDiscount extends Model
 
     public function formattedValue(): string
     {
-        return $this->value . ' ' . $this->type->suffix();
+        return $this->value.' '.$this->type->suffix();
     }
 }

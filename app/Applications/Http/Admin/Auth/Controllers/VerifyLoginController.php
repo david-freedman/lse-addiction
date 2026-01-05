@@ -15,7 +15,7 @@ final class VerifyLoginController
     {
         $email = session('admin_login_email');
 
-        if (!$email) {
+        if (! $email) {
             return redirect()->route('admin.login');
         }
 
@@ -40,7 +40,7 @@ final class VerifyLoginController
 
         $user = VerifyCodeAction::execute($data);
 
-        if (!$user || !($user instanceof User)) {
+        if (! $user || ! ($user instanceof User)) {
             $remaining = $verification?->getRemainingAttempts() ?? 0;
             $message = $remaining > 0
                 ? "Невірний код верифікації. Залишилось спроб: {$remaining}"

@@ -15,13 +15,13 @@ final class ShowCompleteVerificationController
     {
         $studentId = session('verification_student_id') ?? Auth::id();
 
-        if (!$studentId) {
+        if (! $studentId) {
             return redirect()->route('student.login');
         }
 
         $student = Student::find($studentId);
 
-        if (!$student) {
+        if (! $student) {
             return redirect()->route('student.login');
         }
 
@@ -34,14 +34,14 @@ final class ShowCompleteVerificationController
 
         $requirePhone = config('verification.require_phone', true);
 
-        $verificationStep = ($requirePhone && !$student->hasVerifiedPhone())
+        $verificationStep = ($requirePhone && ! $student->hasVerifiedPhone())
             ? 'phone'
             : 'email';
         $contact = $verificationStep === 'phone'
             ? $student->phone
             : $student->email;
 
-        if (!session()->has('verification_code_sent')) {
+        if (! session()->has('verification_code_sent')) {
             SendVerificationCodeAction::execute(
                 type: $verificationStep,
                 contact: $contact,

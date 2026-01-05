@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Domains\Course\Enums\CourseStatus;
 use App\Domains\Course\Models\Course;
 use App\Domains\Student\Models\Student;
 use App\Models\User;
@@ -22,7 +23,7 @@ class CourseStudentSeeder extends Seeder
             return;
         }
 
-        $statuses = ['active', 'completed', 'paused'];
+        $statuses = ['active', 'completed'];
         $enrollments = [];
 
         foreach ($students->take(20) as $index => $student) {
@@ -42,7 +43,7 @@ class CourseStudentSeeder extends Seeder
                     'individual_discount' => rand(0, 3) === 0 ? rand(5, 20) : 0,
                     'lessons_completed' => $lessonsCompleted,
                     'total_lessons' => $totalLessons,
-                    'last_activity_at' => $status !== 'paused' ? now()->subDays(rand(0, 14)) : null,
+                    'last_activity_at' => now()->subDays(rand(0, 14)),
                     'notes' => null,
                 ];
             }
@@ -57,5 +58,95 @@ class CourseStudentSeeder extends Seeder
         }
 
         $this->command->info('Created '.count($uniqueEnrollments).' course enrollments');
+
+        $this->enrollTestStudent($teachers);
+    }
+
+    private function enrollTestStudent($teachers): void
+    {
+        $testStudent = Student::where('email', 'an.zhovna@gmail.com')->first();
+
+        if (!$testStudent) {
+            return;
+        }
+
+        $testEnrollments = [];
+
+        $activeCourse = Course::where('status', CourseStatus::Active->value)->first();
+        if ($activeCourse) {
+            $testEnrollments[] = [
+                'course_id' => $activeCourse->id,
+                'student_id' => $testStudent->id,
+                'teacher_id' => $teachers->isNotEmpty() ? $teachers->random()->id : null,
+                'enrolled_at' => now()->subDays(30),
+                'status' => 'completed',
+                'individual_discount' => 0,
+                'lessons_completed' => 15,
+                'total_lessons' => 15,
+                'last_activity_at' => now()->subDays(2),
+                'notes' => null,
+            ];
+        }
+
+        $draftCourse = Course::where('status', CourseStatus::Draft->value)->first();
+        if ($draftCourse) {
+            $testEnrollments[] = [
+                'course_id' => $draftCourse->id,
+                'student_id' => $testStudent->id,
+                'teacher_id' => $teachers->isNotEmpty() ? $teachers->random()->id : null,
+                'enrolled_at' => now()->subDays(5),
+                'status' => 'active',
+                'individual_discount' => 0,
+                'lessons_completed' => 0,
+                'total_lessons' => 10,
+                'last_activity_at' => null,
+                'notes' => null,
+            ];
+        }
+
+        $archivedCourse = Course::where('status', CourseStatus::Archived->value)->first();
+        if ($archivedCourse) {
+            $testEnrollments[] = [
+                'course_id' => $archivedCourse->id,
+                'student_id' => $testStudent->id,
+                'teacher_id' => $teachers->isNotEmpty() ? $teachers->random()->id : null,
+                'enrolled_at' => now()->subMonths(5),
+                'status' => 'active',
+                'individual_discount' => 10,
+                'lessons_completed' => 8,
+                'total_lessons' => 12,
+                'last_activity_at' => now()->subMonths(4),
+                'notes' => null,
+            ];
+        }
+
+        $hiddenCourse = Course::where('status', CourseStatus::Hidden->value)->first();
+        if ($hiddenCourse) {
+            $testEnrollments[] = [
+                'course_id' => $hiddenCourse->id,
+                'student_id' => $testStudent->id,
+                'teacher_id' => $teachers->isNotEmpty() ? $teachers->random()->id : null,
+                'enrolled_at' => now()->subDays(15),
+                'status' => 'active',
+                'individual_discount' => 0,
+                'lessons_completed' => 3,
+                'total_lessons' => 8,
+                'last_activity_at' => now()->subDays(10),
+                'notes' => null,
+            ];
+        }
+
+        foreach ($testEnrollments as $enrollment) {
+            $exists = DB::table('course_student')
+                ->where('course_id', $enrollment['course_id'])
+                ->where('student_id', $enrollment['student_id'])
+                ->exists();
+
+            if (!$exists) {
+                DB::table('course_student')->insert($enrollment);
+            }
+        }
+
+        $this->command->info('Enrolled an.zhovna@gmail.com in '.count($testEnrollments).' courses (all statuses)');
     }
 }

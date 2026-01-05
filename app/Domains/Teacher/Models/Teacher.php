@@ -3,13 +3,16 @@
 namespace App\Domains\Teacher\Models;
 
 use App\Domains\Course\Models\Course;
+use App\Domains\Webinar\Models\Webinar;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Teacher extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'user_id',
         'first_name',
@@ -29,6 +32,11 @@ class Teacher extends Model
     public function courses(): HasMany
     {
         return $this->hasMany(Course::class);
+    }
+
+    public function webinars(): HasMany
+    {
+        return $this->hasMany(Webinar::class);
     }
 
     public function getFullNameAttribute(): string
@@ -63,5 +71,22 @@ class Teacher extends Model
             $q->where('first_name', 'ilike', "%{$search}%")
                 ->orWhere('last_name', 'ilike', "%{$search}%");
         });
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (!$this->user?->photo) {
+            return null;
+        }
+
+        if (str_starts_with($this->user->photo, 'http')) {
+            return $this->user->photo;
+        }
+
+        if (str_starts_with($this->user->photo, 'img/')) {
+            return asset($this->user->photo);
+        }
+
+        return asset('storage/'.$this->user->photo);
     }
 }

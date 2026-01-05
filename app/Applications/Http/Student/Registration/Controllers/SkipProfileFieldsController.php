@@ -12,13 +12,13 @@ final class SkipProfileFieldsController
     {
         $studentId = session('student_id');
 
-        if (!$studentId) {
+        if (! $studentId) {
             return redirect()->route('student.register');
         }
 
         $student = Student::find($studentId);
 
-        if (!$student) {
+        if (! $student) {
             return redirect()->route('student.register');
         }
 
@@ -26,6 +26,6 @@ final class SkipProfileFieldsController
 
         session()->forget(['student_id', 'student_email', 'student_phone', 'phone_code_expires_at', 'email_code_expires_at']);
 
-        return redirect()->route('student.profile.show')->with('info', __('messages.profile_fields.skipped'));
+        return redirect()->route('student.dashboard')->with('info', __('messages.profile_fields.skipped'));
     }
 }

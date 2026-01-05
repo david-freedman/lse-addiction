@@ -12,7 +12,7 @@ final class ShowVerifyLoginController
         $contact = session('login_contact');
         $type = session('login_type');
 
-        if (!$contact || !$type) {
+        if (! $contact || ! $type) {
             return redirect()->route('student.login');
         }
 

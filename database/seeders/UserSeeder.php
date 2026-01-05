@@ -13,14 +13,14 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Майборода Алла Анатоліївна',
             'email' => 'maiboroda@lse.loc',
-            'photo' => 'img/speakers/01.webp',
+            'photo' => 'https://ui-avatars.com/api/?name=Майборода+Алла&background=14b8a6&color=fff&size=256',
             'role' => UserRole::Teacher,
         ]);
 
         User::create([
             'name' => 'Чумак Ярослав Анатолійович',
             'email' => 'chumak@lse.loc',
-            'photo' => 'img/speakers/02.webp',
+            'photo' => 'https://ui-avatars.com/api/?name=Чумак+Ярослав&background=0891b2&color=fff&size=256',
             'role' => UserRole::Teacher,
         ]);
 

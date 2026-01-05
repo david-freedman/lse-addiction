@@ -170,21 +170,66 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div>
-                                <label class="mb-2 block text-sm font-medium text-gray-700">Викладач</label>
-                                <select name="courses[0][teacher_id]" class="w-full rounded-lg border border-gray-300 px-4 py-2">
-                                    <option value="">Без викладача</option>
-                                    @foreach($viewModel->teachers() as $teacher)
-                                        <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
                             {{-- Temporarily hidden: Individual discount form field --}}
                             {{-- <div>
                                 <label class="mb-2 block text-sm font-medium text-gray-700">Персональна знижка (%)</label>
                                 <input type="number" name="courses[0][individual_discount]" min="0" max="100" step="0.01" class="w-full rounded-lg border border-gray-300 px-4 py-2">
                             </div> --}}
                             <button type="submit" class="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600">Призначити</button>
+                        </form>
+                    </details>
+                @endif
+            </div>
+
+            <div class="rounded-2xl border border-gray-200 bg-white p-6">
+                <h3 class="mb-4 text-lg font-bold text-gray-900">Вебінари ({{ $viewModel->registeredWebinarsCount() }})</h3>
+
+                @if($viewModel->hasRegisteredWebinars())
+                    <div class="space-y-3">
+                        @foreach($viewModel->registeredWebinars() as $webinar)
+                            <div class="rounded-lg border border-gray-200 p-4">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2">
+                                            <h4 class="font-medium text-gray-900">{{ $webinar->title }}</h4>
+                                            <span class="rounded-full px-2 py-0.5 text-xs font-medium bg-{{ $webinar->status->color() }}-100 text-{{ $webinar->status->color() }}-700">
+                                                {{ $webinar->status->label() }}
+                                            </span>
+                                        </div>
+                                        <div class="mt-2 flex gap-4 text-xs text-gray-500">
+                                            <span>{{ $webinar->starts_at->format('d.m.Y H:i') }}</span>
+                                            @if($webinar->pivot->registered_at)
+                                                <span>Записано: {{ $webinar->pivot->registered_at->format('d.m.Y') }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <form action="{{ route('admin.students.unregister-from-webinar', [$student, $webinar]) }}" method="POST" onsubmit="return confirm('Відписати від вебінару?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-sm text-error-600 hover:text-error-700">Відписати</button>
+                                    </form>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-sm text-gray-500">Студент не записаний на жоден вебінар</p>
+                @endif
+
+                @if($viewModel->hasAvailableWebinars())
+                    <details class="mt-4">
+                        <summary class="cursor-pointer text-sm font-medium text-brand-600">Записати на вебінар</summary>
+                        <form action="{{ route('admin.students.assign-to-webinar', $student) }}" method="POST" class="mt-4 space-y-4 rounded-lg bg-gray-50 p-4">
+                            @csrf
+                            <div>
+                                <label class="mb-2 block text-sm font-medium text-gray-700">Вебінар</label>
+                                <select name="webinar_id" required class="w-full rounded-lg border border-gray-300 px-4 py-2">
+                                    @foreach($viewModel->availableWebinars() as $webinar)
+                                        <option value="{{ $webinar->id }}">{{ $webinar->title }} ({{ $webinar->starts_at->format('d.m.Y H:i') }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <button type="submit" class="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600">Записати</button>
                         </form>
                     </details>
                 @endif
@@ -257,6 +302,82 @@
                                 </div>
                             @endforeach
                         </div>
+                    </details>
+                @endif
+            </div>
+
+            <div class="rounded-2xl border border-gray-200 bg-white p-6">
+                <h3 class="mb-4 text-lg font-bold text-gray-900">Сертифікати ({{ $viewModel->certificatesCount() }})</h3>
+
+                @if($viewModel->hasCertificates())
+                    <div class="space-y-3">
+                        @foreach($viewModel->certificates() as $certificate)
+                            <div class="rounded-lg border {{ $certificate->isRevoked() ? 'border-gray-200 bg-gray-50 opacity-60' : 'border-gray-200' }} p-4">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2">
+                                            <h4 class="font-medium text-gray-900">{{ $certificate->course->name }}</h4>
+                                            <span class="rounded-full px-2 py-0.5 text-xs font-medium {{ $certificate->grade_level->badgeClasses() }}">
+                                                {{ $certificate->grade_level->label() }}
+                                            </span>
+                                            @if($certificate->isRevoked())
+                                                <span class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">Відкликано</span>
+                                            @endif
+                                        </div>
+                                        <div class="mt-2 flex flex-wrap gap-4 text-xs text-gray-500">
+                                            <span>№ {{ $certificate->certificate_number }}</span>
+                                            <span>Оцінка: {{ number_format($certificate->grade, 1) }}%</span>
+                                            <span>Години: {{ $certificate->formatted_study_hours }}</span>
+                                            <span>Видано: {{ $certificate->formatted_issued_at }}</span>
+                                            @if($certificate->issuedBy)
+                                                <span>Видав: {{ $certificate->issuedBy->name }}</span>
+                                            @else
+                                                <span>Автоматично</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @if(!$certificate->isRevoked())
+                                        <form action="{{ route('admin.certificates.revoke', $certificate) }}" method="POST" onsubmit="return confirm('Відкликати сертифікат?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-sm text-error-600 hover:text-error-700">Відкликати</button>
+                                        </form>
+                                    @else
+                                        <form action="{{ route('admin.certificates.restore', $certificate->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="text-sm text-success-600 hover:text-success-700">Відновити</button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-sm text-gray-500">Немає сертифікатів</p>
+                @endif
+
+                @if($viewModel->hasCoursesEligibleForManualCertificate())
+                    <details class="mt-4">
+                        <summary class="cursor-pointer text-sm font-medium text-brand-600">Видати сертифікат вручну</summary>
+                        <form action="{{ route('admin.students.certificates.issue', $student) }}" method="POST" class="mt-4 space-y-4 rounded-lg bg-gray-50 p-4">
+                            @csrf
+                            <div>
+                                <label class="mb-2 block text-sm font-medium text-gray-700">Курс</label>
+                                <select name="course_id" required class="w-full rounded-lg border border-gray-300 px-4 py-2">
+                                    @foreach($viewModel->coursesEligibleForManualCertificate() as $course)
+                                        <option value="{{ $course->id }}">{{ $course->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="mb-2 block text-sm font-medium text-gray-700">Оцінка (%)</label>
+                                <input type="number" name="grade" min="0" max="100" step="0.01" placeholder="Залиште порожнім для автоматичного розрахунку" class="w-full rounded-lg border border-gray-300 px-4 py-2">
+                                <p class="mt-1 text-xs text-gray-500">Якщо не вказано, оцінка розраховується за результатами фінального тесту</p>
+                            </div>
+                            <button type="submit" class="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600">
+                                Видати сертифікат
+                            </button>
+                        </form>
                     </details>
                 @endif
             </div>

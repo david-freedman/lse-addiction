@@ -79,9 +79,9 @@
 
         <div>
             <label for="photo" class="mb-2 block text-sm font-medium text-gray-700">Фото</label>
-            @if($teacher->user->photo)
+            @if($teacher->avatar_url)
                 <div class="mb-3 flex items-center gap-4">
-                    <img src="{{ str_starts_with($teacher->user->photo, 'http') ? $teacher->user->photo : (str_starts_with($teacher->user->photo, 'img/') ? asset($teacher->user->photo) : Storage::url($teacher->user->photo)) }}" alt="{{ $teacher->full_name }}" class="h-20 w-20 rounded-lg object-cover">
+                    <img src="{{ $teacher->avatar_url }}" alt="{{ $teacher->full_name }}" class="h-20 w-20 rounded-lg object-cover">
                     <span class="text-sm text-gray-500">Поточне фото</span>
                 </div>
             @endif

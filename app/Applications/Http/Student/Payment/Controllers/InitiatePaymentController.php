@@ -20,7 +20,7 @@ final class InitiatePaymentController
             abort(403, 'Unauthorized access to transaction');
         }
 
-        if (!$transaction->isPending()) {
+        if (! $transaction->isPending()) {
             return redirect()->route('student.transactions.index')
                 ->with('error', 'Транзакція вже оброблена');
         }

@@ -5,7 +5,6 @@ namespace App\Domains\Transaction\ViewModels;
 use App\Domains\Course\Models\Course;
 use App\Domains\Student\Models\Student;
 use App\Domains\Transaction\Data\TransactionFilterData;
-use App\Domains\Transaction\Enums\PaymentMethod;
 use App\Domains\Transaction\Enums\TransactionStatus;
 use App\Domains\Transaction\Models\Transaction;
 use Carbon\Carbon;

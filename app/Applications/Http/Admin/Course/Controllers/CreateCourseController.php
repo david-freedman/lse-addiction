@@ -11,6 +11,11 @@ final class CreateCourseController
     {
         $teachers = Teacher::orderBy('last_name')->get();
 
-        return view('admin.courses.create', compact('teachers'));
+        $breadcrumbs = [
+            ['title' => 'Курси', 'url' => route('admin.courses.index')],
+            ['title' => 'Створити курс'],
+        ];
+
+        return view('admin.courses.create', compact('teachers', 'breadcrumbs'));
     }
 }

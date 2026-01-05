@@ -30,9 +30,7 @@ readonly class StudentListViewModel
         $this->courses = $coursesQuery->get();
 
         $query = Student::query()
-            ->with(['courses' => function ($query) {
-                $query->withPivot(['enrolled_at', 'status', 'lessons_completed', 'total_lessons']);
-            }])
+            ->with(['courses', 'courseProgress'])
             ->withCount('courses');
 
         if ($restrictToCourseIds !== null) {

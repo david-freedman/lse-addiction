@@ -13,7 +13,7 @@ class ToggleUserStatusAction
     public static function execute(User $user): User
     {
         $oldStatus = $user->is_active;
-        $newStatus = !$oldStatus;
+        $newStatus = ! $oldStatus;
 
         $user->update(['is_active' => $newStatus]);
 

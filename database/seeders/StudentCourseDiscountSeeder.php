@@ -17,7 +17,7 @@ class StudentCourseDiscountSeeder extends Seeder
         $courses = Course::all();
         $admin = User::where('role', 'admin')->first();
 
-        if ($students->isEmpty() || $courses->isEmpty() || !$admin) {
+        if ($students->isEmpty() || $courses->isEmpty() || ! $admin) {
             $this->command->warn('Seeder skipped: No students, courses, or admin found.');
 
             return;

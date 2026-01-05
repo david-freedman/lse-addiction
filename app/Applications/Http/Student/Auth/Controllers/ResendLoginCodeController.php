@@ -14,7 +14,7 @@ final class ResendLoginCodeController
         $contact = session('login_contact');
         $type = session('login_type');
 
-        if (!$contact || !$type) {
+        if (! $contact || ! $type) {
             return redirect()->route('student.login');
         }
 
@@ -22,7 +22,7 @@ final class ResendLoginCodeController
             ->where($type === 'email' ? 'email' : 'phone', $contact)
             ->first();
 
-        if (!$student) {
+        if (! $student) {
             return redirect()->route('student.login');
         }
 

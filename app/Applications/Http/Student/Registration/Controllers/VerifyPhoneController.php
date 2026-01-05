@@ -15,7 +15,7 @@ final class VerifyPhoneController
 
         $student = VerifyCodeAction::execute($data);
 
-        if (!$student) {
+        if (! $student) {
             return back()->withErrors(['code' => __('messages.verification.invalid_code')]);
         }
 
