@@ -20,11 +20,9 @@ jobs:
           script: |
             cd ${{ secrets.REMOTE_PATH }}
             git pull origin main
-            rm -rf vendor
             /opt/php84/bin/php /usr/local/bin/composer install --no-dev --optimize-autoloader
             /opt/php84/bin/php artisan optimize:clear
             /opt/php84/bin/php artisan optimize
             /opt/php84/bin/php artisan migrate --force
             npm install
-            rm -rf public/build
             npm run build
