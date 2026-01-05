@@ -14,6 +14,7 @@ use App\Domains\Quiz\Models\Quiz;
 use App\Domains\Student\Models\Student;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ProgressSeeder extends Seeder
 {
