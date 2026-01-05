@@ -202,7 +202,7 @@
                 >
                     <option value="">Не вказано</option>
                     <option value="upcoming" {{ old('type') === 'upcoming' ? 'selected' : '' }}>Майбутні події</option>
-                    <option value="recorded" {{ old('type') === 'recorded' ? 'selected' : '' }}>Курси у запісі</option>
+                    <option value="recorded" {{ old('type') === 'recorded' ? 'selected' : '' }}>Курси у записі</option>
                     <option value="free" {{ old('type') === 'free' ? 'selected' : '' }}>Безкоштовні</option>
                 </select>
                 @error('type')

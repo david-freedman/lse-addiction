@@ -9,6 +9,7 @@ use App\Domains\ActivityLog\Enums\ActivityType;
 use App\Domains\Course\Data\CreateCourseData;
 use App\Domains\Course\Models\Course;
 use App\Domains\Course\Models\CourseTag;
+use Illuminate\Support\Str;
 
 class CreateCourseAction
 {
@@ -19,8 +20,11 @@ class CreateCourseAction
             $bannerPath = $data->banner->store('courses', 'public');
         }
 
+        $slug = self::generateUniqueSlug($data->name);
+
         $course = Course::create([
             'name' => $data->name,
+            'slug' => $slug,
             'description' => $data->description,
             'price' => $data->price,
             'old_price' => $data->old_price,
@@ -58,5 +62,19 @@ class CreateCourseAction
         ]));
 
         return $course;
+    }
+
+    private static function generateUniqueSlug(string $name): string
+    {
+        $slug = Str::slug($name);
+        $originalSlug = $slug;
+        $counter = 1;
+
+        while (Course::where('slug', $slug)->exists()) {
+            $slug = $originalSlug.'-'.$counter;
+            $counter++;
+        }
+
+        return $slug;
     }
 }
