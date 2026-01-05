@@ -72,7 +72,7 @@
 </div>
 
 <script>
-function openPurchaseModal(courseId, name, instructor, duration, price, discount, imageUrl, individualDiscount = null, finalPrice = null) {
+function openPurchaseModal(courseSlug, name, instructor, duration, price, discount, imageUrl, individualDiscount = null, finalPrice = null) {
     const modal = document.getElementById('purchase-modal');
     const form = document.getElementById('purchase-form');
     const modalImage = document.getElementById('modal-course-image');
@@ -115,7 +115,7 @@ function openPurchaseModal(courseId, name, instructor, duration, price, discount
         modalImage.classList.add('hidden');
     }
 
-    form.action = `/student/catalog/${courseId}/purchase`;
+    form.action = `/student/catalog/${courseSlug}/purchase`;
 
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';

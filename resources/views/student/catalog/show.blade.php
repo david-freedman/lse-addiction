@@ -163,7 +163,7 @@
                     @if($course->isAvailableByDate())
                         <button
                             type="button"
-                            onclick="openPurchaseModal({{ $course->id }}, '{{ addslashes($course->name) }}', '{{ $course->teacher?->full_name ?? '' }}', '{{ $course->formatted_date ?? '' }}', '{{ $course->formatted_price }}', '{{ $course->has_discount ? $course->formatted_discount_amount : '' }}', '{{ $course->banner_url ?? '' }}', '{{ isset($individualDiscount) ? $individualDiscount->formattedValue() : '' }}', '{{ isset($finalPrice) ? number_format($finalPrice, 0, ',', ' ') . ' ₴' : '' }}')"
+                            onclick="openPurchaseModal('{{ $course->slug }}', '{{ addslashes($course->name) }}', '{{ $course->teacher?->full_name ?? '' }}', '{{ $course->formatted_date ?? '' }}', '{{ $course->formatted_price }}', '{{ $course->has_discount ? $course->formatted_discount_amount : '' }}', '{{ $course->banner_url ?? '' }}', '{{ isset($individualDiscount) ? $individualDiscount->formattedValue() : '' }}', '{{ isset($finalPrice) ? number_format($finalPrice, 0, ',', ' ') . ' ₴' : '' }}')"
                             class="w-full inline-flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 px-6 rounded-lg transition"
                         >
                             Купити курс
