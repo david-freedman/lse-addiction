@@ -79,7 +79,7 @@
 
             @if($showPurchaseButton && !(isset($course->is_purchased) && $course->is_purchased) && $course->isAvailableByDate())
                 <button
-                    onclick="event.preventDefault(); event.stopPropagation(); openPurchaseModal({{ $course->id }}, '{{ addslashes($course->name) }}', '{{ $course->teacher?->full_name ?? '' }}', '{{ $course->formatted_date ?? '' }}', '{{ $course->formatted_price }}', '{{ $course->has_discount ? $course->formatted_discount_amount : '' }}', '{{ $course->banner_url ?? '' }}', '{{ $individualDiscount?->formattedValue() ?? '' }}', '{{ $individualDiscount ? number_format($finalPrice, 0, ',', ' ') . " ₴" : "" }}')"
+                    onclick="event.preventDefault(); event.stopPropagation(); openPurchaseModal('{{ $course->slug }}', '{{ addslashes($course->name) }}', '{{ $course->teacher?->full_name ?? '' }}', '{{ $course->formatted_date ?? '' }}', '{{ $course->formatted_price }}', '{{ $course->has_discount ? $course->formatted_discount_amount : '' }}', '{{ $course->banner_url ?? '' }}', '{{ $individualDiscount?->formattedValue() ?? '' }}', '{{ $individualDiscount ? number_format($finalPrice, 0, ',', ' ') . " ₴" : "" }}')"
                     class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 ml-2 relative z-10"
                 >
                     Купити
