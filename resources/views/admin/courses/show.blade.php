@@ -3,9 +3,15 @@
 @section('title', $viewModel->name())
 
 @section('content')
-<div class="mb-6 flex items-center justify-between">
-    <h1 class="text-title-xl font-bold text-gray-900">{{ $viewModel->name() }}</h1>
-    <div class="flex items-center gap-3">
+<div class="mb-6 flex items-start justify-between gap-4">
+    <h1 class="text-2xl font-bold text-gray-900">{{ $viewModel->name() }}</h1>
+    <div class="flex shrink-0 items-center gap-3">
+        <a href="{{ route('admin.courses.history', $course) }}" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Історія змін
+        </a>
         <a href="{{ route('admin.courses.edit', $course) }}" class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-brand-600 focus:outline-none focus:ring-4 focus:ring-brand-500/20">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -50,6 +56,10 @@
             </div>
 
             <div class="flex items-center gap-6 mb-4 text-sm">
+                <div>
+                    <span class="text-gray-500">Номер:</span>
+                    <span class="font-medium text-gray-900 ml-1">{{ $course->number }}</span>
+                </div>
                 <div>
                     <span class="text-gray-500">Викладач:</span>
                     <span class="font-medium text-gray-900 ml-1">{{ $viewModel->teacherName() }}</span>
@@ -130,8 +140,8 @@
                             <span class="text-sm text-gray-500">{{ $module['lessons_count'] }} уроків</span>
 
                             @if($module['has_final_test'])
-                                <span class="inline-flex rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-700">
-                                    Має тест
+                                <span class="inline-flex rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+                                    🏆 Підсумковий
                                 </span>
                             @endif
 

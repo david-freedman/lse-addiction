@@ -54,10 +54,10 @@ class WebinarStudentSeeder extends Seeder
             ];
         }
 
-        $completedWebinar = $webinars->firstWhere('status', WebinarStatus::Completed);
-        if ($completedWebinar) {
+        $endedWebinar = $webinars->firstWhere('status', WebinarStatus::Ended);
+        if ($endedWebinar) {
             $registrations[] = [
-                'webinar_id' => $completedWebinar->id,
+                'webinar_id' => $endedWebinar->id,
                 'student_id' => $testStudent->id,
                 'registered_at' => now()->subDays(20),
                 'attended_at' => now()->subDays(14),
@@ -84,6 +84,18 @@ class WebinarStudentSeeder extends Seeder
                 'webinar_id' => $draftWebinar->id,
                 'student_id' => $testStudent->id,
                 'registered_at' => now()->subDays(2),
+                'attended_at' => null,
+                'cancelled_at' => null,
+                'transaction_id' => null,
+            ];
+        }
+
+        $recordedWebinar = $webinars->firstWhere('status', WebinarStatus::Recorded);
+        if ($recordedWebinar) {
+            $registrations[] = [
+                'webinar_id' => $recordedWebinar->id,
+                'student_id' => $testStudent->id,
+                'registered_at' => now()->subDays(35),
                 'attended_at' => null,
                 'cancelled_at' => null,
                 'transaction_id' => null,

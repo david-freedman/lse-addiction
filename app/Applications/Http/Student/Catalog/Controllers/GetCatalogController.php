@@ -17,9 +17,10 @@ final class GetCatalogController
         $student = auth()->user();
         $tab = $request->input('tab', 'courses');
         $search = $request->input('search');
+        $webinarFilter = $request->input('webinar_filter', 'all');
 
         if ($tab === 'webinars') {
-            return $this->webinarsTab($student, $search);
+            return $this->webinarsTab($student, $search, $webinarFilter);
         }
 
         return $this->coursesTab($student, $search);
@@ -49,9 +50,7 @@ final class GetCatalogController
         });
 
         $coursesCount = Course::where('status', CourseStatus::Active)->count();
-        $webinarsCount = Webinar::where('status', WebinarStatus::Upcoming)
-            ->where('starts_at', '>', now())
-            ->count();
+        $webinarsCount = $this->getWebinarsCount();
 
         return view('student.catalog.index', [
             'tab' => 'courses',
@@ -59,21 +58,40 @@ final class GetCatalogController
             'webinars' => null,
             'coursesCount' => $coursesCount,
             'webinarsCount' => $webinarsCount,
+            'webinarFilter' => 'all',
+            'liveWebinarsCount' => $this->getLiveWebinarsCount(),
+            'recordedWebinarsCount' => $this->getRecordedWebinarsCount(),
         ]);
     }
 
-    private function webinarsTab($student, ?string $search): View
+    private function webinarsTab($student, ?string $search, string $webinarFilter): View
     {
-        $webinars = Webinar::with(['teacher.user'])
-            ->where('status', WebinarStatus::Upcoming)
-            ->where('starts_at', '>', now())
+        $query = Webinar::with(['teacher.user'])
             ->when($search, function ($query, $search) {
                 return $query->where('title', 'ilike', "%{$search}%");
             })
-            ->withCount('activeRegistrations as participants_count')
-            ->orderBy('starts_at')
-            ->paginate(9)
-            ->withQueryString();
+            ->withCount('activeRegistrations as participants_count');
+
+        if ($webinarFilter === 'live') {
+            $query->whereIn('status', [WebinarStatus::Upcoming, WebinarStatus::Live])
+                ->where('starts_at', '>', now())
+                ->orderBy('starts_at');
+        } elseif ($webinarFilter === 'recorded') {
+            $query->where('status', WebinarStatus::Recorded)
+                ->orderBy('starts_at', 'desc');
+        } else {
+            $query->where(function ($q) {
+                $q->where(function ($sub) {
+                    $sub->whereIn('status', [WebinarStatus::Upcoming, WebinarStatus::Live])
+                        ->where('starts_at', '>', now());
+                })->orWhere('status', WebinarStatus::Recorded);
+            })
+                ->orderByRaw("CASE WHEN status IN ('upcoming', 'live') THEN 0 ELSE 1 END")
+                ->orderByRaw("CASE WHEN status IN ('upcoming', 'live') THEN starts_at END ASC")
+                ->orderByRaw("CASE WHEN status = 'recorded' THEN starts_at END DESC");
+        }
+
+        $webinars = $query->paginate(9)->withQueryString();
 
         $registeredWebinarIds = $student->webinars()
             ->wherePivotNull('cancelled_at')
@@ -85,9 +103,7 @@ final class GetCatalogController
         });
 
         $coursesCount = Course::where('status', CourseStatus::Active)->count();
-        $webinarsCount = Webinar::where('status', WebinarStatus::Upcoming)
-            ->where('starts_at', '>', now())
-            ->count();
+        $webinarsCount = $this->getWebinarsCount();
 
         return view('student.catalog.index', [
             'tab' => 'webinars',
@@ -95,6 +111,26 @@ final class GetCatalogController
             'webinars' => $webinars,
             'coursesCount' => $coursesCount,
             'webinarsCount' => $webinarsCount,
+            'webinarFilter' => $webinarFilter,
+            'liveWebinarsCount' => $this->getLiveWebinarsCount(),
+            'recordedWebinarsCount' => $this->getRecordedWebinarsCount(),
         ]);
+    }
+
+    private function getWebinarsCount(): int
+    {
+        return $this->getLiveWebinarsCount() + $this->getRecordedWebinarsCount();
+    }
+
+    private function getLiveWebinarsCount(): int
+    {
+        return Webinar::whereIn('status', [WebinarStatus::Upcoming, WebinarStatus::Live])
+            ->where('starts_at', '>', now())
+            ->count();
+    }
+
+    private function getRecordedWebinarsCount(): int
+    {
+        return Webinar::where('status', WebinarStatus::Recorded)->count();
     }
 }

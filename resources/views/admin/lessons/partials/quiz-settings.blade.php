@@ -38,15 +38,29 @@
                            class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                     <span class="text-sm text-gray-700">Показувати правильні відповіді</span>
                 </label>
-
-                <label class="flex items-center gap-2">
-                    <input type="hidden" name="quiz_is_final" value="0">
-                    <input type="checkbox" name="quiz_is_final" value="1"
-                           {{ old('quiz_is_final', $lesson->quiz->is_final ?? false) ? 'checked' : '' }}
-                           class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
-                    <span class="text-sm text-gray-700">Фінальний тест курсу</span>
-                </label>
             </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-gray-200">
+            <label class="flex items-start gap-3 p-3 bg-amber-50 rounded-lg border border-amber-200 cursor-pointer">
+                <input type="hidden" name="is_final" value="0">
+                <input type="checkbox" name="is_final" value="1"
+                       {{ old('is_final', $lesson->is_final ?? false) ? 'checked' : '' }}
+                       class="mt-0.5 h-4 w-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500">
+                <div>
+                    <span class="font-medium text-amber-800">🏆 Підсумковий тест модуля</span>
+                    <p class="text-xs text-amber-700 mt-1">
+                        Він завжди буде останнім в списку уроків і студенти зможуть пройти його тільки після завершення всіх інших уроків.
+                    </p>
+                </div>
+            </label>
+            <label class="flex items-center gap-2 mt-2 ml-8 text-sm text-gray-700">
+                <input type="hidden" name="allow_retake_after_pass" value="0">
+                <input type="checkbox" name="allow_retake_after_pass" value="1"
+                       {{ old('allow_retake_after_pass', $lesson->allow_retake_after_pass ?? true) ? 'checked' : '' }}
+                       class="rounded border-gray-300 text-amber-600 focus:ring-amber-500">
+                Дозволити перескладання після успішного проходження
+            </label>
         </div>
 
         @if(!isset($lesson) || !$lesson->quiz)

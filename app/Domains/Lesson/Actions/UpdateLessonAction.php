@@ -2,6 +2,10 @@
 
 namespace App\Domains\Lesson\Actions;
 
+use App\Domains\ActivityLog\Actions\LogActivityAction;
+use App\Domains\ActivityLog\Data\ActivityLogData;
+use App\Domains\ActivityLog\Enums\ActivitySubject;
+use App\Domains\ActivityLog\Enums\ActivityType;
 use App\Domains\Homework\Actions\CreateHomeworkAction;
 use App\Domains\Homework\Actions\DeleteHomeworkAction;
 use App\Domains\Homework\Actions\UpdateHomeworkAction;
@@ -19,6 +23,15 @@ class UpdateLessonAction
 {
     public static function execute(Lesson $lesson, UpdateLessonData $data): Lesson
     {
+        self::validateFinalTest($lesson, $data);
+
+        $oldValues = $lesson->only([
+            'name', 'description', 'content', 'type', 'video_url',
+            'qa_session_url', 'duration_minutes', 'order', 'status',
+            'is_final', 'allow_retake_after_pass',
+        ]);
+        $oldValues['type'] = $lesson->type?->value;
+
         $oldType = $lesson->type;
         $newType = $data->type ?? $oldType;
 
@@ -60,6 +73,14 @@ class UpdateLessonAction
             $updateData['attachments'] = $data->attachments;
         }
 
+        if ($data->is_final !== null) {
+            $updateData['is_final'] = $data->is_final;
+        }
+
+        if ($data->allow_retake_after_pass !== null) {
+            $updateData['allow_retake_after_pass'] = $data->allow_retake_after_pass;
+        }
+
         $lesson->update($updateData);
 
         if ($newType === LessonType::Dicom) {
@@ -70,6 +91,29 @@ class UpdateLessonAction
 
         self::handleQuizTypeChange($lesson, $oldType, $newType, $data);
         self::handleHomeworkChange($lesson, $data);
+
+        $newValues = [];
+        foreach ($updateData as $key => $value) {
+            $newValues[$key] = $key === 'type' ? $value?->value : $value;
+        }
+
+        $changes = [];
+        foreach ($newValues as $key => $newValue) {
+            if (array_key_exists($key, $oldValues) && $oldValues[$key] != $newValue) {
+                $changes[$key] = ['old' => $oldValues[$key], 'new' => $newValue];
+            }
+        }
+
+        if (! empty($changes)) {
+            LogActivityAction::execute(ActivityLogData::from([
+                'subject_type' => ActivitySubject::Lesson,
+                'subject_id' => $lesson->id,
+                'activity_type' => ActivityType::LessonUpdated,
+                'description' => 'Lesson updated',
+                'properties' => ['changes' => $changes],
+                'course_id' => $lesson->module->course_id,
+            ]));
+        }
 
         return $lesson->fresh();
     }
@@ -85,41 +129,38 @@ class UpdateLessonAction
         $isSurvey = $newType === LessonType::Survey;
         $isQuizLike = $isQuiz || $isSurvey;
 
-        if ($wasQuizLike && !$isQuizLike && $lesson->quiz) {
+        if ($wasQuizLike && ! $isQuizLike && $lesson->quiz) {
             DeleteQuizAction::execute($lesson->quiz);
+
             return;
         }
 
-        if (!$wasQuizLike && $isQuizLike) {
+        if (! $wasQuizLike && $isQuizLike) {
             $lesson->quiz()->create([
                 'title' => $lesson->name,
                 'passing_score' => $isSurvey ? 0 : ($data->quiz_passing_score ?? 70),
                 'max_attempts' => $data->quiz_max_attempts,
                 'time_limit_minutes' => $data->quiz_time_limit_minutes,
                 'show_correct_answers' => $isSurvey ? false : ($data->quiz_show_correct_answers ?? true),
-                'is_final' => $isSurvey ? false : ($data->quiz_is_final ?? false),
                 'is_survey' => $isSurvey,
             ]);
+
             return;
         }
 
         if ($wasQuizLike && $isQuizLike && $lesson->quiz) {
             $quizUpdateData = ['is_survey' => $isSurvey];
 
-            if (!$isSurvey) {
+            if (! $isSurvey) {
                 if ($data->quiz_passing_score !== null) {
                     $quizUpdateData['passing_score'] = $data->quiz_passing_score;
                 }
                 if ($data->quiz_show_correct_answers !== null) {
                     $quizUpdateData['show_correct_answers'] = $data->quiz_show_correct_answers;
                 }
-                if ($data->quiz_is_final !== null) {
-                    $quizUpdateData['is_final'] = $data->quiz_is_final;
-                }
             } else {
                 $quizUpdateData['passing_score'] = 0;
                 $quizUpdateData['show_correct_answers'] = false;
-                $quizUpdateData['is_final'] = false;
             }
 
             if ($data->quiz_max_attempts !== null) {
@@ -129,7 +170,7 @@ class UpdateLessonAction
                 $quizUpdateData['time_limit_minutes'] = $data->quiz_time_limit_minutes;
             }
 
-            if (!empty($quizUpdateData)) {
+            if (! empty($quizUpdateData)) {
                 $lesson->quiz->update($quizUpdateData);
             }
         }
@@ -140,12 +181,13 @@ class UpdateLessonAction
         $hasHomework = $lesson->homework !== null;
         $wantsHomework = $data->has_homework ?? $hasHomework;
 
-        if ($hasHomework && !$wantsHomework) {
+        if ($hasHomework && ! $wantsHomework) {
             app(DeleteHomeworkAction::class)($lesson->homework);
+
             return;
         }
 
-        if (!$hasHomework && $wantsHomework) {
+        if (! $hasHomework && $wantsHomework) {
             app(CreateHomeworkAction::class)($lesson, new CreateHomeworkData(
                 description: $data->homework_description,
                 response_type: $data->homework_response_type ?? HomeworkResponseType::Both,
@@ -158,6 +200,7 @@ class UpdateLessonAction
                 max_file_size_mb: $data->homework_max_file_size_mb ?? 10,
                 max_files: $data->homework_max_files ?? 5,
             ));
+
             return;
         }
 
@@ -205,5 +248,25 @@ class UpdateLessonAction
             'dicom_url' => null,
             'dicom_metadata' => null,
         ]);
+    }
+
+    private static function validateFinalTest(Lesson $lesson, UpdateLessonData $data): void
+    {
+        if ($data->is_final !== true) {
+            return;
+        }
+
+        if ($lesson->is_final) {
+            return;
+        }
+
+        $existingFinalTest = $lesson->module->lessons()
+            ->where('is_final', true)
+            ->where('id', '!=', $lesson->id)
+            ->exists();
+
+        if ($existingFinalTest) {
+            throw new \InvalidArgumentException('Модуль вже має підсумковий тест');
+        }
     }
 }

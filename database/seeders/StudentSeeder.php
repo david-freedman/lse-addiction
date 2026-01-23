@@ -40,6 +40,7 @@ class StudentSeeder extends Seeder
 
         foreach ($students as $data) {
             Student::create([
+                'number' => Student::generateNumber(),
                 'name' => $data['name'],
                 'surname' => $data['surname'],
                 'email' => $data['email'],

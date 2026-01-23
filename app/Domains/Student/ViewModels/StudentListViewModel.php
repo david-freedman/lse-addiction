@@ -44,7 +44,8 @@ readonly class StudentListViewModel
                 $q->where('name', 'ilike', "%{$filters->search}%")
                     ->orWhere('surname', 'ilike', "%{$filters->search}%")
                     ->orWhere('email', 'ilike', "%{$filters->search}%")
-                    ->orWhere('phone', 'ilike', "%{$filters->search}%");
+                    ->orWhere('phone', 'ilike', "%{$filters->search}%")
+                    ->orWhere('number', 'ilike', "%{$filters->search}%");
             });
         }
 

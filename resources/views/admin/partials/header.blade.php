@@ -62,7 +62,7 @@
             </button>
 
             <a href="{{ route('admin.dashboard') }}" class="lg:hidden">
-                <span class="text-lg font-semibold text-brand-600">LSE/span>
+                <span class="text-lg font-semibold text-brand-600">LSE</span>
             </a>
 
             <button

@@ -23,7 +23,6 @@ class ModuleFactory extends Factory
             'description' => fake()->optional()->paragraph(),
             'order' => 0,
             'status' => ModuleStatus::Active,
-            'has_final_test' => fake()->boolean(20),
             'unlock_rule' => ModuleUnlockRule::None,
         ];
     }
@@ -39,13 +38,6 @@ class ModuleFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => ModuleStatus::Hidden,
-        ]);
-    }
-
-    public function withFinalTest(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'has_final_test' => true,
         ]);
     }
 

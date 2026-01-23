@@ -32,6 +32,7 @@ class WebinarFactory extends Factory
             'old_price' => fake()->optional(0.3)->randomElement([1000, 2000, 3000]),
             'banner' => null,
             'meeting_url' => null,
+            'recording_url' => null,
         ];
     }
 
@@ -51,11 +52,20 @@ class WebinarFactory extends Factory
         ]);
     }
 
-    public function completed(): static
+    public function ended(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => WebinarStatus::Completed,
+            'status' => WebinarStatus::Ended,
             'starts_at' => fake()->dateTimeBetween('-1 month', '-1 day'),
+        ]);
+    }
+
+    public function recorded(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => WebinarStatus::Recorded,
+            'starts_at' => fake()->dateTimeBetween('-1 month', '-1 day'),
+            'recording_url' => 'https://www.youtube.com/watch?v=' . fake()->regexify('[a-zA-Z0-9]{11}'),
         ]);
     }
 

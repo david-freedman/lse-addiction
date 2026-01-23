@@ -234,20 +234,38 @@
             @enderror
         </div>
 
-        <div>
-            <label for="meeting_url" class="mb-2 block text-sm font-medium text-gray-700">Посилання на трансляцію</label>
-            <input
-                type="url"
-                name="meeting_url"
-                id="meeting_url"
-                value="{{ old('meeting_url', $webinar->meeting_url) }}"
-                placeholder="https://zoom.us/j/..."
-                class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('meeting_url') border-error-500 @enderror"
-            >
-            <p class="mt-1 text-xs text-gray-500">Zoom, Google Meet, YouTube тощо</p>
-            @error('meeting_url')
-                <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
-            @enderror
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div>
+                <label for="meeting_url" class="mb-2 block text-sm font-medium text-gray-700">Посилання на трансляцію</label>
+                <input
+                    type="url"
+                    name="meeting_url"
+                    id="meeting_url"
+                    value="{{ old('meeting_url', $webinar->meeting_url) }}"
+                    placeholder="https://zoom.us/j/..."
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('meeting_url') border-error-500 @enderror"
+                >
+                <p class="mt-1 text-xs text-gray-500">Zoom, Google Meet тощо</p>
+                @error('meeting_url')
+                    <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div>
+                <label for="recording_url" class="mb-2 block text-sm font-medium text-gray-700">Посилання на запис</label>
+                <input
+                    type="url"
+                    name="recording_url"
+                    id="recording_url"
+                    value="{{ old('recording_url', $webinar->recording_url) }}"
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('recording_url') border-error-500 @enderror"
+                >
+                <p class="mt-1 text-xs text-gray-500">Обов'язкове для статусу "У записі"</p>
+                @error('recording_url')
+                    <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
+                @enderror
+            </div>
         </div>
 
         <div>

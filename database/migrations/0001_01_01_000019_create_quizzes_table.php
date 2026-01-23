@@ -16,7 +16,6 @@ return new class extends Migration
             $table->unsignedInteger('max_attempts')->nullable();
             $table->unsignedInteger('time_limit_minutes')->nullable();
             $table->boolean('show_correct_answers')->default(true);
-            $table->boolean('is_final')->default(false);
             $table->boolean('is_survey')->default(false);
             $table->timestamps();
         });

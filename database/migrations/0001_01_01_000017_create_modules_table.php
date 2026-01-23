@@ -15,7 +15,6 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->unsignedInteger('order')->default(0);
             $table->string('status')->default('active');
-            $table->boolean('has_final_test')->default(false);
             $table->string('unlock_rule')->default('none');
             $table->timestamps();
 

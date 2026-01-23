@@ -15,12 +15,17 @@ final class SubmissionsInboxViewModel
 {
     public function __construct(
         public readonly SubmissionsFilterData $filters,
+        private readonly ?array $restrictToCourseIds = null,
     ) {}
 
     public function submissions(): LengthAwarePaginator
     {
         $query = HomeworkSubmission::query()
             ->with(['student', 'homework.lesson.module.course']);
+
+        if ($this->restrictToCourseIds !== null) {
+            $query->whereHas('homework.lesson.module', fn ($q) => $q->whereIn('course_id', $this->restrictToCourseIds));
+        }
 
         if ($this->filters->isReviewedTab()) {
             $query->whereIn('status', [
@@ -65,11 +70,16 @@ final class SubmissionsInboxViewModel
      */
     public function statusCounts(): array
     {
+        $baseQuery = HomeworkSubmission::query();
+        if ($this->restrictToCourseIds !== null) {
+            $baseQuery->whereHas('homework.lesson.module', fn ($q) => $q->whereIn('course_id', $this->restrictToCourseIds));
+        }
+
         return [
-            'all' => HomeworkSubmission::count(),
-            'pending' => HomeworkSubmission::where('status', HomeworkSubmissionStatus::Pending)->count(),
-            'revision_requested' => HomeworkSubmission::where('status', HomeworkSubmissionStatus::RevisionRequested)->count(),
-            'reviewed' => HomeworkSubmission::whereIn('status', [
+            'all' => (clone $baseQuery)->count(),
+            'pending' => (clone $baseQuery)->where('status', HomeworkSubmissionStatus::Pending)->count(),
+            'revision_requested' => (clone $baseQuery)->where('status', HomeworkSubmissionStatus::RevisionRequested)->count(),
+            'reviewed' => (clone $baseQuery)->whereIn('status', [
                 HomeworkSubmissionStatus::Approved,
                 HomeworkSubmissionStatus::Rejected,
             ])->count(),
@@ -81,10 +91,15 @@ final class SubmissionsInboxViewModel
      */
     public function courses(): Collection
     {
-        return Course::query()
+        $query = Course::query()
             ->whereHas('modules.lessons.homework.submissions')
-            ->orderBy('name')
-            ->get(['id', 'name']);
+            ->orderBy('name');
+
+        if ($this->restrictToCourseIds !== null) {
+            $query->whereIn('id', $this->restrictToCourseIds);
+        }
+
+        return $query->get(['id', 'name']);
     }
 
     /**
@@ -129,7 +144,11 @@ final class SubmissionsInboxViewModel
 
     public function hasNoSubmissions(): bool
     {
-        return HomeworkSubmission::count() === 0;
+        $query = HomeworkSubmission::query();
+        if ($this->restrictToCourseIds !== null) {
+            $query->whereHas('homework.lesson.module', fn ($q) => $q->whereIn('course_id', $this->restrictToCourseIds));
+        }
+        return $query->count() === 0;
     }
 
     public function currentStatus(): ?string

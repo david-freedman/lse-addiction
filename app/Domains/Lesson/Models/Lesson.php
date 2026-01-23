@@ -38,10 +38,13 @@ class Lesson extends Model
         'dicom_url',
         'dicom_metadata',
         'qa_session_url',
+        'starts_at',
         'duration_minutes',
         'order',
         'status',
         'attachments',
+        'is_final',
+        'allow_retake_after_pass',
     ];
 
     protected function casts(): array
@@ -52,6 +55,9 @@ class Lesson extends Model
             'dicom_source_type' => DicomSourceType::class,
             'dicom_metadata' => 'array',
             'attachments' => 'array',
+            'starts_at' => 'datetime',
+            'is_final' => 'boolean',
+            'allow_retake_after_pass' => 'boolean',
         ];
     }
 
@@ -110,6 +116,26 @@ class Lesson extends Model
         return $query->where('type', $type);
     }
 
+    public function scopeFinalTest($query)
+    {
+        return $query->where('is_final', true);
+    }
+
+    public function scopeRegular($query)
+    {
+        return $query->where('is_final', false);
+    }
+
+    public function isFinalTest(): bool
+    {
+        return $this->is_final === true;
+    }
+
+    public function allowsRetakeAfterPass(): bool
+    {
+        return $this->allow_retake_after_pass === true;
+    }
+
     protected function isVideo(): Attribute
     {
         return Attribute::make(
@@ -166,6 +192,20 @@ class Lesson extends Model
 
                 return "{$minutes} хв";
             }
+        );
+    }
+
+    protected function formattedDate(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->starts_at?->translatedFormat('j F Y') . ' р.'
+        );
+    }
+
+    protected function formattedTime(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->starts_at?->format('H:i')
         );
     }
 }

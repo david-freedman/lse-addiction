@@ -23,7 +23,6 @@ class Quiz extends Model
         'max_attempts',
         'time_limit_minutes',
         'show_correct_answers',
-        'is_final',
         'is_survey',
     ];
 
@@ -34,7 +33,6 @@ class Quiz extends Model
             'max_attempts' => 'integer',
             'time_limit_minutes' => 'integer',
             'show_correct_answers' => 'boolean',
-            'is_final' => 'boolean',
             'is_survey' => 'boolean',
         ];
     }
@@ -67,16 +65,6 @@ class Quiz extends Model
     public function isForLesson(): bool
     {
         return $this->quizzable_type === Lesson::class;
-    }
-
-    public function isFinal(): bool
-    {
-        return $this->is_final === true;
-    }
-
-    public function scopeFinal($query)
-    {
-        return $query->where('is_final', true);
     }
 
     protected function maxScore(): Attribute

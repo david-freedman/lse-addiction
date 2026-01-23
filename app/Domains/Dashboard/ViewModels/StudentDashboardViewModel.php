@@ -3,6 +3,7 @@
 namespace App\Domains\Dashboard\ViewModels;
 
 use App\Domains\Calendar\Data\CalendarCourseData;
+use App\Domains\Calendar\Data\CalendarQaSessionData;
 use App\Domains\Calendar\Data\CalendarWebinarData;
 use App\Domains\Course\Enums\CourseType;
 use App\Domains\Course\Enums\CourseStatus;
@@ -10,6 +11,8 @@ use App\Domains\Course\Models\Course;
 use App\Domains\Dashboard\Data\DashboardCourseData;
 use App\Domains\Dashboard\Data\DashboardStatsData;
 use App\Domains\Dashboard\Data\DashboardWebinarData;
+use App\Domains\Lesson\Enums\LessonStatus;
+use App\Domains\Lesson\Enums\LessonType;
 use App\Domains\Lesson\Models\Lesson;
 use App\Domains\Module\Models\Module;
 use App\Domains\Progress\Enums\ProgressStatus;
@@ -159,6 +162,7 @@ readonly class StudentDashboardViewModel
     public function upcomingWebinars(): Collection
     {
         $myWebinars = $this->student->webinars()
+            ->wherePivotNull('cancelled_at')
             ->whereIn('status', [WebinarStatus::Upcoming, WebinarStatus::Live])
             ->ordered()
             ->with('teacher')
@@ -183,7 +187,9 @@ readonly class StudentDashboardViewModel
 
     public function webinarsCount(): int
     {
-        return Webinar::query()->upcoming()->count();
+        return Webinar::query()
+            ->whereIn('status', [WebinarStatus::Upcoming, WebinarStatus::Live])
+            ->count();
     }
 
     public function hasWebinars(): bool
@@ -208,7 +214,8 @@ readonly class StudentDashboardViewModel
             isRegistered: in_array($webinar->id, $registeredIds),
             isLive: $webinar->status === WebinarStatus::Live,
             isUpcoming: $webinar->status === WebinarStatus::Upcoming,
-            isCompleted: $webinar->status === WebinarStatus::Completed,
+            isEnded: $webinar->status === WebinarStatus::Ended,
+            isRecorded: $webinar->status === WebinarStatus::Recorded,
             status: $webinar->status,
             price: $webinar->price > 0 ? number_format($webinar->price, 0, '', ' ') . ' грн' : 'Безкоштовно',
             isFree: $webinar->is_free,
@@ -269,6 +276,36 @@ readonly class StudentDashboardViewModel
             $coursesByDate[$dateKey][] = $this->buildCalendarCourseData($course);
         }
 
+        $qaSessions = Lesson::query()
+            ->where('type', LessonType::QaSession)
+            ->where('status', LessonStatus::Published)
+            ->whereNotNull('starts_at')
+            ->where('starts_at', '>', now())
+            ->where('starts_at', '<=', $lastMonth->endOfMonth())
+            ->whereHas('module.course', function ($q) {
+                $q->whereHas('students', function ($sq) {
+                    $sq->where('students.id', $this->student->id)
+                        ->where('course_student.status', 'active');
+                });
+            })
+            ->with('module.course')
+            ->orderBy('starts_at')
+            ->get();
+
+        $qaSessionsByDate = [];
+        $datesWithQaSessions = [];
+
+        foreach ($qaSessions as $lesson) {
+            $dateKey = $lesson->starts_at->format('Y-m-d');
+
+            if (!isset($qaSessionsByDate[$dateKey])) {
+                $qaSessionsByDate[$dateKey] = [];
+                $datesWithQaSessions[] = $dateKey;
+            }
+
+            $qaSessionsByDate[$dateKey][] = $this->buildCalendarQaSessionData($lesson);
+        }
+
         $monthsData = $months->map(
             fn ($date) => $this->buildMonthData($date->year, $date->month)
         )->values()->all();
@@ -289,6 +326,8 @@ readonly class StudentDashboardViewModel
             'coursesByDate' => $coursesByDate,
             'datesWithCourses' => $datesWithCourses,
             'upcomingCourses' => $upcomingCourses,
+            'qaSessionsByDate' => $qaSessionsByDate,
+            'datesWithQaSessions' => $datesWithQaSessions,
         ];
     }
 
@@ -331,6 +370,22 @@ readonly class StudentDashboardViewModel
             date: $course->starts_at->format('Y-m-d'),
             formattedDate: $course->formatted_date,
             label: $course->label_text,
+        );
+    }
+
+    private function buildCalendarQaSessionData(Lesson $lesson): CalendarQaSessionData
+    {
+        return new CalendarQaSessionData(
+            id: $lesson->id,
+            name: $lesson->name,
+            lessonUrl: route('student.lessons.show', [
+                'course' => $lesson->module->course->slug,
+                'lesson' => $lesson->id,
+            ]),
+            qaSessionUrl: $lesson->qa_session_url,
+            date: $lesson->starts_at->format('Y-m-d'),
+            formattedTime: $lesson->formatted_time,
+            courseName: $lesson->module->course->name,
         );
     }
 }

@@ -16,8 +16,14 @@ class CertificateSeeder extends Seeder
             ->get();
 
         $count = 0;
+        $created = [];
 
         foreach ($completedProgress as $progress) {
+            $key = $progress->student_id.'-'.$progress->course_id;
+            if (isset($created[$key])) {
+                continue;
+            }
+
             Certificate::factory()
                 ->forStudent($progress->student)
                 ->forCourse($progress->course)
@@ -25,6 +31,7 @@ class CertificateSeeder extends Seeder
                     'study_hours' => $progress->course->total_duration ?? 120,
                     'issued_at' => $progress->completed_at,
                 ]);
+            $created[$key] = true;
             $count++;
         }
 

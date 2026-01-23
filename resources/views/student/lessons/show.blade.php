@@ -51,6 +51,27 @@
                         </svg>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">Q&A Сесія</h3>
+                    @if($viewModel->startsAt())
+                        <div class="flex items-center justify-center gap-4 mb-4">
+                            <div class="flex items-center gap-2 text-gray-700">
+                                <svg class="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <span class="font-medium">{{ $viewModel->formattedDate() }}</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-gray-700">
+                                <svg class="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span class="font-medium">{{ $viewModel->formattedTime() }}</span>
+                            </div>
+                            @if($viewModel->duration())
+                                <div class="flex items-center gap-2 text-gray-500">
+                                    <span>{{ $viewModel->duration() }}</span>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
                     <p class="text-gray-600 mb-6">Натисніть кнопку нижче, щоб приєднатися до живої сесії питань та відповідей з викладачем.</p>
                     <a href="{{ $viewModel->qaSessionUrl() }}" target="_blank" rel="noopener noreferrer"
                        class="inline-flex items-center gap-2 px-8 py-3 text-base font-medium text-white bg-teal-500 rounded-lg hover:bg-teal-600 transition">

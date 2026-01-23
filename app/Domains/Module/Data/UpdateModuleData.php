@@ -26,9 +26,6 @@ class UpdateModuleData extends Data
         public readonly ?ModuleStatus $status = null,
 
         #[Nullable]
-        public readonly ?bool $has_final_test = null,
-
-        #[Nullable]
         public readonly ?ModuleUnlockRule $unlock_rule = null,
     ) {}
 }

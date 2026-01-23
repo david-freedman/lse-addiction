@@ -25,6 +25,7 @@ class CreateCourseAction
         $course = Course::create([
             'name' => $data->name,
             'slug' => $slug,
+            'number' => $data->number,
             'description' => $data->description,
             'price' => $data->price,
             'old_price' => $data->old_price,
@@ -36,6 +37,7 @@ class CreateCourseAction
             'type' => $data->type,
             'starts_at' => $data->starts_at,
             'label' => $data->label,
+            'requires_certificate_approval' => $data->requires_certificate_approval,
         ]);
 
         if ($data->tags) {
@@ -53,12 +55,22 @@ class CreateCourseAction
             'activity_type' => ActivityType::CourseCreated,
             'description' => 'Course created',
             'properties' => [
-                'name' => $data->name,
-                'status' => $data->status,
-                'price' => $data->price,
+                'attributes' => array_filter([
+                    'name' => $data->name,
+                    'number' => $data->number,
+                    'description' => $data->description,
+                    'price' => $data->price,
+                    'old_price' => $data->old_price,
+                    'discount_percentage' => $data->discount_percentage,
+                    'teacher_id' => $data->teacher_id,
+                    'status' => $data->status,
+                    'type' => $data->type,
+                    'starts_at' => $data->starts_at,
+                    'label' => $data->label,
+                    'tags' => $data->tags,
+                ], fn ($v) => $v !== null),
             ],
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
+            'course_id' => $course->id,
         ]));
 
         return $course;

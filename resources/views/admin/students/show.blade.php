@@ -34,7 +34,7 @@
                     </div>
                 @endif
                 <h3 class="text-lg font-bold text-gray-900">{{ $student->name }} {{ $student->surname }}</h3>
-                <p class="text-sm text-gray-500">ID: {{ $student->id }}</p>
+                <p class="text-sm text-gray-500">№ {{ $student->number }}</p>
             </div>
 
             <div class="mt-6 space-y-3">
@@ -92,7 +92,15 @@
                         @foreach($viewModel->profileFields() as $label => $value)
                             <div>
                                 <p class="text-xs font-medium text-gray-500">{{ $label }}</p>
-                                <p class="text-sm text-gray-900">{{ $value }}</p>
+                                @if(is_array($value))
+                                    <div class="flex flex-wrap gap-1 mt-1">
+                                        @foreach($value as $tag)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-50 text-teal-700">{{ $tag }}</span>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <p class="text-sm text-gray-900">{{ $value }}</p>
+                                @endif
                             </div>
                         @endforeach
                     </div>

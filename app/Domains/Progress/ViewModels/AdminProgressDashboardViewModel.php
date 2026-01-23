@@ -30,13 +30,36 @@ readonly class AdminProgressDashboardViewModel
     private Collection $courses;
 
     public function __construct(
-        private string $period = 'all'
+        private string $period = 'all',
+        private ?array $restrictToCourseIds = null
     ) {
-        $this->courses = Course::orderBy('name')->get();
-        $this->totalStudents = Student::count();
+        $coursesQuery = Course::orderBy('name');
+        if ($this->restrictToCourseIds !== null) {
+            $coursesQuery->whereIn('id', $this->restrictToCourseIds);
+        }
+        $this->courses = $coursesQuery->get();
+
+        if ($this->restrictToCourseIds !== null) {
+            $this->totalStudents = \Illuminate\Support\Facades\DB::table('course_student')
+                ->whereIn('course_id', $this->restrictToCourseIds)
+                ->distinct('student_id')
+                ->count('student_id');
+        } else {
+            $this->totalStudents = Student::count();
+        }
 
         $progressQuery = StudentCourseProgress::query();
         $quizQuery = StudentQuizAttempt::query();
+
+        if ($this->restrictToCourseIds !== null) {
+            $progressQuery->whereIn('course_id', $this->restrictToCourseIds);
+            $quizQuery->whereHas('quiz', function ($q) {
+                $q->where('quizzable_type', 'App\\Domains\\Lesson\\Models\\Lesson')
+                    ->whereHas('quizzable.module', function ($mq) {
+                        $mq->whereIn('course_id', $this->restrictToCourseIds);
+                    });
+            });
+        }
 
         if ($this->period !== 'all') {
             $dateFrom = $this->getPeriodStartDate();

@@ -11,7 +11,7 @@ final class UpdateWebinarStatusesCommand extends Command
 {
     protected $signature = 'webinars:update-statuses';
 
-    protected $description = 'Update webinar statuses based on time (Upcoming → Live → Completed)';
+    protected $description = 'Update webinar statuses based on time (Upcoming → Live → Ended)';
 
     public function handle(): int
     {
@@ -23,13 +23,13 @@ final class UpdateWebinarStatusesCommand extends Command
             ->where(DB::raw('starts_at + (duration_minutes || \' minutes\')::interval'), '>', $now)
             ->update(['status' => WebinarStatus::Live]);
 
-        $toCompletedCount = Webinar::query()
+        $toEndedCount = Webinar::query()
             ->whereIn('status', [WebinarStatus::Upcoming, WebinarStatus::Live])
             ->where(DB::raw('starts_at + (duration_minutes || \' minutes\')::interval'), '<=', $now)
-            ->update(['status' => WebinarStatus::Completed]);
+            ->update(['status' => WebinarStatus::Ended]);
 
-        if ($toLiveCount > 0 || $toCompletedCount > 0) {
-            $this->info("Updated statuses: {$toLiveCount} to Live, {$toCompletedCount} to Completed");
+        if ($toLiveCount > 0 || $toEndedCount > 0) {
+            $this->info("Updated statuses: {$toLiveCount} to Live, {$toEndedCount} to Ended");
         }
 
         return self::SUCCESS;

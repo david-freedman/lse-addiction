@@ -8,4 +8,5 @@ enum ProfileFieldType: string
     case Select = 'select';
     case Number = 'number';
     case Date = 'date';
+    case Tags = 'tags';
 }

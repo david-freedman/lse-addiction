@@ -70,6 +70,15 @@ class LessonSeeder extends Seeder
                 'type' => LessonType::QaSession,
                 'duration_minutes' => 60,
                 'qa_session_url' => 'https://zoom.us/j/123456789',
+                'starts_at_offset_days' => 7,
+            ],
+            [
+                'name' => 'Додаткова Q&A сесія',
+                'description' => 'Додаткова сесія для обговорення питань, що залишились після основного матеріалу.',
+                'type' => LessonType::QaSession,
+                'duration_minutes' => 45,
+                'qa_session_url' => 'https://zoom.us/j/987654321',
+                'starts_at_offset_days' => 21,
             ],
             [
                 'name' => 'Опитування студентів',
@@ -106,7 +115,7 @@ class LessonSeeder extends Seeder
                     'description' => $template['description'],
                     'type' => $template['type'],
                     'duration_minutes' => $template['duration_minutes'],
-                    'order' => $order + 1,
+                    'order' => $order,
                     'status' => LessonStatus::Published,
                     'attachments' => null,
                 ];
@@ -126,6 +135,7 @@ class LessonSeeder extends Seeder
                     $lessonData['video_url'] = null;
                 } elseif ($template['type'] === LessonType::QaSession) {
                     $lessonData['qa_session_url'] = $template['qa_session_url'] ?? null;
+                    $lessonData['starts_at'] = now()->addDays($template['starts_at_offset_days'] ?? 7)->setHour(14)->setMinute(0)->setSecond(0);
                     $lessonData['content'] = null;
                     $lessonData['video_url'] = null;
                 } elseif ($template['type'] === LessonType::Survey) {

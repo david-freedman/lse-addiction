@@ -7,7 +7,8 @@ enum WebinarStatus: string
     case Draft = 'draft';
     case Upcoming = 'upcoming';
     case Live = 'live';
-    case Completed = 'completed';
+    case Ended = 'ended';
+    case Recorded = 'recorded';
     case Cancelled = 'cancelled';
 
     public function label(): string
@@ -16,7 +17,8 @@ enum WebinarStatus: string
             self::Draft => 'Чернетка',
             self::Upcoming => 'Заплановано',
             self::Live => 'Йде зараз',
-            self::Completed => 'Завершено',
+            self::Ended => 'Завершено',
+            self::Recorded => 'У записі',
             self::Cancelled => 'Скасовано',
         };
     }
@@ -24,11 +26,10 @@ enum WebinarStatus: string
     public function color(): string
     {
         return match ($this) {
-            self::Draft => 'gray',
+            self::Draft, self::Ended, self::Cancelled => 'gray',
             self::Upcoming => 'teal',
             self::Live => 'red',
-            self::Completed => 'green',
-            self::Cancelled => 'gray',
+            self::Recorded => 'green',
         };
     }
 }

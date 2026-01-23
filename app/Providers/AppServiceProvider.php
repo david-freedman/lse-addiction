@@ -66,7 +66,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('access-users', fn (Authenticatable $user) => $user instanceof User && false);
         Gate::define('access-finances', fn (Authenticatable $user) => $user instanceof User && false);
         Gate::define('access-student-groups', fn (Authenticatable $user) => $user instanceof User && ($user->isAdmin() || $user->isTeacher()));
-        Gate::define('access-progress', fn (Authenticatable $user) => $user instanceof User && $user->isAdmin());
+        Gate::define('access-progress', fn (Authenticatable $user) => $user instanceof User && ($user->isAdmin() || $user->isTeacher()));
     }
 
     private function configureViewComposers(): void

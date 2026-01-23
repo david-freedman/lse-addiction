@@ -3,12 +3,14 @@
 namespace App\Domains\Certificate\Models;
 
 use App\Domains\Certificate\Enums\CertificateGrade;
+use App\Domains\Certificate\Enums\CertificateStatus;
 use App\Domains\Course\Models\Course;
 use App\Domains\Student\Models\Student;
 use App\Models\User;
 use Database\Factories\CertificateFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -32,6 +34,10 @@ class Certificate extends Model
         'issued_at',
         'viewed_at',
         'issued_by',
+        'published_at',
+        'published_by',
+        'revoked_at',
+        'revoked_by',
     ];
 
     protected function casts(): array
@@ -40,6 +46,8 @@ class Certificate extends Model
             'grade' => 'decimal:2',
             'issued_at' => 'datetime',
             'viewed_at' => 'datetime',
+            'published_at' => 'datetime',
+            'revoked_at' => 'datetime',
         ];
     }
 
@@ -56,6 +64,16 @@ class Certificate extends Model
     public function issuedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'issued_by');
+    }
+
+    public function publishedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'published_by');
+    }
+
+    public function revokedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'revoked_by');
     }
 
     protected function gradeLevel(): Attribute
@@ -88,26 +106,42 @@ class Certificate extends Model
         return $this->issued_by === null;
     }
 
-    public function isRevoked(): bool
+    public function isPending(): bool
     {
-        return $this->trashed();
+        return $this->published_at === null && $this->revoked_at === null && !$this->trashed();
     }
 
-    public static function generateNumber(): string
+    public function isPublished(): bool
     {
-        $year = now()->year;
-        $lastCertificate = self::withTrashed()
-            ->where('certificate_number', 'like', "LSE-{$year}-%")
-            ->orderByRaw("CAST(SPLIT_PART(certificate_number, '-', 3) AS INTEGER) DESC")
-            ->first();
+        return $this->published_at !== null && $this->revoked_at === null && !$this->trashed();
+    }
 
-        $sequence = 1;
-        if ($lastCertificate) {
-            $parts = explode('-', $lastCertificate->certificate_number);
-            $sequence = (int) end($parts) + 1;
+    public function isRevoked(): bool
+    {
+        return $this->revoked_at !== null || $this->trashed();
+    }
+
+    public function isVisibleToStudent(): bool
+    {
+        return $this->isPublished();
+    }
+
+    public function getStatus(): CertificateStatus
+    {
+        if ($this->isRevoked()) {
+            return CertificateStatus::Revoked;
         }
 
-        return sprintf('LSE-%d-%03d', $year, $sequence);
+        if ($this->isPublished()) {
+            return CertificateStatus::Published;
+        }
+
+        return CertificateStatus::Pending;
+    }
+
+    public static function generateNumber(Course $course, Student $student): string
+    {
+        return sprintf('%d-2556-%s-%s', now()->year, $course->number, $student->number);
     }
 
     public function scopeForStudent($query, int $studentId)
@@ -124,5 +158,32 @@ class Certificate extends Model
         return $query->whereHas('course', function ($q) use ($search) {
             $q->where('name', 'ilike', "%{$search}%");
         });
+    }
+
+    public function scopePending(Builder $query): Builder
+    {
+        return $query->whereNull('published_at')
+            ->whereNull('revoked_at')
+            ->whereNull('deleted_at');
+    }
+
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->whereNotNull('published_at')
+            ->whereNull('revoked_at')
+            ->whereNull('deleted_at');
+    }
+
+    public function scopeRevoked(Builder $query): Builder
+    {
+        return $query->where(function ($q) {
+            $q->whereNotNull('revoked_at')
+                ->orWhereNotNull('deleted_at');
+        });
+    }
+
+    public function scopeVisibleToStudent(Builder $query): Builder
+    {
+        return $query->published();
     }
 }

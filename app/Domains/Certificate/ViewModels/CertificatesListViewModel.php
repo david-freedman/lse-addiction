@@ -19,6 +19,7 @@ readonly class CertificatesListViewModel
         $this->search = $search;
 
         $query = Certificate::forStudent($student->id)
+            ->visibleToStudent()
             ->with(['course.teacher'])
             ->orderBy('issued_at', 'desc');
 

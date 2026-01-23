@@ -45,8 +45,8 @@
                 <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $statusClass }}">
                     {{ $module->status->label() }}
                 </span>
-                @if($module->has_final_test)
-                    <span class="inline-flex rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">Тест</span>
+                @if($module->hasFinalTest())
+                    <span class="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">🏆 Підсумковий</span>
                 @endif
                 <div class="flex items-center gap-2">
                     <a href="{{ route('admin.lessons.index', [$course, $module]) }}" class="rounded-lg px-3 py-1.5 text-xs font-medium text-brand-600 transition hover:bg-brand-50">
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
             animation: 150,
             onEnd: async function(evt) {
                 const ids = [...document.querySelectorAll('.module-card')].map(el => el.dataset.id);
-                await fetch('{{ route('admin.modules.reorder', $course) }}', {
+                const response = await fetch('{{ route('admin.modules.reorder', $course) }}', {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
@@ -88,6 +88,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     body: JSON.stringify({ order: ids })
                 });
+                if (response.ok) {
+                    location.reload();
+                }
             }
         });
     }

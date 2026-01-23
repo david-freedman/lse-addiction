@@ -19,19 +19,16 @@ class ModuleSeeder extends Seeder
                 'name' => 'Вступ до курсу',
                 'description' => 'Знайомство з основними концепціями та завданнями курсу.',
                 'unlock_rule' => ModuleUnlockRule::None,
-                'has_final_test' => false,
             ],
             [
                 'name' => 'Теоретичні основи',
                 'description' => 'Глибоке вивчення теоретичних аспектів та наукової бази.',
                 'unlock_rule' => ModuleUnlockRule::CompletePrevious,
-                'has_final_test' => true,
             ],
             [
                 'name' => 'Практичне застосування',
                 'description' => 'Практичні навички, клінічні випадки та реальні приклади застосування.',
                 'unlock_rule' => ModuleUnlockRule::CompleteTest,
-                'has_final_test' => true,
             ],
         ];
 
@@ -43,9 +40,8 @@ class ModuleSeeder extends Seeder
                     'course_id' => $course->id,
                     'name' => $template['name'],
                     'description' => $template['description'],
-                    'order' => $order + 1,
+                    'order' => $order,
                     'status' => ModuleStatus::Active,
-                    'has_final_test' => $template['has_final_test'],
                     'unlock_rule' => $template['unlock_rule'],
                 ]);
                 $totalModules++;

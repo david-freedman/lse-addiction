@@ -11,10 +11,14 @@ final class GetCertificatesController
 {
     public function __invoke(Request $request): View
     {
+        $user = $request->user('admin');
+        $restrictToCourseIds = $user->isTeacher() ? $user->getTeacherCourseIds() : null;
+
         $filters = CertificateFilterData::from($request->all());
         $viewModel = new CertificateListViewModel(
             filters: $filters,
             perPage: 20,
+            restrictToCourseIds: $restrictToCourseIds,
         );
 
         return view('admin.certificates.index', compact('viewModel'));

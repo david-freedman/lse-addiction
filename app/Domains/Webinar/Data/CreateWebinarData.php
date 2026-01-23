@@ -43,6 +43,9 @@ class CreateWebinarData extends Data
         #[Nullable, StringType, Url, Max(500)]
         public readonly ?string $meeting_url,
 
+        #[Nullable, StringType, Url, Max(500)]
+        public readonly ?string $recording_url,
+
         #[Required, StringType]
         public readonly string $status,
 
@@ -64,6 +67,14 @@ class CreateWebinarData extends Data
             'starts_at' => ['required', 'date', 'date_format:d.m.Y H:i'],
             'old_price' => ['nullable', 'numeric', 'min:0', 'gte:price'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:webinars,slug'],
+            'recording_url' => ['nullable', 'url', 'max:500', 'required_if:status,recorded'],
+        ];
+    }
+
+    public static function messages(): array
+    {
+        return [
+            'recording_url.required_if' => 'Посилання на запис обов\'язкове для статусу "У записі"',
         ];
     }
 }

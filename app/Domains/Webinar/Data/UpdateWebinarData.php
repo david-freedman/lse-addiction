@@ -43,6 +43,9 @@ class UpdateWebinarData extends Data
         #[Nullable, StringType, Url, Max(500)]
         public readonly ?string $meeting_url,
 
+        #[Nullable, StringType, Url, Max(500)]
+        public readonly ?string $recording_url,
+
         #[Required, StringType]
         public readonly string $status,
 
@@ -65,6 +68,14 @@ class UpdateWebinarData extends Data
             'teacher_id' => ['required', 'integer', 'exists:teachers,id'],
             'starts_at' => ['required', 'date', 'date_format:d.m.Y H:i'],
             'old_price' => ['nullable', 'numeric', 'min:0', 'gte:price'],
+            'recording_url' => ['nullable', 'url', 'max:500', 'required_if:status,recorded'],
+        ];
+    }
+
+    public static function messages(): array
+    {
+        return [
+            'recording_url.required_if' => 'Посилання на запис обов\'язкове для статусу "У записі"',
         ];
     }
 }

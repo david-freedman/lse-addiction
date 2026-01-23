@@ -56,5 +56,47 @@ enum ActivityType: string
     case HomeworkSubmitted = 'homework.submitted';
     case HomeworkReviewed = 'homework.reviewed';
 
+    case ModuleCreated = 'module.created';
+    case ModuleUpdated = 'module.updated';
+    case ModuleDeleted = 'module.deleted';
+    case ModulesReordered = 'modules.reordered';
+
+    case LessonCreated = 'lesson.created';
+    case LessonUpdated = 'lesson.updated';
+    case LessonDeleted = 'lesson.deleted';
+    case LessonCompleted = 'lesson.completed';
+    case LessonsReordered = 'lessons.reordered';
+
+    case QuizCreated = 'quiz.created';
+    case QuizUpdated = 'quiz.updated';
+    case QuizDeleted = 'quiz.deleted';
+    case QuizQuestionCreated = 'quiz.question.created';
+    case QuizQuestionUpdated = 'quiz.question.updated';
+    case QuizQuestionDeleted = 'quiz.question.deleted';
+    case QuizSubmitted = 'quiz.submitted';
+    case QuestionsReordered = 'questions.reordered';
+
+    case CertificateIssued = 'certificate.issued';
+    case CertificatePublished = 'certificate.published';
+    case CertificateRevoked = 'certificate.revoked';
+    case CertificateRestored = 'certificate.restored';
+
+    case CommentCreated = 'comment.created';
+    case CommentDeleted = 'comment.deleted';
+    case CommentReplied = 'comment.replied';
+
+    case StudentGroupCreated = 'student_group.created';
+    case StudentGroupUpdated = 'student_group.updated';
+    case StudentGroupDeleted = 'student_group.deleted';
+    case StudentAddedToGroup = 'student_group.student_added';
+    case StudentRemovedFromGroup = 'student_group.student_removed';
+
+    case DiscountAssigned = 'discount.assigned';
+    case DiscountRemoved = 'discount.removed';
+
+    case AdminLoginSuccess = 'admin.login.success';
+    case AdminLoginFailed = 'admin.login.failed';
+    case AdminLoggedOut = 'admin.logged.out';
+
     case SystemError = 'system.error';
 }

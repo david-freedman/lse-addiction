@@ -22,7 +22,7 @@
                     type="text"
                     name="search"
                     value="{{ $viewModel->filters()->search }}"
-                    placeholder="Пошук по назві курсу..."
+                    placeholder="Пошук по номеру або назві курсу..."
                     class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white"
                 >
             </div>
@@ -106,6 +106,7 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Номер</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Назва</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Викладач</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ціна</th>
@@ -118,6 +119,9 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($viewModel->courses() as $course)
                         <tr class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-4 text-sm text-gray-700">
+                                {{ $course->number }}
+                            </td>
                             <td class="px-6 py-4">
                                 <a href="{{ route('admin.courses.show', $course) }}" class="font-medium text-brand-600 hover:text-brand-700 hover:underline">
                                     {{ $course->name }}

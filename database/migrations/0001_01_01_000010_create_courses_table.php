@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
+            $table->string('number', 7)->unique();
             $table->text('description');
             $table->text('description_short')->nullable();
             $table->decimal('price', 10, 2);
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->timestamp('starts_at')->nullable();
             $table->string('label')->nullable();
             $table->boolean('is_sequential')->default(true);
+            $table->boolean('requires_certificate_approval')->default(true);
             $table->timestamps();
 
             $table->index('status');

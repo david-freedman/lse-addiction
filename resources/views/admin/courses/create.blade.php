@@ -27,6 +27,24 @@
         </div>
 
         <div>
+            <label for="number" class="mb-2 block text-sm font-medium text-gray-700">Номер курсу <span class="text-error-500">*</span></label>
+            <input
+                type="text"
+                name="number"
+                id="number"
+                value="{{ old('number') }}"
+                required
+                maxlength="7"
+                placeholder="1234567"
+                class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('number') border-error-500 @enderror"
+            >
+            <p class="mt-1 text-xs text-gray-500">7 цифр, унікальний номер курсу</p>
+            @error('number')
+                <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div>
             <label for="description" class="mb-2 block text-sm font-medium text-gray-700">Опис <span class="text-error-500">*</span></label>
             <textarea
                 name="description"
@@ -258,6 +276,32 @@
                 @error('label')
                     <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
                 @enderror
+            </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <div class="flex items-start gap-3">
+                <input
+                    type="hidden"
+                    name="requires_certificate_approval"
+                    value="0"
+                >
+                <input
+                    type="checkbox"
+                    name="requires_certificate_approval"
+                    id="requires_certificate_approval"
+                    value="1"
+                    {{ old('requires_certificate_approval') ? 'checked' : '' }}
+                    class="mt-1 rounded border-gray-300 text-brand-500 focus:ring-brand-500"
+                >
+                <div>
+                    <label for="requires_certificate_approval" class="block text-sm font-medium text-gray-700">
+                        Модерація сертифікатів
+                    </label>
+                    <p class="mt-0.5 text-xs text-gray-500">
+                        Якщо увімкнено, сертифікати будуть видаватися автоматично, але потребуватимуть підтвердження адміністратора або викладача перед тим, як стануть доступними студентам.
+                    </p>
+                </div>
             </div>
         </div>
 

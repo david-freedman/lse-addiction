@@ -15,13 +15,13 @@ class TeacherFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => null,
+            'user_id' => UserFactory::new(),
             'first_name' => fake('uk_UA')->firstName(),
             'last_name' => fake('uk_UA')->lastName(),
             'middle_name' => fake()->optional()->firstName(),
             'position' => fake()->optional()->jobTitle(),
             'workplace' => fake()->optional()->company(),
-            'specialization' => fake()->optional()->sentence(3),
+            'specialization' => fake()->sentence(3),
             'description' => fake()->optional()->paragraph(),
         ];
     }

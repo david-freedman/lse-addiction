@@ -11,7 +11,11 @@ final class ShowProgressDashboardController
     public function __invoke(Request $request): View
     {
         $period = $request->get('period', 'all');
-        $viewModel = new AdminProgressDashboardViewModel($period);
+
+        $user = $request->user('admin');
+        $restrictToCourseIds = $user->isTeacher() ? $user->getTeacherCourseIds() : null;
+
+        $viewModel = new AdminProgressDashboardViewModel($period, $restrictToCourseIds);
 
         return view('admin.progress.dashboard', compact('viewModel'));
     }
