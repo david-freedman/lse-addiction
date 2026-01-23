@@ -103,7 +103,7 @@
                 <button
                     type="button"
                     onclick="openRegisterModal('{{ $webinar->slug }}', '{{ addslashes($webinar->title) }}', '{{ $webinar->teacher->full_name }}', '{{ $isRecorded ? 'Запис' : $webinar->starts_at->translatedFormat('d.m.Y') . ' о ' . $webinar->formatted_time }}', '{{ $isRecorded ? 'Доступний відразу' : $webinar->formatted_duration }}', '{{ $isRecorded ? 'необмежено' : ($webinar->available_spots !== null ? $webinar->available_spots : 'необмежено') }}', '{{ number_format($webinar->price, 0, ',', ' ') }} ₴', '{{ $webinar->banner_url ?? '' }}', {{ $webinar->is_free ? 'true' : 'false' }})"
-                    class="ml-auto bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                    class="ml-auto bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition cursor-pointer"
                 >
                     {{ $isRecorded ? 'Переглянути' : 'Зареєструватися' }}
                 </button>

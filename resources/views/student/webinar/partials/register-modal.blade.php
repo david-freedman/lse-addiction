@@ -76,7 +76,7 @@ function openRegisterModal(slug, title, teacher, datetime, duration, spots, pric
     const modalPlaceholder = document.getElementById('modal-webinar-placeholder');
     const isRecording = datetime === 'Запис';
 
-    document.getElementById('modal-header-title').textContent = isRecording ? 'Реєстрація на вебінар';
+    document.getElementById('modal-header-title').textContent = 'Реєстрація на вебінар';
     document.getElementById('modal-header-subtitle').textContent = isRecording ? 'Підтвердіть отримання доступу' : 'Підтвердіть Вашу участь';
     document.getElementById('modal-webinar-title').textContent = title;
     document.getElementById('modal-webinar-teacher').textContent = teacher;

@@ -42,7 +42,7 @@ readonly class WebinarListViewModel
             $query->whereDate('starts_at', '<=', $this->filters->date_to);
         }
 
-        return $query->orderByDesc('starts_at')->paginate($this->perPage);
+        return $query->orderByDesc('id')->paginate($this->perPage);
     }
 
     public function filters(): WebinarFilterData
