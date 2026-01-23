@@ -30,6 +30,7 @@ class Course extends Model
     protected $fillable = [
         'name',
         'slug',
+        'number',
         'description',
         'description_short',
         'price',
@@ -43,6 +44,7 @@ class Course extends Model
         'starts_at',
         'label',
         'is_sequential',
+        'requires_certificate_approval',
     ];
 
     protected $casts = [
@@ -52,6 +54,7 @@ class Course extends Model
         'type' => CourseType::class,
         'status' => CourseStatus::class,
         'is_sequential' => 'boolean',
+        'requires_certificate_approval' => 'boolean',
     ];
 
     public function teacher(): BelongsTo
@@ -284,23 +287,30 @@ class Course extends Model
         return $this->teacher_id === $user->id || $this->author_id === $user->id;
     }
 
+    public function requiresCertificateApproval(): bool
+    {
+        return $this->requires_certificate_approval;
+    }
+
     public function hasFinalQuiz(): bool
     {
-        $moduleIds = $this->modules()->pluck('id');
-
-        return Quiz::where('quizzable_type', Module::class)
-            ->whereIn('quizzable_id', $moduleIds)
+        $finalLessonIds = Lesson::whereIn('module_id', $this->modules()->pluck('id'))
             ->where('is_final', true)
+            ->pluck('id');
+
+        return Quiz::where('quizzable_type', Lesson::class)
+            ->whereIn('quizzable_id', $finalLessonIds)
             ->exists();
     }
 
     public function getFinalQuiz(): ?Quiz
     {
-        $moduleIds = $this->modules()->pluck('id');
-
-        return Quiz::where('quizzable_type', Module::class)
-            ->whereIn('quizzable_id', $moduleIds)
+        $finalLessonIds = Lesson::whereIn('module_id', $this->modules()->pluck('id'))
             ->where('is_final', true)
+            ->pluck('id');
+
+        return Quiz::where('quizzable_type', Lesson::class)
+            ->whereIn('quizzable_id', $finalLessonIds)
             ->first();
     }
 }

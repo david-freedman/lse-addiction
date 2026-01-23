@@ -15,7 +15,7 @@ final class RevokeCertificateController
     {
         $this->authorize('revoke', $certificate);
 
-        app(RevokeCertificateAction::class)($certificate);
+        app(RevokeCertificateAction::class)($certificate, auth('admin')->user());
 
         return redirect()->back()
             ->with('success', 'Сертифікат успішно відкликано');

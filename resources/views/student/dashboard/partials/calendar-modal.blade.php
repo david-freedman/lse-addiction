@@ -12,7 +12,7 @@
                     </div>
                     <div>
                         <h2 class="text-xl font-bold text-gray-900">Календар подій</h2>
-                        <p class="text-sm text-gray-500">Перегляньте розклад вебінарів та нових курсів</p>
+                        <p class="text-sm text-gray-500">Перегляньте розклад вебінарів, курсів та Q&A сесій</p>
                     </div>
                 </div>
                 <button onclick="closeCalendarModal()" class="cursor-pointer text-gray-400 hover:text-gray-600 transition">
@@ -50,13 +50,26 @@
                 </div>
 
                 <div class="grid grid-cols-7 gap-1" id="calendar-grid"></div>
+
+                <div class="flex items-center gap-4 mt-4 text-xs text-gray-500">
+                    <span class="flex items-center gap-1">
+                        <span class="w-2 h-2 bg-teal-500 rounded-full"></span> Курси
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <span class="w-2 h-2 bg-purple-500 rounded-full"></span> Вебінари
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <span class="w-2 h-2 bg-amber-500 rounded-full"></span> Q&A сесії
+                    </span>
+                </div>
             </div>
 
             <div class="w-2/5 p-6 overflow-y-auto bg-gray-50">
                 <div id="selected-date-section" class="hidden mb-6">
                     <h4 class="text-sm font-medium text-gray-500 mb-3" id="selected-date-title"></h4>
                     <div id="selected-date-courses" class="space-y-3 mb-3"></div>
-                    <div id="selected-date-webinars" class="space-y-3"></div>
+                    <div id="selected-date-webinars" class="space-y-3 mb-3"></div>
+                    <div id="selected-date-qa-sessions" class="space-y-3"></div>
                 </div>
 
                 <div id="no-events-message" class="hidden mb-6 p-4 bg-white rounded-lg border border-gray-200">
@@ -140,7 +153,8 @@
 
         const courses = calendarData.coursesByDate[dateStr] || [];
         const webinars = calendarData.webinarsByDate[dateStr] || [];
-        updateSelectedDateSection(dateStr, courses, webinars);
+        const qaSessions = calendarData.qaSessionsByDate[dateStr] || [];
+        updateSelectedDateSection(dateStr, courses, webinars, qaSessions);
     };
 
     function renderCalendar() {
@@ -170,6 +184,7 @@
             const dateStr = `${year}-${String(monthNum + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const hasCourses = calendarData.datesWithCourses.includes(dateStr);
             const hasWebinars = calendarData.datesWithWebinars.includes(dateStr);
+            const hasQaSessions = calendarData.datesWithQaSessions.includes(dateStr);
             const isToday = dateStr === today;
             const isSelected = dateStr === selectedDate;
 
@@ -190,7 +205,10 @@
             if (hasWebinars) {
                 indicator += '<div class="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>';
             }
-            if (!hasCourses && !hasWebinars) {
+            if (hasQaSessions) {
+                indicator += '<div class="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>';
+            }
+            if (!hasCourses && !hasWebinars && !hasQaSessions) {
                 indicator += '<div class="w-1.5 h-1.5"></div>';
             }
             indicator += '</div>';
@@ -208,16 +226,17 @@
         }
     }
 
-    function updateSelectedDateSection(dateStr, courses, webinars) {
+    function updateSelectedDateSection(dateStr, courses, webinars, qaSessions) {
         const selectedSection = document.getElementById('selected-date-section');
         const noEventsMessage = document.getElementById('no-events-message');
         const dateTitle = document.getElementById('selected-date-title');
         const coursesList = document.getElementById('selected-date-courses');
         const webinarsList = document.getElementById('selected-date-webinars');
+        const qaSessionsList = document.getElementById('selected-date-qa-sessions');
 
         const formattedDate = formatDateUkrainian(dateStr);
 
-        if (courses.length === 0 && webinars.length === 0) {
+        if (courses.length === 0 && webinars.length === 0 && qaSessions.length === 0) {
             selectedSection.classList.add('hidden');
             noEventsMessage.classList.remove('hidden');
             document.getElementById('no-events-text').textContent = `Немає подій на ${formattedDate}`;
@@ -229,6 +248,9 @@
 
             coursesList.innerHTML = courses.map(course => renderCourseCard(course)).join('');
             webinarsList.innerHTML = webinars.map(webinar => renderWebinarCard(webinar)).join('');
+            qaSessionsList.innerHTML = qaSessions.length > 0
+                ? `<h5 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Q&A сесії</h5>` + qaSessions.map(session => renderQaSessionCard(session)).join('')
+                : '';
             filterUpcoming(courses.map(c => c.id), webinars.map(w => w.id));
         }
     }
@@ -336,6 +358,33 @@
                         ${webinar.formattedDuration}
                     </span>
                 </div>
+            </div>
+        `;
+    }
+
+    function renderQaSessionCard(session) {
+        const linkHtml = session.qaSessionUrl
+            ? `<a href="${session.qaSessionUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-xs text-amber-600 hover:text-amber-700 font-medium mt-2">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    Перейти до сесії
+                </a>`
+            : '';
+
+        return `
+            <div class="bg-white rounded-lg p-4 border-2 hover:bg-amber-50 transition cursor-pointer" style="border-color: #f59e0b" onclick="window.location.href='${session.lessonUrl}'">
+                <h4 class="text-sm font-semibold text-gray-900 mb-1 line-clamp-2">${session.name}</h4>
+                <p class="text-xs text-gray-500 mb-2">${session.courseName}</p>
+                <div class="flex items-center gap-4 text-xs text-gray-500">
+                    <span class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        ${session.formattedTime}
+                    </span>
+                </div>
+                ${linkHtml}
             </div>
         `;
     }

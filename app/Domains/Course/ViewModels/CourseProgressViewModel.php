@@ -154,7 +154,7 @@ readonly class CourseProgressViewModel
             return 'lock';
         }
 
-        if ($module->has_final_test) {
+        if ($module->hasFinalTest()) {
             return 'quiz';
         }
 

@@ -83,18 +83,6 @@
                 </div>
             </div>
 
-            <div>
-                <label class="flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        name="has_final_test"
-                        value="1"
-                        {{ old('has_final_test', $module->has_final_test) ? 'checked' : '' }}
-                        class="rounded border-gray-300 text-brand-500 focus:ring-brand-500"
-                    >
-                    <span class="text-sm text-gray-700">Має підсумковий тест</span>
-                </label>
-            </div>
         </div>
 
         <div class="flex items-center justify-between border-t border-gray-200 pt-5 mt-6">

@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('performed_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->unsignedBigInteger('course_id')->nullable();
             $table->string('subject_type');
             $table->unsignedBigInteger('subject_id')->nullable();
             $table->string('activity_type');
@@ -22,6 +24,7 @@ return new class extends Migration
             $table->index(['subject_type', 'subject_id']);
             $table->index('activity_type');
             $table->index('created_at');
+            $table->index('course_id');
         });
     }
 

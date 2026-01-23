@@ -2,6 +2,7 @@
 
 namespace App\Domains\Certificate\Data;
 
+use App\Domains\Certificate\Enums\CertificateStatus;
 use Spatie\LaravelData\Attributes\Validation\Nullable;
 use Spatie\LaravelData\Data;
 
@@ -18,6 +19,15 @@ class CertificateFilterData extends Data
         public readonly ?int $student_id = null,
 
         #[Nullable]
-        public readonly ?bool $only_revoked = null,
+        public readonly ?string $status = null,
     ) {}
+
+    public function getStatusEnum(): ?CertificateStatus
+    {
+        if ($this->status === null) {
+            return null;
+        }
+
+        return CertificateStatus::tryFrom($this->status);
+    }
 }

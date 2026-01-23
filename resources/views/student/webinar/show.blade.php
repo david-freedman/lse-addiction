@@ -89,74 +89,97 @@
                 <div class="bg-white rounded-xl shadow-md p-6">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Деталі</h3>
                     <div class="space-y-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
-                                <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
+                        @if($webinar->isRecorded())
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Доступність</p>
+                                    <p class="font-semibold text-green-600">Доступний відразу</p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Дата</p>
-                                <p class="font-semibold text-gray-900">{{ $webinar->formatted_date }}</p>
+                        @else
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Дата</p>
+                                    <p class="font-semibold text-gray-900">{{ $webinar->formatted_date }}</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
-                                <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Час</p>
+                                    <p class="font-semibold text-gray-900">{{ $webinar->formatted_time }}</p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Час</p>
-                                <p class="font-semibold text-gray-900">{{ $webinar->formatted_time }}</p>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Тривалість</p>
+                                    <p class="font-semibold text-gray-900">{{ $webinar->formatted_duration }}</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
-                                <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                </svg>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Учасників</p>
+                                    <p class="font-semibold text-gray-900">
+                                        {{ $webinar->participantsCount() }}
+                                        @if($webinar->max_participants)
+                                            / {{ $webinar->max_participants }}
+                                        @endif
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Тривалість</p>
-                                <p class="font-semibold text-gray-900">{{ $webinar->formatted_duration }}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
-                                <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Учасників</p>
-                                <p class="font-semibold text-gray-900">
-                                    {{ $webinar->participantsCount() }}
-                                    @if($webinar->max_participants)
-                                        / {{ $webinar->max_participants }}
-                                    @endif
-                                </p>
-                            </div>
-                        </div>
+                        @endif
                     </div>
                 </div>
 
                 <div class="bg-white rounded-xl shadow-md p-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">Реєстрація</h3>
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">{{ $webinar->isRecorded() ? 'Доступ' : 'Реєстрація' }}</h3>
                     @if($isRegistered)
                         <div class="flex items-center gap-2 text-teal-600 mb-4">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                             </svg>
-                            <span class="font-medium">Ви зареєстровані</span>
+                            <span class="font-medium">{{ $webinar->isRecorded() ? 'Ви маєте доступ' : 'Ви зареєстровані' }}</span>
                         </div>
-                        @if($webinar->status === \App\Domains\Webinar\Enums\WebinarStatus::Completed)
+                        @if($webinar->isEnded())
                             <div class="w-full inline-flex items-center justify-center gap-2 bg-gray-100 text-gray-500 font-medium py-3 px-6 rounded-lg text-center">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span>Вебінар завершено</span>
+                                <span>Вебінар завершився</span>
                             </div>
+                        @elseif($webinar->isRecorded() && $meetingUrl)
+                            <a href="{{ $meetingUrl }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Переглянути запис
+                            </a>
                         @elseif($meetingUrl)
                             @if($webinar->status === \App\Domains\Webinar\Enums\WebinarStatus::Live)
                                 <p class="text-sm text-rose-600 font-medium mb-3 text-center">
@@ -197,10 +220,10 @@
                         @if($webinar->hasCapacity())
                             <button
                                 type="button"
-                                onclick="openRegisterModal('{{ $webinar->slug }}', '{{ addslashes($webinar->title) }}', '{{ $webinar->teacher->full_name }}', '{{ $webinar->starts_at->translatedFormat('d.m.Y') }} о {{ $webinar->formatted_time }}', '{{ $webinar->formatted_duration }}', '{{ $webinar->available_spots !== null ? $webinar->available_spots : 'необмежено' }}', '{{ number_format($webinar->price, 0, ',', ' ') }} ₴', '{{ $webinar->banner_url ?? '' }}', {{ $webinar->is_free ? 'true' : 'false' }})"
+                                onclick="openRegisterModal('{{ $webinar->slug }}', '{{ addslashes($webinar->title) }}', '{{ $webinar->teacher->full_name }}', '{{ $webinar->isRecorded() ? 'Запис' : $webinar->starts_at->translatedFormat('d.m.Y') . ' о ' . $webinar->formatted_time }}', '{{ $webinar->isRecorded() ? 'Доступний відразу' : $webinar->formatted_duration }}', '{{ $webinar->isRecorded() ? 'необмежено' : ($webinar->available_spots !== null ? $webinar->available_spots : 'необмежено') }}', '{{ number_format($webinar->price, 0, ',', ' ') }} ₴', '{{ $webinar->banner_url ?? '' }}', {{ $webinar->is_free ? 'true' : 'false' }})"
                                 class="w-full inline-flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 px-6 rounded-lg transition"
                             >
-                                Зареєструватися
+                                {{ 'Зареєструватися' }}
                             </button>
                         @else
                             <div class="w-full inline-flex items-center justify-center gap-2 bg-gray-100 text-gray-500 font-semibold py-3 px-6 rounded-lg">

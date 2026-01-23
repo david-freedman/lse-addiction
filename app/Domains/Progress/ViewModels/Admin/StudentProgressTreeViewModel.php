@@ -17,14 +17,20 @@ readonly class StudentProgressTreeViewModel
     public function __construct(
         private ?Course $course = null,
         private ?Student $student = null,
+        private ?array $restrictToCourseIds = null,
     ) {}
 
     public function courses(): Collection
     {
-        return Course::query()
+        $query = Course::query()
             ->whereHas('students')
-            ->orderBy('name')
-            ->get(['id', 'name']);
+            ->orderBy('name');
+
+        if ($this->restrictToCourseIds !== null) {
+            $query->whereIn('id', $this->restrictToCourseIds);
+        }
+
+        return $query->get(['id', 'name']);
     }
 
     public function students(): Collection

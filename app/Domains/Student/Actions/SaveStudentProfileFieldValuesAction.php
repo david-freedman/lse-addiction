@@ -6,6 +6,7 @@ use App\Domains\ActivityLog\Actions\LogActivityAction;
 use App\Domains\ActivityLog\Data\ActivityLogData;
 use App\Domains\ActivityLog\Enums\ActivitySubject;
 use App\Domains\ActivityLog\Enums\ActivityType;
+use App\Domains\Student\Enums\ProfileFieldType;
 use App\Domains\Student\Models\ProfileField;
 use App\Domains\Student\Models\Student;
 use App\Domains\Student\Models\StudentProfileFieldValue;
@@ -22,6 +23,10 @@ class SaveStudentProfileFieldValuesAction
             }
 
             $field = $activeFields->get($fieldKey);
+
+            if ($field->type === ProfileFieldType::Tags) {
+                $value = self::sanitizeTags($value, $field->options['max_items'] ?? 5);
+            }
 
             if ($field->is_required && empty($value)) {
                 continue;
@@ -49,5 +54,26 @@ class SaveStudentProfileFieldValuesAction
             'ip_address' => null,
             'user_agent' => null,
         ]));
+    }
+
+    private static function sanitizeTags(mixed $value, int $maxItems): ?string
+    {
+        if (! is_array($value)) {
+            return null;
+        }
+
+        $tags = collect($value)
+            ->map(fn (string $tag) => trim($tag))
+            ->filter(fn (string $tag) => mb_strlen($tag) >= 2 && mb_strlen($tag) <= 50)
+            ->uniqueStrict()
+            ->take($maxItems)
+            ->values()
+            ->all();
+
+        if (empty($tags)) {
+            return null;
+        }
+
+        return json_encode($tags, JSON_UNESCAPED_UNICODE);
     }
 }

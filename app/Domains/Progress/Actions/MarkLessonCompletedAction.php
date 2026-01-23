@@ -2,6 +2,10 @@
 
 namespace App\Domains\Progress\Actions;
 
+use App\Domains\ActivityLog\Actions\LogActivityAction;
+use App\Domains\ActivityLog\Data\ActivityLogData;
+use App\Domains\ActivityLog\Enums\ActivitySubject;
+use App\Domains\ActivityLog\Enums\ActivityType;
 use App\Domains\Certificate\Actions\IssueCertificateAction;
 use App\Domains\Course\Models\Course;
 use App\Domains\Homework\Enums\HomeworkSubmissionStatus;
@@ -46,6 +50,25 @@ final class MarkLessonCompletedAction
         if (!$lessonProgress->started_at) {
             $lessonProgress->update(['started_at' => now()]);
         }
+
+        LogActivityAction::execute(ActivityLogData::from([
+            'subject_type' => ActivitySubject::Lesson,
+            'subject_id' => $lesson->id,
+            'activity_type' => ActivityType::LessonCompleted,
+            'description' => 'Lesson completed',
+            'properties' => [
+                'lesson_id' => $lesson->id,
+                'lesson_title' => $lesson->title,
+                'lesson_type' => $lesson->type->value,
+                'module_id' => $lesson->module_id,
+                'course_id' => $course->id,
+                'course_name' => $course->name,
+                'student_id' => $student->id,
+                'student_email' => $student->email->value,
+            ],
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]));
 
         $this->updateModuleProgress($student, $lesson->module);
         $this->updateCourseProgress($student, $course);

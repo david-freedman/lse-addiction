@@ -4,6 +4,7 @@ use App\Applications\Http\Admin\Course\Controllers\ArchiveCourseController;
 use App\Applications\Http\Admin\Course\Controllers\CreateCourseController;
 use App\Applications\Http\Admin\Course\Controllers\DeleteCourseController;
 use App\Applications\Http\Admin\Course\Controllers\EditCourseController;
+use App\Applications\Http\Admin\Course\Controllers\GetCourseHistoryController;
 use App\Applications\Http\Admin\Course\Controllers\GetCoursesController;
 use App\Applications\Http\Admin\Course\Controllers\RestoreCourseController;
 use App\Applications\Http\Admin\Course\Controllers\ShowCourseController;
@@ -17,6 +18,7 @@ Route::middleware(['auth:admin', 'verified.user', 'role:admin,teacher'])->group(
         Route::get('/create', CreateCourseController::class)->name('create');
         Route::post('/', StoreCourseController::class)->name('store');
         Route::get('/{course}', ShowCourseController::class)->name('show')->can('view', 'course');
+        Route::get('/{course}/history', GetCourseHistoryController::class)->name('history')->can('view', 'course');
         Route::get('/{course}/edit', EditCourseController::class)->name('edit')->can('update', 'course');
         Route::patch('/{course}', UpdateCourseController::class)->name('update')->can('update', 'course');
         Route::patch('/{course}/archive', ArchiveCourseController::class)->name('archive')->can('archive', 'course');

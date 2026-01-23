@@ -7,7 +7,7 @@ use App\Applications\Http\Admin\Progress\Controllers\ShowStudentProgressControll
 use App\Applications\Http\Admin\Progress\Controllers\ShowStudentProgressTreeController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth:admin', 'verified.user', 'role:admin'])->group(function () {
+Route::middleware(['auth:admin', 'verified.user', 'role:admin,teacher'])->group(function () {
     Route::prefix('progress')->name('progress.')->group(function () {
         Route::get('/', ShowProgressDashboardController::class)->name('dashboard')
             ->can('access-progress');

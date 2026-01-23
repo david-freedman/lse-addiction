@@ -8,6 +8,7 @@ use App\Domains\ActivityLog\Models\ActivityLog;
 use App\Domains\Certificate\Models\Certificate;
 use App\Domains\Course\Models\Course;
 use App\Domains\Discount\Models\StudentCourseDiscount;
+use App\Domains\Student\Enums\ProfileFieldType;
 use App\Domains\Student\Models\Student;
 use App\Domains\Transaction\Models\Transaction;
 use App\Domains\Webinar\Enums\WebinarStatus;
@@ -234,8 +235,11 @@ readonly class StudentDetailViewModel
             if ($value->profileField && $value->value) {
                 $displayValue = $value->value;
 
-                if ($value->profileField->type->value === 'select' && $value->profileField->options) {
+                if ($value->profileField->type === ProfileFieldType::Select && $value->profileField->options) {
                     $displayValue = $value->profileField->options[$value->value] ?? $value->value;
+                } elseif ($value->profileField->type === ProfileFieldType::Tags) {
+                    $decoded = json_decode($value->value, true);
+                    $displayValue = is_array($decoded) ? $decoded : [$value->value];
                 }
 
                 $result[$value->profileField->label] = $displayValue;

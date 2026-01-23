@@ -363,6 +363,21 @@ readonly class LessonDetailViewModel
         return $this->lesson->qa_session_url;
     }
 
+    public function startsAt(): ?\Carbon\Carbon
+    {
+        return $this->lesson->starts_at;
+    }
+
+    public function formattedDate(): ?string
+    {
+        return $this->lesson->formatted_date;
+    }
+
+    public function formattedTime(): ?string
+    {
+        return $this->lesson->formatted_time;
+    }
+
     public function dicomUrl(): ?string
     {
         if (!$this->isDicom()) {

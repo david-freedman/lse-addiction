@@ -38,6 +38,11 @@ readonly class QuizDetailViewModel
         return $this->quiz->isSurvey();
     }
 
+    public function isFinal(): bool
+    {
+        return $this->lesson->is_final;
+    }
+
     public function title(): string
     {
         return $this->isSurvey() ? 'Опитування' : 'Квіз';
@@ -252,12 +257,43 @@ readonly class QuizDetailViewModel
 
         foreach ($this->quiz->questions as $question) {
             foreach ($question->answers as $answer) {
-                if ($answer->category && ! in_array($answer->category, $categories)) {
+                if ($answer->category && !in_array($answer->category, $categories)) {
                     $categories[] = $answer->category;
                 }
             }
         }
 
         return $categories;
+    }
+
+    public function questionsCount(): int
+    {
+        return $this->quiz->questions()->count();
+    }
+
+    public function questionsFormatDescription(): string
+    {
+        $questions = $this->quiz->questions()->get();
+        $types = $questions->pluck('type')->unique();
+
+        if ($types->count() === 1) {
+            return match ($types->first()->value) {
+                'single_choice' => 'Кожне питання має одну правильну відповідь',
+                'multiple_choice' => 'Деякі питання мають кілька правильних відповідей',
+                'image_select' => 'Оберіть правильне зображення',
+                'ordering' => 'Розставте відповіді у правильному порядку',
+                'drag_drop' => 'Розподіліть елементи по категоріях',
+                default => 'Оберіть правильну відповідь',
+            };
+        }
+
+        $hasSingle = $types->contains(fn($t) => $t->value === 'single_choice');
+        $hasMultiple = $types->contains(fn($t) => $t->value === 'multiple_choice');
+
+        if ($hasSingle && $hasMultiple) {
+            return 'Деякі питання мають одну, інші - кілька правильних відповідей';
+        }
+
+        return 'Різні типи питань: уважно читайте інструкції';
     }
 }

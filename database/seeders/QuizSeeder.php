@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Domains\Lesson\Enums\LessonType;
 use App\Domains\Lesson\Models\Lesson;
-use App\Domains\Module\Models\Module;
 use App\Domains\Quiz\Enums\QuestionType;
 use App\Domains\Quiz\Models\Quiz;
 use App\Domains\Quiz\Models\QuizAnswer;
@@ -17,22 +16,6 @@ class QuizSeeder extends Seeder
     {
         $quizCount = 0;
         $questionCount = 0;
-
-        $modules = Module::where('has_final_test', true)->get();
-        foreach ($modules as $module) {
-            $quiz = Quiz::create([
-                'quizzable_type' => Module::class,
-                'quizzable_id' => $module->id,
-                'title' => 'Фінальний тест модуля',
-                'passing_score' => 70,
-                'max_attempts' => 3,
-                'time_limit_minutes' => 30,
-                'show_correct_answers' => true,
-            ]);
-            $quizCount++;
-
-            $questionCount += $this->createQuestionsForQuiz($quiz, 5);
-        }
 
         $quizLessons = Lesson::where('type', LessonType::Quiz)->get();
         foreach ($quizLessons as $lesson) {

@@ -5,12 +5,14 @@ namespace App\Domains\Course\Data;
 use App\Domains\Course\Enums\CourseLabel;
 use App\Domains\Course\Enums\CourseStatus;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Spatie\LaravelData\Attributes\Validation\Date;
 use Spatie\LaravelData\Attributes\Validation\Image;
 use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\Mimes;
 use Spatie\LaravelData\Attributes\Validation\Min;
+use Spatie\LaravelData\Attributes\Validation\BooleanType;
 use Spatie\LaravelData\Attributes\Validation\Nullable;
 use Spatie\LaravelData\Attributes\Validation\Numeric;
 use Spatie\LaravelData\Attributes\Validation\Required;
@@ -22,6 +24,9 @@ class UpdateCourseData extends Data
     public function __construct(
         #[Required, StringType, Min(3), Max(255)]
         public readonly string $name,
+
+        #[Required, StringType]
+        public readonly string $number,
 
         #[Required, StringType]
         public readonly string $description,
@@ -55,6 +60,9 @@ class UpdateCourseData extends Data
 
         #[Nullable, StringType, Max(50)]
         public readonly ?string $label,
+
+        #[Nullable, BooleanType]
+        public readonly ?bool $requires_certificate_approval = null,
     ) {}
 
     public static function rules(): array
@@ -69,6 +77,7 @@ class UpdateCourseData extends Data
             'discount_percentage' => ['nullable', 'integer', 'min:0', 'max:100'],
             'teacher_id' => ['required', 'integer', 'exists:teachers,id'],
             'label' => ['nullable', new Enum(CourseLabel::class)],
+            'number' => ['required', 'digits:7', Rule::unique('courses', 'number')->ignore(request()->route('course')?->id)],
         ];
     }
 }

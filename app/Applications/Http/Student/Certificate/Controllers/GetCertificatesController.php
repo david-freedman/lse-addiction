@@ -14,6 +14,7 @@ final class GetCertificatesController
         $search = $request->query('search');
 
         $student->certificates()
+            ->visibleToStudent()
             ->whereNull('viewed_at')
             ->update(['viewed_at' => now()]);
 

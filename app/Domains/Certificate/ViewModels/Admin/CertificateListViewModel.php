@@ -3,6 +3,7 @@
 namespace App\Domains\Certificate\ViewModels\Admin;
 
 use App\Domains\Certificate\Data\CertificateFilterData;
+use App\Domains\Certificate\Enums\CertificateStatus;
 use App\Domains\Certificate\Models\Certificate;
 use App\Domains\Course\Models\Course;
 use App\Domains\Student\Models\Student;
@@ -14,6 +15,7 @@ readonly class CertificateListViewModel
     public function __construct(
         private CertificateFilterData $filters,
         private int $perPage = 20,
+        private ?array $restrictToCourseIds = null,
     ) {}
 
     public function certificates(): LengthAwarePaginator
@@ -21,6 +23,10 @@ readonly class CertificateListViewModel
         $query = Certificate::query()
             ->withTrashed()
             ->with(['student', 'course', 'issuedBy']);
+
+        if ($this->restrictToCourseIds !== null) {
+            $query->whereIn('course_id', $this->restrictToCourseIds);
+        }
 
         if ($this->filters->search) {
             $search = $this->filters->search;
@@ -45,10 +51,13 @@ readonly class CertificateListViewModel
             $query->where('student_id', $this->filters->student_id);
         }
 
-        if ($this->filters->only_revoked === true) {
-            $query->onlyTrashed();
-        } elseif ($this->filters->only_revoked === false) {
-            $query->withoutTrashed();
+        $status = $this->filters->getStatusEnum();
+        if ($status !== null) {
+            match ($status) {
+                CertificateStatus::Pending => $query->pending(),
+                CertificateStatus::Published => $query->published(),
+                CertificateStatus::Revoked => $query->revoked(),
+            };
         }
 
         return $query->orderByDesc('issued_at')->paginate($this->perPage)->withQueryString();
@@ -61,14 +70,20 @@ readonly class CertificateListViewModel
 
     public function courses(): Collection
     {
-        return Course::orderBy('name')->get(['id', 'name']);
+        $query = Course::orderBy('name');
+        if ($this->restrictToCourseIds !== null) {
+            $query->whereIn('id', $this->restrictToCourseIds);
+        }
+        return $query->get(['id', 'name']);
     }
 
     public function students(): Collection
     {
-        return Student::orderBy('surname')
-            ->orderBy('name')
-            ->get(['id', 'name', 'surname', 'email']);
+        $query = Student::orderBy('surname')->orderBy('name');
+        if ($this->restrictToCourseIds !== null) {
+            $query->whereHas('courses', fn ($q) => $q->whereIn('courses.id', $this->restrictToCourseIds));
+        }
+        return $query->get(['id', 'name', 'surname', 'email']);
     }
 
     public function hasNoCertificates(): bool
@@ -81,6 +96,17 @@ readonly class CertificateListViewModel
         return $this->filters->search !== null
             || $this->filters->course_id !== null
             || $this->filters->student_id !== null
-            || $this->filters->only_revoked !== null;
+            || $this->filters->status !== null;
+    }
+
+    public function pendingCount(): int
+    {
+        $query = Certificate::query()->pending();
+
+        if ($this->restrictToCourseIds !== null) {
+            $query->whereIn('course_id', $this->restrictToCourseIds);
+        }
+
+        return $query->count();
     }
 }

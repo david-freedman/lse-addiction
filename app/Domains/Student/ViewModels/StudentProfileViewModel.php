@@ -70,6 +70,11 @@ readonly class StudentProfileViewModel
         return $this->student->city;
     }
 
+    public function number(): string
+    {
+        return $this->student->number;
+    }
+
     public function hasContactDetails(): bool
     {
         return $this->student->hasContactDetails();
@@ -86,6 +91,9 @@ readonly class StudentProfileViewModel
 
                 if ($value->profileField->type->value === 'select' && $value->profileField->options) {
                     $displayValue = $value->profileField->options[$value->value] ?? $value->value;
+                } elseif ($value->profileField->type->value === 'tags') {
+                    $tags = is_array($value->value) ? $value->value : json_decode($value->value, true);
+                    $displayValue = is_array($tags) ? implode(', ', $tags) : $value->value;
                 }
 
                 $result[$value->profileField->label] = $displayValue;

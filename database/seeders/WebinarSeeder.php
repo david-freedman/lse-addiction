@@ -103,15 +103,30 @@ class WebinarSeeder extends Seeder
 
         Webinar::create([
             'title' => 'ПЕТ-КТ в онкології: практичні аспекти',
-            'slug' => Str::slug('pet-kt-v-onkologii-completed'),
-            'description' => 'Завершений вебінар з основ позитронно-емісійної томографії в онкологічній практиці. Показання, протоколи, інтерпретація результатів. Доступний запис.',
+            'slug' => Str::slug('pet-kt-v-onkologii-ended'),
+            'description' => 'Завершений вебінар з основ позитронно-емісійної томографії в онкологічній практиці. Показання, протоколи, інтерпретація результатів. Запис готується.',
             'banner' => 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?q=80&w=2070',
             'teacher_id' => $teachers->random()->id,
             'starts_at' => now()->subDays(14)->setTime(14, 0),
             'duration_minutes' => 90,
-            'status' => WebinarStatus::Completed,
+            'status' => WebinarStatus::Ended,
             'max_participants' => 100,
             'price' => 1000,
+        ]);
+
+        Webinar::create([
+            'title' => 'Дегенеративні захворювання хребта (частина 1)',
+            'slug' => Str::slug('degeneratyvni-zakhvoryuvannya-khrebta-1'),
+            'description' => 'Запис вебінару з діагностики та лікування дегенеративних захворювань хребта. Теоретичні основи, класифікація, методи візуалізації.',
+            'banner' => 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?q=80&w=2070',
+            'teacher_id' => $teachers->random()->id,
+            'starts_at' => now()->subDays(30)->setTime(10, 0),
+            'duration_minutes' => 120,
+            'status' => WebinarStatus::Recorded,
+            'max_participants' => 50,
+            'price' => 1200,
+            'old_price' => 1500,
+            'recording_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
         ]);
 
         Webinar::create([
@@ -141,6 +156,6 @@ class WebinarSeeder extends Seeder
             'meeting_url' => 'https://zoom.us/j/1234567890',
         ]);
 
-        $this->command->info('Created 9 webinars (5 Upcoming, 1 Draft, 1 Completed, 1 Cancelled, 1 Live)');
+        $this->command->info('Created 10 webinars (5 Upcoming, 1 Draft, 1 Ended, 1 Recorded, 1 Cancelled, 1 Live)');
     }
 }

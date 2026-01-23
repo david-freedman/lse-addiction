@@ -10,6 +10,7 @@ use App\Domains\Progress\Models\StudentCourseProgress;
 use App\Domains\Progress\Models\StudentLessonProgress;
 use App\Domains\Progress\Models\StudentModuleProgress;
 use App\Domains\Progress\Models\StudentQuizAttempt;
+use App\Domains\Lesson\Enums\LessonType;
 use App\Domains\Quiz\Models\Quiz;
 use App\Domains\Student\Models\Student;
 use Illuminate\Database\Seeder;
@@ -26,6 +27,7 @@ class ProgressSeeder extends Seeder
         $moduleProgressCount = 0;
         $lessonProgressCount = 0;
         $quizAttemptCount = 0;
+        $surveyAttemptCount = 0;
 
         foreach ($students as $student) {
             foreach ($student->courses as $course) {
@@ -125,12 +127,34 @@ class ProgressSeeder extends Seeder
                                 : null,
                         ]);
                         $lessonProgressCount++;
+
+                        if ($lessonStatus === ProgressStatus::Completed
+                            && $lesson->type === LessonType::Survey
+                            && $lesson->quiz
+                        ) {
+                            $surveyAttemptCount += $this->createSurveyAttempt(
+                                $student,
+                                $lesson->quiz,
+                                $lessonStartedAt
+                            );
+                        }
+
+                        if ($lessonStatus === ProgressStatus::Completed
+                            && $lesson->type === LessonType::Quiz
+                            && $lesson->quiz
+                            && !$lesson->is_final
+                        ) {
+                            $quizAttemptCount += $this->createQuizAttemptForLesson(
+                                $student,
+                                $lesson->quiz,
+                                $lessonStartedAt
+                            );
+                        }
                     }
 
-                    if ($moduleStatus === ProgressStatus::Completed && $module->has_final_test) {
-                        $quiz = Quiz::where('quizzable_type', Module::class)
-                            ->where('quizzable_id', $module->id)
-                            ->first();
+                    if ($moduleStatus === ProgressStatus::Completed && $module->hasFinalTest()) {
+                        $finalTestLesson = $module->finalTestLesson();
+                        $quiz = $finalTestLesson?->quiz;
 
                         if ($quiz) {
                             $attempts = fake()->numberBetween(1, min(3, $quiz->max_attempts ?? 3));
@@ -170,6 +194,7 @@ class ProgressSeeder extends Seeder
         $this->command->info("  - Module progress: {$moduleProgressCount}");
         $this->command->info("  - Lesson progress: {$lessonProgressCount}");
         $this->command->info("  - Quiz attempts: {$quizAttemptCount}");
+        $this->command->info("  - Survey attempts: {$surveyAttemptCount}");
 
         $this->ensureTestStudentHasCompletedProgress();
     }
@@ -201,5 +226,109 @@ class ProgressSeeder extends Seeder
 
             $this->command->info('Ensured an.zhovna@gmail.com has completed progress for certificate');
         }
+    }
+
+    private function createSurveyAttempt(Student $student, Quiz $quiz, Carbon $lessonStartedAt): int
+    {
+        $existingAttempt = StudentQuizAttempt::where('student_id', $student->id)
+            ->where('quiz_id', $quiz->id)
+            ->exists();
+
+        if ($existingAttempt) {
+            return 0;
+        }
+
+        $questions = $quiz->questions()->with('answers')->get();
+
+        if ($questions->isEmpty()) {
+            return 0;
+        }
+
+        $answers = [];
+        foreach ($questions as $question) {
+            $questionAnswers = $question->answers;
+            if ($questionAnswers->isEmpty()) {
+                continue;
+            }
+
+            $randomAnswer = $questionAnswers->random();
+            $answers[$question->id] = [
+                'selected' => [$randomAnswer->id],
+            ];
+        }
+
+        $attemptStartedAt = $lessonStartedAt->copy()->addHours(fake()->numberBetween(1, 12));
+
+        StudentQuizAttempt::create([
+            'student_id' => $student->id,
+            'quiz_id' => $quiz->id,
+            'attempt_number' => 1,
+            'score' => 0,
+            'max_score' => 0,
+            'passed' => true,
+            'answers' => $answers,
+            'time_spent_seconds' => fake()->numberBetween(60, 300),
+            'started_at' => $attemptStartedAt,
+            'completed_at' => $attemptStartedAt->copy()->addMinutes(fake()->numberBetween(2, 10)),
+        ]);
+
+        return 1;
+    }
+
+    private function createQuizAttemptForLesson(Student $student, Quiz $quiz, Carbon $lessonStartedAt): int
+    {
+        $existingAttempt = StudentQuizAttempt::where('student_id', $student->id)
+            ->where('quiz_id', $quiz->id)
+            ->exists();
+
+        if ($existingAttempt) {
+            return 0;
+        }
+
+        $questions = $quiz->questions()->with('answers')->get();
+
+        if ($questions->isEmpty()) {
+            return 0;
+        }
+
+        $maxScore = $questions->sum('points') ?: 10;
+        $passingScore = $quiz->passing_score ?? 70;
+
+        $score = fake()->numberBetween(
+            (int) ($maxScore * $passingScore / 100),
+            $maxScore
+        );
+
+        $answers = [];
+        foreach ($questions as $question) {
+            $questionAnswers = $question->answers;
+            if ($questionAnswers->isEmpty()) {
+                continue;
+            }
+
+            $correctAnswer = $questionAnswers->firstWhere('is_correct', true);
+            $selectedAnswer = $correctAnswer ?? $questionAnswers->random();
+
+            $answers[$question->id] = [
+                'selected' => [$selectedAnswer->id],
+            ];
+        }
+
+        $attemptStartedAt = $lessonStartedAt->copy()->addHours(fake()->numberBetween(1, 12));
+
+        StudentQuizAttempt::create([
+            'student_id' => $student->id,
+            'quiz_id' => $quiz->id,
+            'attempt_number' => 1,
+            'score' => $score,
+            'max_score' => $maxScore,
+            'passed' => true,
+            'answers' => $answers,
+            'time_spent_seconds' => fake()->numberBetween(300, 900),
+            'started_at' => $attemptStartedAt,
+            'completed_at' => $attemptStartedAt->copy()->addMinutes(fake()->numberBetween(5, 15)),
+        ]);
+
+        return 1;
     }
 }

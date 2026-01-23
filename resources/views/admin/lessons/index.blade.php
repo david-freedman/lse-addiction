@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
             animation: 150,
             onEnd: async function(evt) {
                 const ids = [...document.querySelectorAll('.lesson-card')].map(el => el.dataset.id);
-                await fetch('{{ route('admin.lessons.reorder', [$course, $module]) }}', {
+                const response = await fetch('{{ route('admin.lessons.reorder', [$course, $module]) }}', {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
@@ -90,6 +90,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     body: JSON.stringify({ order: ids })
                 });
+                if (response.ok) {
+                    location.reload();
+                }
             }
         });
     }

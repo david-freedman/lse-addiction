@@ -20,7 +20,7 @@
                 type="text"
                 name="search"
                 value="{{ $viewModel->filters()->search }}"
-                placeholder="Пошук по імені, email, телефону..."
+                placeholder="Пошук по номеру, імені, email, телефону..."
                 class="flex-1 rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white"
             >
             <button type="button" @click="showFilters = !showFilters" class="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50">
@@ -128,6 +128,7 @@
                                     class="h-4 w-4 rounded border-gray-300 text-brand-600"
                                 >
                             </th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Номер</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">ПІБ</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Email / Телефон</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Курси</th>
@@ -147,6 +148,9 @@
                                         x-model="selectedStudents"
                                         class="h-4 w-4 rounded border-gray-300 text-brand-600"
                                     >
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="text-sm text-gray-900">{{ $student->number }}</span>
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-3">

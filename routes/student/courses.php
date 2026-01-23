@@ -10,6 +10,7 @@ use App\Applications\Http\Student\Lesson\Controllers\ShowLessonController;
 use App\Applications\Http\Student\Lesson\Controllers\StoreCommentController;
 use App\Applications\Http\Student\Lesson\Controllers\StreamDicomController;
 use App\Applications\Http\Student\Module\Controllers\ShowModuleController;
+use App\Applications\Http\Student\Quiz\Controllers\SaveDraftController;
 use App\Applications\Http\Student\Quiz\Controllers\ShowQuizController;
 use App\Applications\Http\Student\Quiz\Controllers\SubmitQuizController;
 use Illuminate\Support\Facades\Route;
@@ -30,4 +31,5 @@ Route::middleware(['auth', 'verified.student'])->group(function () {
 
     Route::get('courses/{course}/lessons/{lesson}/quiz', ShowQuizController::class)->name('quiz.show');
     Route::post('courses/{course}/lessons/{lesson}/quiz', SubmitQuizController::class)->name('quiz.submit');
+    Route::post('courses/{course}/lessons/{lesson}/quiz/save-draft', SaveDraftController::class)->name('quiz.save-draft');
 });

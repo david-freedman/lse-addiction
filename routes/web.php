@@ -14,6 +14,7 @@ Route::get('verify/{certificateNumber}', VerifyCertificateController::class)
 Route::prefix('student')->name('student.')->group(function () {
     require __DIR__.'/student/auth.php';
     require __DIR__.'/student/registration.php';
+    require __DIR__.'/student/legal.php';
     require __DIR__.'/student/profile.php';
     require __DIR__.'/student/courses.php';
     require __DIR__.'/student/catalog.php';

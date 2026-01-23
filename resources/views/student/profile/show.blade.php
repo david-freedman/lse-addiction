@@ -53,6 +53,10 @@
                     <h3 class="text-sm font-medium text-gray-500 mb-1">Місто</h3>
                     <p class="text-base text-gray-900">{{ $viewModel->city() ?? 'Не вказано' }}</p>
                 </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500 mb-1">ID студента</h3>
+                    <p class="text-base text-gray-900">{{ $viewModel->number() }}</p>
+                </div>
             </div>
 
             <div class="border-t border-gray-200 pt-8 mb-8">

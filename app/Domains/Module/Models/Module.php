@@ -9,14 +9,12 @@ use App\Domains\Module\Enums\ModuleStatus;
 use App\Domains\Module\Enums\ModuleUnlockRule;
 use App\Domains\Progress\Enums\ProgressStatus;
 use App\Domains\Progress\Models\StudentModuleProgress;
-use App\Domains\Quiz\Models\Quiz;
 use App\Domains\Student\Models\Student;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Module extends Model
 {
@@ -27,7 +25,6 @@ class Module extends Model
         'description',
         'order',
         'status',
-        'has_final_test',
         'unlock_rule',
     ];
 
@@ -36,7 +33,6 @@ class Module extends Model
         return [
             'status' => ModuleStatus::class,
             'unlock_rule' => ModuleUnlockRule::class,
-            'has_final_test' => 'boolean',
         ];
     }
 
@@ -50,9 +46,9 @@ class Module extends Model
         return $this->hasMany(Lesson::class)->orderBy('order');
     }
 
-    public function quiz(): MorphOne
+    public function regularLessons(): HasMany
     {
-        return $this->morphOne(Quiz::class, 'quizzable');
+        return $this->hasMany(Lesson::class)->where('is_final', false)->orderBy('order');
     }
 
     public function progress(): HasMany
@@ -77,7 +73,7 @@ class Module extends Model
         }
 
         $previousModule = $this->getPreviousModule();
-        if (! $previousModule) {
+        if (!$previousModule) {
             return true;
         }
 
@@ -87,12 +83,27 @@ class Module extends Model
 
         return match ($this->unlock_rule) {
             ModuleUnlockRule::CompletePrevious => $previousProgress?->status === ProgressStatus::Completed,
-            ModuleUnlockRule::CompleteTest => $previousModule->quiz?->attempts()
-                ->where('student_id', $student->id)
-                ->where('passed', true)
-                ->exists() ?? true,
+            ModuleUnlockRule::CompleteTest => $this->checkPreviousModuleFinalTestPassed($previousModule, $student),
             default => true,
         };
+    }
+
+    private function checkPreviousModuleFinalTestPassed(Module $previousModule, Student $student): bool
+    {
+        $finalTestLesson = $previousModule->finalTestLesson();
+        if (!$finalTestLesson) {
+            return true;
+        }
+
+        $quiz = $finalTestLesson->quiz;
+        if (!$quiz) {
+            return true;
+        }
+
+        return $quiz->attempts()
+            ->where('student_id', $student->id)
+            ->where('passed', true)
+            ->exists();
     }
 
     public function getPreviousModule(): ?Module
@@ -115,5 +126,66 @@ class Module extends Model
         return Attribute::make(
             get: fn () => $this->lessons()->where('status', LessonStatus::Published)->count()
         );
+    }
+
+    public function hasFinalTest(): bool
+    {
+        return $this->lessons()->where('is_final', true)->exists();
+    }
+
+    public function finalTestLesson(): ?Lesson
+    {
+        return $this->lessons()->where('is_final', true)->first();
+    }
+
+    public function isCompleted(Student $student): bool
+    {
+        $regularLessons = $this->regularLessons()
+            ->where('status', LessonStatus::Published)
+            ->get();
+
+        foreach ($regularLessons as $lesson) {
+            $progress = $lesson->progress()
+                ->where('student_id', $student->id)
+                ->where('status', ProgressStatus::Completed)
+                ->exists();
+
+            if (!$progress) {
+                return false;
+            }
+        }
+
+        $finalTest = $this->finalTestLesson();
+        if ($finalTest && $finalTest->status === LessonStatus::Published) {
+            $quiz = $finalTest->quiz;
+            if ($quiz) {
+                return $quiz->attempts()
+                    ->where('student_id', $student->id)
+                    ->where('passed', true)
+                    ->exists();
+            }
+        }
+
+        return true;
+    }
+
+    public function allRegularLessonsCompleted(Student $student): bool
+    {
+        $regularLessons = $this->regularLessons()
+            ->where('status', LessonStatus::Published)
+            ->get();
+
+        foreach ($regularLessons as $lesson) {
+            $completed = $lesson->progress()
+                ->where('student_id', $student->id)
+                ->where('status', ProgressStatus::Completed)
+                ->exists();
+
+            if (!$completed) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

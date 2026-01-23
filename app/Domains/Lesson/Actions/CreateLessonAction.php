@@ -2,6 +2,10 @@
 
 namespace App\Domains\Lesson\Actions;
 
+use App\Domains\ActivityLog\Actions\LogActivityAction;
+use App\Domains\ActivityLog\Data\ActivityLogData;
+use App\Domains\ActivityLog\Enums\ActivitySubject;
+use App\Domains\ActivityLog\Enums\ActivityType;
 use App\Domains\Homework\Actions\CreateHomeworkAction;
 use App\Domains\Homework\Data\CreateHomeworkData;
 use App\Domains\Homework\Enums\HomeworkResponseType;
@@ -16,6 +20,14 @@ class CreateLessonAction
 {
     public static function execute(Module $module, CreateLessonData $data): Lesson
     {
+        $isFinal = $data->is_final ?? false;
+
+        if ($isFinal && $module->hasFinalTest()) {
+            throw new \InvalidArgumentException('Модуль вже має підсумковий тест');
+        }
+
+        $order = self::determineOrder($module, $data, $isFinal);
+
         $lesson = $module->lessons()->create([
             'name' => $data->name,
             'description' => $data->description,
@@ -24,9 +36,11 @@ class CreateLessonAction
             'video_url' => $data->video_url,
             'qa_session_url' => $data->qa_session_url,
             'duration_minutes' => $data->duration_minutes,
-            'order' => $data->order ?: $module->lessons()->max('order') + 1,
+            'order' => $order,
             'status' => $data->status,
             'attachments' => $data->attachments,
+            'is_final' => $isFinal,
+            'allow_retake_after_pass' => $data->allow_retake_after_pass ?? true,
         ]);
 
         if ($data->type === LessonType::Dicom) {
@@ -56,6 +70,22 @@ class CreateLessonAction
             ));
         }
 
+        LogActivityAction::execute(ActivityLogData::from([
+            'subject_type' => ActivitySubject::Lesson,
+            'subject_id' => $lesson->id,
+            'activity_type' => ActivityType::LessonCreated,
+            'description' => 'Lesson created',
+            'properties' => [
+                'attributes' => array_filter([
+                    'name' => $data->name,
+                    'type' => $data->type?->value,
+                    'status' => $data->status,
+                    'is_final' => $isFinal,
+                ], fn ($v) => $v !== null),
+            ],
+            'course_id' => $module->course_id,
+        ]));
+
         return $lesson;
     }
 
@@ -71,5 +101,23 @@ class CreateLessonAction
                 'dicom_metadata' => null,
             ]);
         }
+    }
+
+    private static function determineOrder(Module $module, CreateLessonData $data, bool $isFinal): int
+    {
+        if ($isFinal) {
+            return ($module->lessons()->max('order') ?? -1) + 1;
+        }
+
+        if ($data->order !== null) {
+            return $data->order;
+        }
+
+        $finalTest = $module->finalTestLesson();
+        if ($finalTest) {
+            return $finalTest->order;
+        }
+
+        return $module->lessons()->count();
     }
 }

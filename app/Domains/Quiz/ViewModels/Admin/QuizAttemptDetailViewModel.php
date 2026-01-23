@@ -52,6 +52,7 @@ readonly class QuizAttemptDetailViewModel
         sort($correctIds);
 
         $studentIds = is_array($studentAnswer) ? $studentAnswer : [(string) $studentAnswer];
+        $studentIds = array_filter($studentIds, fn ($id) => !is_array($id));
         $studentIds = array_map('strval', $studentIds);
         sort($studentIds);
 
@@ -65,6 +66,7 @@ readonly class QuizAttemptDetailViewModel
         }
 
         $answerIds = is_array($studentAnswer) ? $studentAnswer : [$studentAnswer];
+        $answerIds = array_filter($answerIds, fn ($id) => !is_array($id));
         $answers = $question->answers->whereIn('id', $answerIds);
 
         return $answers->pluck('answer_text')->filter()->implode(', ') ?: 'Не відповів';

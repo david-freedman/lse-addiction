@@ -21,10 +21,13 @@ return new class extends Migration
             $table->string('dicom_url')->nullable();
             $table->json('dicom_metadata')->nullable();
             $table->string('qa_session_url')->nullable();
+            $table->timestamp('starts_at')->nullable();
             $table->unsignedInteger('duration_minutes')->nullable();
             $table->unsignedInteger('order')->default(0);
             $table->string('status')->default('draft');
             $table->json('attachments')->nullable();
+            $table->boolean('is_final')->default(false);
+            $table->boolean('allow_retake_after_pass')->default(true);
             $table->timestamps();
 
             $table->index(['module_id', 'order']);

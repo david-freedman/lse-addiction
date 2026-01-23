@@ -14,6 +14,7 @@ class RegisterStudentAction
     public static function execute(RegisterStudentData $data): Student
     {
         $student = Student::create([
+            'number' => Student::generateNumber(),
             'email' => $data->email,
             'phone' => $data->phone,
         ]);

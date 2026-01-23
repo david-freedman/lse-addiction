@@ -21,11 +21,17 @@ return new class extends Migration
             $table->timestamp('issued_at');
             $table->timestamp('viewed_at')->nullable();
             $table->foreignId('issued_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamp('published_at')->nullable();
+            $table->foreignId('published_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamp('revoked_at')->nullable();
+            $table->foreignId('revoked_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();
 
             $table->unique(['student_id', 'course_id']);
             $table->index('issued_at');
+            $table->index('published_at');
+            $table->index(['published_at', 'course_id']);
         });
     }
 

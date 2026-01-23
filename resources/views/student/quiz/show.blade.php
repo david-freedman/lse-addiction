@@ -18,7 +18,12 @@
     ])->values()->toArray();
 @endphp
 
-<div class="flex flex-col lg:flex-row" x-data="{ sidebarOpen: false, showQuizForm: {{ $viewModel->hasPassed() ? 'false' : 'true' }} }">
+<div class="flex flex-col lg:flex-row" x-data="{
+    sidebarOpen: false,
+    showQuizForm: {{ $viewModel->hasPassed() ? 'false' : 'true' }},
+    showFinalTestModal: {{ ($viewModel->isFinal() && !$viewModel->hasPassed() && $viewModel->canAttempt()) ? 'true' : 'false' }},
+    quizStarted: false
+}">
     <div class="flex-1 lg:pr-0">
         <div class="px-4 sm:px-6 py-4">
             <div class="flex items-center justify-between">
@@ -125,7 +130,7 @@
             </div>
         @else
             <div x-data="quizWizard({{ json_encode($questionsData) }})"
-                 x-show="showQuizForm"
+                 x-show="showQuizForm && ({{ $viewModel->isFinal() ? 'quizStarted' : 'true' }})"
                  x-cloak
                  class="px-4 sm:px-6 lg:px-8 py-6 max-w-4xl border-t border-gray-200">
 
@@ -337,6 +342,120 @@
     </div>
 
     @include('student.partials.course-sidebar', ['modules' => $viewModel->modules(), 'currentModuleId' => $lesson->module_id])
+
+    {{-- Modal: Умови проходження тесту (для підсумкових тестів) --}}
+    @if($viewModel->isFinal())
+        <div x-show="showFinalTestModal"
+             x-cloak
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 z-50 overflow-y-auto"
+             aria-labelledby="modal-title"
+             role="dialog"
+             aria-modal="true">
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+                {{-- Backdrop --}}
+                <div class="fixed inset-0 bg-gray-500/75 transition-opacity" @click="showFinalTestModal = false"></div>
+
+                {{-- Modal panel --}}
+                <div x-show="showFinalTestModal"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     class="relative bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full">
+
+                    {{-- Close button --}}
+                    <button @click="showFinalTestModal = false"
+                            class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+
+                    <div class="px-6 pt-8 pb-6">
+                        {{-- Icon --}}
+                        <div class="flex justify-center mb-4">
+                            <div class="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center">
+                                <svg class="w-7 h-7 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        {{-- Title --}}
+                        <h3 id="modal-title" class="text-xl font-semibold text-gray-900 text-center mb-2">
+                            Умови проходження тесту
+                        </h3>
+                        <p class="text-sm text-gray-500 text-center mb-6">
+                            Уважно ознайомтесь з правилами перед початком тестування
+                        </p>
+
+                        {{-- Rules --}}
+                        <div class="space-y-3">
+                            {{-- Rule 1: Формат відповіді --}}
+                            <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center text-white font-semibold text-sm">
+                                    1
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Формат відповіді</h4>
+                                    <p class="text-sm text-gray-600 mt-0.5">{{ $viewModel->questionsFormatDescription() }}</p>
+                                </div>
+                            </div>
+
+                            {{-- Rule 2: Критерії успіху --}}
+                            <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-amber-400 flex items-center justify-center text-white font-semibold text-sm">
+                                    2
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Критерії успіху</h4>
+                                    <p class="text-sm text-gray-600 mt-0.5">
+                                        Успішним складанням тесту є <span class="font-semibold text-gray-900">{{ $viewModel->passingScore() }}%</span> правильних відповідей
+                                    </p>
+                                </div>
+                            </div>
+
+                            {{-- Rule 3: Важливо --}}
+                            <div class="flex items-start gap-4 p-4 bg-red-50 rounded-xl border border-red-100">
+                                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-red-400 flex items-center justify-center text-white font-semibold text-sm">
+                                    !
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Важливо</h4>
+                                    <p class="text-sm text-gray-600 mt-0.5">Уважно читайте кожне питання перед вибором відповіді</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Buttons --}}
+                        <div class="mt-6 space-y-3">
+                            <button @click="showFinalTestModal = false; quizStarted = true"
+                                    type="button"
+                                    class="w-full inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-white bg-teal-500 rounded-lg hover:bg-teal-600 transition-colors">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                Почати тест
+                            </button>
+                            <button @click="showFinalTestModal = false; window.history.back()"
+                                    type="button"
+                                    class="w-full inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                Скасувати
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
 
 @push('scripts')

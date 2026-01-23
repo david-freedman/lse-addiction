@@ -44,6 +44,29 @@
         </a>
     </div>
 
+    @if($tab === 'webinars')
+        <div class="mb-6 flex items-center gap-2">
+            <a
+                href="{{ route('student.catalog.index', ['tab' => 'webinars', 'webinar_filter' => 'all', 'search' => request('search')]) }}"
+                class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ $webinarFilter === 'all' ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
+            >
+                Всі ({{ $webinarsCount }})
+            </a>
+            <a
+                href="{{ route('student.catalog.index', ['tab' => 'webinars', 'webinar_filter' => 'live', 'search' => request('search')]) }}"
+                class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ $webinarFilter === 'live' ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
+            >
+                Наживу ({{ $liveWebinarsCount }})
+            </a>
+            <a
+                href="{{ route('student.catalog.index', ['tab' => 'webinars', 'webinar_filter' => 'recorded', 'search' => request('search')]) }}"
+                class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ $webinarFilter === 'recorded' ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
+            >
+                У записі ({{ $recordedWebinarsCount }})
+            </a>
+        </div>
+    @endif
+
     @if($tab === 'courses')
         @if($courses->isEmpty())
             <div class="bg-white rounded-lg shadow-sm p-12 text-center">

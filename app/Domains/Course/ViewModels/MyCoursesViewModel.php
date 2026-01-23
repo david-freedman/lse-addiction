@@ -27,14 +27,14 @@ readonly class MyCoursesViewModel
         $this->currentStatus = $status;
 
         $this->allCourses = $student->courses()
-            ->where('courses.status', '!=', CourseStatus::Hidden)
+            ->whereNotIn('courses.status', [CourseStatus::Hidden, CourseStatus::Draft])
             ->withPivot(['enrolled_at', 'status'])
             ->with(['teacher', 'tags', 'modules.lessons'])
             ->orderBy('course_student.enrolled_at', 'desc')
             ->get();
 
         $query = $student->courses()
-            ->where('courses.status', '!=', CourseStatus::Hidden)
+            ->whereNotIn('courses.status', [CourseStatus::Hidden, CourseStatus::Draft])
             ->withPivot(['enrolled_at', 'status'])
             ->with(['teacher', 'tags', 'modules.lessons'])
             ->orderBy('course_student.enrolled_at', 'desc');

@@ -19,11 +19,9 @@ class CreateModuleData extends Data
         #[Nullable, StringType]
         public readonly ?string $description = null,
 
-        public readonly int $order = 0,
+        public readonly ?int $order = null,
 
         public readonly ModuleStatus $status = ModuleStatus::Active,
-
-        public readonly bool $has_final_test = false,
 
         public readonly ModuleUnlockRule $unlock_rule = ModuleUnlockRule::None,
     ) {}

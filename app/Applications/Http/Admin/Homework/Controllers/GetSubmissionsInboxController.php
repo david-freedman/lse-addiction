@@ -19,7 +19,10 @@ final class GetSubmissionsInboxController
             'search' => $request->string('search')->toString() ?: null,
         ]);
 
-        $viewModel = new SubmissionsInboxViewModel($filters);
+        $user = $request->user('admin');
+        $restrictToCourseIds = $user->isTeacher() ? $user->getTeacherCourseIds() : null;
+
+        $viewModel = new SubmissionsInboxViewModel($filters, $restrictToCourseIds);
 
         return view('admin.homework.index', compact('viewModel'));
     }

@@ -34,7 +34,7 @@ class UploadDicomFileAction
     private static function validateDicomFile(UploadedFile $file): void
     {
         $extension = strtolower($file->getClientOriginalExtension());
-        if (!in_array($extension, ['dcm', 'dicom'])) {
+        if (! in_array($extension, ['dcm', 'dicom'])) {
             throw new \InvalidArgumentException('Invalid file extension. Only .dcm and .dicom files are allowed.');
         }
 
@@ -44,7 +44,7 @@ class UploadDicomFileAction
         }
 
         $handle = fopen($file->getPathname(), 'rb');
-        if (!$handle) {
+        if (! $handle) {
             throw new \InvalidArgumentException('Unable to read file.');
         }
 
@@ -60,7 +60,7 @@ class UploadDicomFileAction
     private static function extractMetadata(UploadedFile $file): array
     {
         $handle = fopen($file->getPathname(), 'rb');
-        if (!$handle) {
+        if (! $handle) {
             return self::defaultMetadata($file);
         }
 

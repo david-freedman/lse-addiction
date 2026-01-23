@@ -22,9 +22,13 @@ class ActivityLogData extends Data
         public readonly string $description,
         #[Nullable]
         public readonly ?array $properties,
+        #[Nullable]
+        public readonly ?int $performed_by = null,
+        #[Nullable]
+        public readonly ?int $course_id = null,
         #[Nullable, StringType]
-        public readonly ?string $ip_address,
+        public readonly ?string $ip_address = null,
         #[Nullable, StringType]
-        public readonly ?string $user_agent,
+        public readonly ?string $user_agent = null,
     ) {}
 }

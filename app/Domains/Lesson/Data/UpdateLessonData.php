@@ -48,6 +48,9 @@ class UpdateLessonData extends Data
         #[Nullable, Url]
         public readonly ?string $qa_session_url = null,
 
+        #[Nullable, WithCast(DateTimeInterfaceCast::class, format: 'Y-m-d\TH:i')]
+        public readonly ?Carbon $starts_at = null,
+
         #[Nullable]
         public readonly ?int $duration_minutes = null,
 
@@ -73,7 +76,10 @@ class UpdateLessonData extends Data
         public readonly ?bool $quiz_show_correct_answers = null,
 
         #[Nullable]
-        public readonly ?bool $quiz_is_final = null,
+        public readonly ?bool $is_final = null,
+
+        #[Nullable]
+        public readonly ?bool $allow_retake_after_pass = null,
 
         #[Nullable]
         public readonly ?bool $has_homework = null,
@@ -117,6 +123,7 @@ class UpdateLessonData extends Data
             'dicom_file_upload' => ['nullable', 'file', 'required_if:dicom_source_type,file'],
             'dicom_url' => ['nullable', 'url', 'required_if:dicom_source_type,url'],
             'qa_session_url' => ['nullable', 'url', 'required_if:type,qa_session'],
+            'starts_at' => ['nullable', 'date', 'required_if:type,qa_session'],
         ];
     }
 
@@ -128,6 +135,7 @@ class UpdateLessonData extends Data
             'dicom_file_upload.required_if' => 'Файл DICOM є обов\'язковим, якщо обрано завантаження файлу.',
             'dicom_url.required_if' => 'URL DICOM є обов\'язковим, якщо обрано зовнішнє посилання.',
             'qa_session_url.required_if' => 'Посилання на Q&A сесію є обов\'язковим для Q&A уроку.',
+            'starts_at.required_if' => 'Дата та час проведення є обов\'язковими для Q&A сесії.',
         ];
     }
 }

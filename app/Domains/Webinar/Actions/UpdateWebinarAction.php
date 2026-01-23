@@ -23,6 +23,7 @@ class UpdateWebinarAction
             'starts_at' => Carbon::createFromFormat('d.m.Y H:i', $data->starts_at),
             'duration_minutes' => $data->duration_minutes,
             'meeting_url' => $data->meeting_url,
+            'recording_url' => $data->recording_url,
             'status' => $data->status,
             'max_participants' => $data->max_participants,
             'price' => $data->price,

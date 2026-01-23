@@ -2,6 +2,10 @@
 
 namespace App\Applications\Http\Admin\Auth\Controllers;
 
+use App\Domains\ActivityLog\Actions\LogActivityAction;
+use App\Domains\ActivityLog\Data\ActivityLogData;
+use App\Domains\ActivityLog\Enums\ActivitySubject;
+use App\Domains\ActivityLog\Enums\ActivityType;
 use App\Domains\Student\Data\VerifyCodeData;
 use App\Domains\Verification\Actions\VerifyCodeAction;
 use App\Models\User;
@@ -15,7 +19,7 @@ final class VerifyLoginController
     {
         $email = session('admin_login_email');
 
-        if (! $email) {
+        if (!$email) {
             return redirect()->route('admin.login');
         }
 
@@ -40,16 +44,44 @@ final class VerifyLoginController
 
         $user = VerifyCodeAction::execute($data);
 
-        if (! $user || ! ($user instanceof User)) {
+        if (!$user || !($user instanceof User)) {
             $remaining = $verification?->getRemainingAttempts() ?? 0;
             $message = $remaining > 0
                 ? "Невірний код верифікації. Залишилось спроб: {$remaining}"
                 : 'Невірний код верифікації.';
 
+            LogActivityAction::execute(ActivityLogData::from([
+                'subject_type' => ActivitySubject::Admin,
+                'subject_id' => null,
+                'activity_type' => ActivityType::AdminLoginFailed,
+                'description' => 'Admin login failed',
+                'properties' => [
+                    'email' => $email,
+                    'reason' => 'invalid_code',
+                    'remaining_attempts' => $remaining,
+                ],
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]));
+
             return back()->withErrors(['code' => $message]);
         }
 
         Auth::guard('admin')->login($user);
+
+        LogActivityAction::execute(ActivityLogData::from([
+            'subject_type' => ActivitySubject::Admin,
+            'subject_id' => $user->id,
+            'activity_type' => ActivityType::AdminLoginSuccess,
+            'description' => 'Admin logged in',
+            'properties' => [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'name' => $user->name,
+            ],
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]));
 
         session()->forget(['admin_login_email', 'next_resend_at']);
 

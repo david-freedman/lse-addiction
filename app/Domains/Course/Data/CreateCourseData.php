@@ -24,6 +24,9 @@ class CreateCourseData extends Data
         public readonly string $name,
 
         #[Required, StringType]
+        public readonly string $number,
+
+        #[Required, StringType]
         public readonly string $description,
 
         #[Required, Numeric, Min(0)]
@@ -55,6 +58,8 @@ class CreateCourseData extends Data
 
         #[Nullable, StringType, Max(50)]
         public readonly ?string $label,
+
+        public readonly bool $requires_certificate_approval = false,
     ) {}
 
     public static function rules(): array
@@ -69,6 +74,7 @@ class CreateCourseData extends Data
             'discount_percentage' => ['nullable', 'integer', 'min:0', 'max:100'],
             'teacher_id' => ['required', 'integer', 'exists:teachers,id'],
             'label' => ['nullable', new Enum(CourseLabel::class)],
+            'number' => ['required', 'digits:7', 'unique:courses,number'],
         ];
     }
 }

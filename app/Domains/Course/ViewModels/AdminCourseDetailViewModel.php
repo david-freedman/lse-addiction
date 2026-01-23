@@ -17,7 +17,6 @@ readonly class AdminCourseDetailViewModel
         return $this->course->load([
             'modules' => fn ($q) => $q->ordered()->with([
                 'lessons' => fn ($q) => $q->ordered(),
-                'quiz',
             ]),
             'teacher',
             'author',
@@ -80,7 +79,7 @@ readonly class AdminCourseDetailViewModel
             'name' => $module->name,
             'order' => $module->order,
             'status' => $module->status,
-            'has_final_test' => $module->has_final_test,
+            'has_final_test' => $module->hasFinalTest(),
             'lessons_count' => $module->lessons->count(),
             'lessons' => $module->lessons->map(fn (Lesson $lesson) => [
                 'id' => $lesson->id,
@@ -88,6 +87,7 @@ readonly class AdminCourseDetailViewModel
                 'type' => $lesson->type,
                 'status' => $lesson->status,
                 'duration' => $lesson->formatted_duration,
+                'is_final' => $lesson->is_final,
             ]),
         ])->toArray();
     }

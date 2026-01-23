@@ -18,6 +18,7 @@ return new class extends Migration
             $table->timestamp('starts_at');
             $table->unsignedSmallInteger('duration_minutes')->default(90);
             $table->string('meeting_url')->nullable();
+            $table->string('recording_url')->nullable();
             $table->string('status')->default('draft');
             $table->unsignedInteger('max_participants')->nullable();
             $table->decimal('price', 10, 2)->default(0);

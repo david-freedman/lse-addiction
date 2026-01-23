@@ -11,6 +11,7 @@
     @auth
         @php
             $newCertificatesCount = auth()->user()->certificates()
+                ->visibleToStudent()
                 ->whereNull('viewed_at')
                 ->count();
         @endphp

@@ -101,12 +101,15 @@ readonly class ModuleDetailViewModel
                     description: $lesson->description,
                     order: $lesson->order,
                     type: $lesson->type->value,
-                    iconType: $iconType,
+                    iconType: $lesson->is_final ? 'final_test' : $iconType,
                     duration: $lesson->formatted_duration,
                     isCompleted: $isCompleted,
                     url: route('student.lessons.show', [$this->course, $lesson]),
-                    colorScheme: $this->getColorScheme($iconType),
+                    colorScheme: $lesson->is_final ? $this->getColorScheme('final_test') : $this->getColorScheme($iconType),
                     hasHomework: $lesson->homework !== null,
+                    formattedDate: $lesson->formatted_date,
+                    formattedTime: $lesson->formatted_time,
+                    isFinal: $lesson->is_final,
                 );
             })
             ->values();
@@ -168,6 +171,13 @@ readonly class ModuleDetailViewModel
                 'progress_color' => 'cyan',
                 'button_bg' => 'bg-cyan-500 hover:bg-cyan-600',
                 'border_color' => 'border-cyan-500',
+            ],
+            'final_test' => [
+                'icon_bg' => 'bg-amber-100',
+                'icon_color' => 'text-amber-600',
+                'progress_color' => 'amber',
+                'button_bg' => 'bg-amber-500 hover:bg-amber-600',
+                'border_color' => 'border-amber-500',
             ],
             default => [
                 'icon_bg' => 'bg-gray-100',

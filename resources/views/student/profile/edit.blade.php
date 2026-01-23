@@ -203,6 +203,42 @@
                                                 {{ $field->is_required ? 'required' : '' }}>
                                             @break
 
+                                        @case('tags')
+                                            @php
+                                                $maxItems = $field->options['max_items'] ?? 5;
+                                                $existingRaw = old("profile_fields.{$field->key}");
+                                                if (is_array($existingRaw)) {
+                                                    $existingTags = $existingRaw;
+                                                } else {
+                                                    $stored = $existingValues[$field->id] ?? null;
+                                                    $existingTags = $stored ? (json_decode($stored, true) ?? []) : [];
+                                                }
+                                            @endphp
+                                            <div x-data="tagInput(@js($existingTags), {{ $maxItems }}, '{{ $field->key }}')" class="w-full">
+                                                <div class="flex flex-wrap gap-1.5 items-center w-full px-4 py-2 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-teal-500 focus-within:border-transparent min-h-[42px] cursor-text" @click="$refs.tagInputField.focus()">
+                                                    <template x-for="(tag, index) in tags" :key="index">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-teal-50 text-teal-700 rounded text-sm">
+                                                            <span x-text="tag"></span>
+                                                            <button type="button" @click.stop="removeTag(index)" class="text-teal-500 hover:text-red-600 text-sm leading-none">&times;</button>
+                                                        </span>
+                                                    </template>
+                                                    <input x-show="tags.length < maxItems"
+                                                        x-ref="tagInputField"
+                                                        x-model="input"
+                                                        @keydown.enter.prevent="addTag()"
+                                                        @keydown.,.prevent="addTag()"
+                                                        @keydown.backspace="handleBackspace()"
+                                                        type="text"
+                                                        placeholder="Введіть спеціальність і натисніть Enter"
+                                                        class="flex-1 min-w-[120px] border-none outline-none p-0 bg-transparent text-sm focus:ring-0">
+                                                </div>
+                                                <div class="mt-1 text-xs text-gray-500 text-right" x-text="`${tags.length}/${maxItems}`"></div>
+                                                <template x-for="(tag, i) in tags" :key="'hidden-'+i">
+                                                    <input type="hidden" :name="`profile_fields[${fieldKey}][]`" :value="tag">
+                                                </template>
+                                            </div>
+                                            @break
+
                                         @default
                                             <input type="text"
                                                 name="profile_fields[{{ $field->key }}]"
@@ -239,6 +275,40 @@
 
 @push('scripts')
 <script>
+function tagInput(initialTags, maxItems, fieldKey) {
+    return {
+        tags: initialTags || [],
+        input: '',
+        maxItems: maxItems,
+        fieldKey: fieldKey,
+        addTag() {
+            const tag = this.input.trim();
+            if (tag.length < 2 || tag.length > 50) {
+                this.input = '';
+                return;
+            }
+            if (this.tags.length >= this.maxItems) {
+                return;
+            }
+            const duplicate = this.tags.some(t => t.toLowerCase() === tag.toLowerCase());
+            if (duplicate) {
+                this.input = '';
+                return;
+            }
+            this.tags.push(tag);
+            this.input = '';
+        },
+        removeTag(index) {
+            this.tags.splice(index, 1);
+        },
+        handleBackspace() {
+            if (this.input === '' && this.tags.length > 0) {
+                this.tags.pop();
+            }
+        }
+    };
+}
+
 document.getElementById('profile_photo').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {

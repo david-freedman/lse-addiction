@@ -66,10 +66,22 @@ return new class extends Migration
             $table->unique(['student_id', 'quiz_id', 'attempt_number']);
             $table->index('passed');
         });
+
+        Schema::create('student_quiz_drafts', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('student_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('lesson_id')->constrained()->cascadeOnDelete();
+            $table->json('answers')->nullable();
+            $table->timestamp('started_at')->nullable();
+            $table->timestamps();
+
+            $table->unique(['student_id', 'lesson_id']);
+        });
     }
 
     public function down(): void
     {
+        Schema::dropIfExists('student_quiz_drafts');
         Schema::dropIfExists('student_quiz_attempts');
         Schema::dropIfExists('student_course_progress');
         Schema::dropIfExists('student_module_progress');

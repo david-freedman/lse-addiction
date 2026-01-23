@@ -27,10 +27,12 @@ class Student extends Authenticatable
     use Notifiable, SoftDeletes;
 
     protected $fillable = [
+        'number',
         'email',
         'phone',
         'name',
         'surname',
+        'patronymic',
         'birthday',
         'city',
         'profile_photo',
@@ -100,6 +102,11 @@ class Student extends Authenticatable
     public function certificates(): HasMany
     {
         return $this->hasMany(Certificate::class);
+    }
+
+    public function consents(): HasMany
+    {
+        return $this->hasMany(StudentConsent::class);
     }
 
     public function webinars(): BelongsToMany
@@ -189,5 +196,25 @@ class Student extends Authenticatable
     public function isNew(): bool
     {
         return $this->created_at->diffInDays(now()) <= 7;
+    }
+
+    public static function generateNumber(): string
+    {
+        $maxNumber = self::query()->max('number');
+        $next = $maxNumber ? (int) $maxNumber + 1 : 1;
+
+        return str_pad((string) $next, 6, '0', STR_PAD_LEFT);
+    }
+
+    public function hasAllRequiredConsents(): bool
+    {
+        $requiredTypes = [
+            \App\Domains\Student\Enums\ConsentType::PrivacyPolicy->value,
+            \App\Domains\Student\Enums\ConsentType::PublicOffer->value,
+        ];
+
+        $givenConsents = $this->consents()->pluck('consent_type')->toArray();
+
+        return count(array_intersect($requiredTypes, $givenConsents)) === count($requiredTypes);
     }
 }

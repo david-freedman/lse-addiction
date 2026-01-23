@@ -3,8 +3,8 @@
         <div class="p-6">
             <div class="flex justify-between items-start mb-4">
                 <div>
-                    <h2 class="text-xl font-bold text-gray-900">Реєстрація на вебінар</h2>
-                    <p class="text-gray-500 text-sm mt-1">Підтвердіть Вашу участь</p>
+                    <h2 id="modal-header-title" class="text-xl font-bold text-gray-900">Реєстрація на вебінар</h2>
+                    <p id="modal-header-subtitle" class="text-gray-500 text-sm mt-1">Підтвердіть Вашу участь</p>
                 </div>
                 <button onclick="closeRegisterModal()" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,7 +74,10 @@ function openRegisterModal(slug, title, teacher, datetime, duration, spots, pric
     const form = document.getElementById('register-form');
     const modalImage = document.getElementById('modal-webinar-image');
     const modalPlaceholder = document.getElementById('modal-webinar-placeholder');
+    const isRecording = datetime === 'Запис';
 
+    document.getElementById('modal-header-title').textContent = isRecording ? 'Реєстрація на вебінар';
+    document.getElementById('modal-header-subtitle').textContent = isRecording ? 'Підтвердіть отримання доступу' : 'Підтвердіть Вашу участь';
     document.getElementById('modal-webinar-title').textContent = title;
     document.getElementById('modal-webinar-teacher').textContent = teacher;
     document.getElementById('modal-webinar-datetime').textContent = datetime;
@@ -86,7 +89,7 @@ function openRegisterModal(slug, title, teacher, datetime, duration, spots, pric
         priceEl.textContent = 'Безкоштовно';
         priceEl.classList.remove('text-teal-600');
         priceEl.classList.add('text-green-600');
-        document.getElementById('register-btn-text').textContent = 'Зареєструватися';
+        document.getElementById('register-btn-text').textContent =  'Зареєструватися';
     } else {
         priceEl.textContent = price;
         priceEl.classList.remove('text-green-600');

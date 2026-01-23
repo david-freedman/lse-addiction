@@ -32,7 +32,10 @@ readonly class AdminCourseListViewModel
         }
 
         if ($this->filters->search) {
-            $query->where('name', 'ilike', "%{$this->filters->search}%");
+            $query->where(function ($q) {
+                $q->where('name', 'ilike', "%{$this->filters->search}%")
+                    ->orWhere('number', 'ilike', "%{$this->filters->search}%");
+            });
         }
 
         if ($this->filters->status) {

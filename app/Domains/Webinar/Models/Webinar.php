@@ -29,6 +29,7 @@ class Webinar extends Model
         'starts_at',
         'duration_minutes',
         'meeting_url',
+        'recording_url',
         'status',
         'max_participants',
         'price',
@@ -99,6 +100,28 @@ class Webinar extends Model
         return $query->where('status', '!=', WebinarStatus::Cancelled);
     }
 
+    public function scopeRecorded(Builder $query): Builder
+    {
+        return $query->where('status', WebinarStatus::Recorded);
+    }
+
+    public function scopeAvailableForCatalog(Builder $query): Builder
+    {
+        return $query->whereIn('status', [
+            WebinarStatus::Upcoming,
+            WebinarStatus::Live,
+            WebinarStatus::Recorded,
+        ]);
+    }
+
+    public function scopeLive(Builder $query): Builder
+    {
+        return $query->whereIn('status', [
+            WebinarStatus::Upcoming,
+            WebinarStatus::Live,
+        ]);
+    }
+
     protected function bannerUrl(): Attribute
     {
         return Attribute::make(
@@ -148,6 +171,10 @@ class Webinar extends Model
 
     public function hasCapacity(): bool
     {
+        if ($this->status === WebinarStatus::Recorded) {
+            return true;
+        }
+
         if ($this->max_participants === null) {
             return true;
         }
@@ -211,10 +238,29 @@ class Webinar extends Model
         return $this->status === WebinarStatus::Draft;
     }
 
+    public function isRecorded(): bool
+    {
+        return $this->status === WebinarStatus::Recorded;
+    }
+
+    public function isEnded(): bool
+    {
+        return $this->status === WebinarStatus::Ended;
+    }
+
+    public function hasRecording(): bool
+    {
+        return !empty($this->recording_url);
+    }
+
     public function getMeetingUrlForStudent(Student $student): ?string
     {
         if (!$this->isRegistered($student)) {
             return null;
+        }
+
+        if ($this->status === WebinarStatus::Recorded) {
+            return $this->recording_url;
         }
 
         if (!$this->meeting_url) {
@@ -228,5 +274,18 @@ class Webinar extends Model
         }
 
         return null;
+    }
+
+    public function getRecordingUrlForStudent(Student $student): ?string
+    {
+        if (!$this->isRegistered($student)) {
+            return null;
+        }
+
+        if ($this->status !== WebinarStatus::Recorded) {
+            return null;
+        }
+
+        return $this->recording_url;
     }
 }

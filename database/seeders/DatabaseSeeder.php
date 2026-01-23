@@ -23,6 +23,9 @@ class DatabaseSeeder extends Seeder
             LessonSeeder::class,
             QuizSeeder::class,
             StudentSeeder::class,
+            StudentConsentSeeder::class,
+            StudentMigrationSeeder::class,
+            StudentGroupSeeder::class,
             WebinarStudentSeeder::class,
             CourseStudentSeeder::class,
             HomeworkSeeder::class,
@@ -32,6 +35,7 @@ class DatabaseSeeder extends Seeder
             FAQSeeder::class,
             ProgressSeeder::class,
             CertificateSeeder::class,
+            CourseHistorySeeder::class,
         ]);
     }
 }
