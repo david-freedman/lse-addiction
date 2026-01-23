@@ -73,18 +73,22 @@ final class GetCatalogController
             ->withCount('activeRegistrations as participants_count');
 
         if ($webinarFilter === 'live') {
-            $query->whereIn('status', [WebinarStatus::Upcoming, WebinarStatus::Live])
-                ->where('starts_at', '>', now())
-                ->orderBy('starts_at');
+            $query->where(function ($q) {
+                $q->where(function ($sub) {
+                    $sub->where('status', WebinarStatus::Upcoming)
+                        ->where('starts_at', '>', now());
+                })->orWhere('status', WebinarStatus::Live);
+            })->orderBy('starts_at');
         } elseif ($webinarFilter === 'recorded') {
             $query->where('status', WebinarStatus::Recorded)
                 ->orderBy('starts_at', 'desc');
         } else {
             $query->where(function ($q) {
                 $q->where(function ($sub) {
-                    $sub->whereIn('status', [WebinarStatus::Upcoming, WebinarStatus::Live])
+                    $sub->where('status', WebinarStatus::Upcoming)
                         ->where('starts_at', '>', now());
-                })->orWhere('status', WebinarStatus::Recorded);
+                })->orWhere('status', WebinarStatus::Live)
+                    ->orWhere('status', WebinarStatus::Recorded);
             })
                 ->orderByRaw("CASE WHEN status IN ('upcoming', 'live') THEN 0 ELSE 1 END")
                 ->orderByRaw("CASE WHEN status IN ('upcoming', 'live') THEN starts_at END ASC")
@@ -124,9 +128,12 @@ final class GetCatalogController
 
     private function getLiveWebinarsCount(): int
     {
-        return Webinar::whereIn('status', [WebinarStatus::Upcoming, WebinarStatus::Live])
-            ->where('starts_at', '>', now())
-            ->count();
+        return Webinar::where(function ($q) {
+            $q->where(function ($sub) {
+                $sub->where('status', WebinarStatus::Upcoming)
+                    ->where('starts_at', '>', now());
+            })->orWhere('status', WebinarStatus::Live);
+        })->count();
     }
 
     private function getRecordedWebinarsCount(): int
