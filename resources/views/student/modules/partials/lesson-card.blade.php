@@ -55,7 +55,7 @@
             @if($lesson->isFinal)
                 🏆 Підсумковий тест
             @else
-                Урок {{ $lesson->order }}: {{ $lesson->name }}
+                Урок {{ $lesson->order + 1 }}: {{ $lesson->name }}
             @endif
         </h3>
 
