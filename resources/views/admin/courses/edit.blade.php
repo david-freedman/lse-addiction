@@ -8,7 +8,7 @@
 </div>
 
 <div class="rounded-2xl border border-gray-200 bg-white p-6">
-    <form action="{{ route('admin.courses.update', $course) }}" method="POST" enctype="multipart/form-data" class="space-y-5">
+    <form id="course-edit-form" action="{{ route('admin.courses.update', $course) }}" method="POST" enctype="multipart/form-data" class="space-y-5">
         @csrf
         @method('PATCH')
 
@@ -333,19 +333,28 @@
 
 @push('scripts')
 <script>
-document.querySelector('form').addEventListener('submit', function(e) {
+document.getElementById('course-edit-form').addEventListener('submit', function(e) {
     const tagsInput = document.getElementById('tags_input').value;
     const tagsArray = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag);
 
-    this.querySelectorAll('input[name="tags[]"]').forEach(input => input.remove());
+    this.querySelectorAll('input[name="tags[]"], input[name="tags_empty"]').forEach(input => input.remove());
 
-    tagsArray.forEach(tag => {
+    if (tagsArray.length > 0) {
+        tagsArray.forEach(tag => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'tags[]';
+            input.value = tag;
+            this.appendChild(input);
+        });
+    } else {
+        // Передаємо порожній маркер, щоб Action знав що теги треба очистити
         const input = document.createElement('input');
         input.type = 'hidden';
-        input.name = 'tags[]';
-        input.value = tag;
+        input.name = 'tags_empty';
+        input.value = '1';
         this.appendChild(input);
-    });
+    }
 });
 </script>
 @endpush
