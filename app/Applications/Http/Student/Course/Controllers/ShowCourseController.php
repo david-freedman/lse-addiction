@@ -24,6 +24,13 @@ final class ShowCourseController
         }
 
         if ($isEnrolled) {
+            if (! $course->hasStarted()) {
+                $course->load(['teacher', 'author', 'tags']);
+                $viewModel = new CourseDetailViewModel($course, $student);
+
+                return view('student.courses.not-started', compact('viewModel', 'course'));
+            }
+
             $course->load([
                 'modules' => fn ($q) => $q->active()->ordered()
                     ->with(['lessons' => fn ($l) => $l->published()->ordered()]),

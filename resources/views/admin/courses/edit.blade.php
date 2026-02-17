@@ -8,7 +8,7 @@
 </div>
 
 <div class="rounded-2xl border border-gray-200 bg-white p-6">
-    <form action="{{ route('admin.courses.update', $course) }}" method="POST" enctype="multipart/form-data" class="space-y-5">
+    <form id="course-edit-form" action="{{ route('admin.courses.update', $course) }}" method="POST" enctype="multipart/form-data" class="space-y-5">
         @csrf
         @method('PATCH')
 
@@ -286,6 +286,40 @@
             </div>
         </div>
 
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div>
+                <label for="registration_starts_at" class="mb-2 block text-sm font-medium text-gray-700">Реєстрація з</label>
+                <input
+                    type="text"
+                    name="registration_starts_at"
+                    id="registration_starts_at"
+                    x-datepicker.datetime
+                    value="{{ old('registration_starts_at', $course->registration_starts_at?->format('d.m.Y H:i')) }}"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('registration_starts_at') border-error-500 @enderror"
+                >
+                <p class="mt-1 text-xs text-gray-500">Початок реєстрації (залиште порожнім щоб унеможливити реєстрацію ДО початку курсу)</p>
+                @error('registration_starts_at')
+                    <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div>
+                <label for="registration_ends_at" class="mb-2 block text-sm font-medium text-gray-700">Реєстрація до</label>
+                <input
+                    type="text"
+                    name="registration_ends_at"
+                    id="registration_ends_at"
+                    x-datepicker.datetime
+                    value="{{ old('registration_ends_at', $course->registration_ends_at?->format('d.m.Y H:i')) }}"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('registration_ends_at') border-error-500 @enderror"
+                >
+                <p class="mt-1 text-xs text-gray-500">Кінець реєстрації (залиште порожнім, щоб дата кінця реєстрації дорівнювала даті початку курсі)</p>
+                @error('registration_ends_at')
+                    <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
+
         <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
             <div class="flex items-start gap-3">
                 <input
@@ -333,19 +367,28 @@
 
 @push('scripts')
 <script>
-document.querySelector('form').addEventListener('submit', function(e) {
+document.getElementById('course-edit-form').addEventListener('submit', function(e) {
     const tagsInput = document.getElementById('tags_input').value;
     const tagsArray = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag);
 
-    this.querySelectorAll('input[name="tags[]"]').forEach(input => input.remove());
+    this.querySelectorAll('input[name="tags[]"], input[name="tags_empty"]').forEach(input => input.remove());
 
-    tagsArray.forEach(tag => {
+    if (tagsArray.length > 0) {
+        tagsArray.forEach(tag => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'tags[]';
+            input.value = tag;
+            this.appendChild(input);
+        });
+    } else {
+        // Передаємо порожній маркер, щоб Action знав що теги треба очистити
         const input = document.createElement('input');
         input.type = 'hidden';
-        input.name = 'tags[]';
-        input.value = tag;
+        input.name = 'tags_empty';
+        input.value = '1';
         this.appendChild(input);
-    });
+    }
 });
 </script>
 @endpush
