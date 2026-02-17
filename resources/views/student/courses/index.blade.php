@@ -82,24 +82,34 @@
                     @php
                         $progress = $viewModel->getCourseProgress($course->id);
                         $isCompleted = $progress->progressPercentage === 100;
+                        $hasStarted = $course->hasStarted();
                     @endphp
-                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition group">
+                    <div class="bg-white border {{ $hasStarted ? 'border-gray-200' : 'border-teal-200' }} rounded-xl overflow-hidden hover:shadow-lg transition group {{ $hasStarted ? '' : 'opacity-90' }}">
                         <div class="relative h-48 overflow-hidden">
                             @if($course->banner)
                                 <div class="w-full aspect-[16/9] overflow-hidden bg-gray-100">
                                     <img src="{{ $course->banner_url }}"
                                         alt="{{ $course->name }}"
-                                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300 {{ $hasStarted ? '' : 'grayscale' }}">
                                 </div>
                             @else
-                                <div class="w-full aspect-[16/9] bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center">
+                                <div class="w-full aspect-[16/9] {{ $hasStarted ? 'bg-gradient-to-br from-teal-400 to-teal-600' : 'bg-gradient-to-br from-gray-300 to-gray-400' }} flex items-center justify-center">
                                     <svg class="w-16 h-16 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                     </svg>
                                 </div>
                             @endif
 
-                            @if($course->label_text)
+                            @if(! $hasStarted)
+                                <div class="absolute inset-0 bg-gray-900/70 flex items-center justify-center">
+                                    <div class="bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full uppercase flex items-center">
+                                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        Ще не розпочато
+                                    </div>
+                                </div>
+                            @elseif($course->label_text)
                                 <div class="absolute top-3 left-3 bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full uppercase">
                                     {{ $course->label_text }}
                                 </div>
@@ -117,48 +127,72 @@
 
                             <h3 class="text-lg font-bold text-gray-900 mb-1 line-clamp-2">{{ $course->name }}</h3>
 
-                            <div class="flex items-center text-sm text-gray-600 mb-4">
+                            <div class="flex items-center text-sm text-gray-600 mb-3">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                                 {{ $course->teacher?->full_name ?? 'Не вказано' }}
                             </div>
 
-                            <div class="mb-4">
-                                <div class="flex justify-between items-center mb-1">
-                                    <span class="text-sm text-gray-600">Прогрес</span>
-                                    <span class="text-sm font-semibold {{ $isCompleted ? 'text-emerald-600' : 'text-teal-600' }}">{{ $progress->progressPercentage }}%</span>
+                            @if(! $hasStarted && $course->starts_at)
+                                <div class="flex items-center gap-2 bg-teal-50 border border-teal-200 rounded-lg px-3 py-2 mb-4">
+                                    <svg class="w-4 h-4 text-teal-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    <div>
+                                        <span class="text-xs text-teal-700 block">Початок курсу</span>
+                                        <span class="text-sm font-semibold text-teal-800">{{ $course->starts_at->locale('uk')->isoFormat('D MMMM YYYY') }}</span>
+                                    </div>
                                 </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="{{ $isCompleted ? 'bg-emerald-500' : 'bg-teal-500' }} h-2 rounded-full transition-all duration-300"
-                                         style="width: {{ $progress->progressPercentage }}%"></div>
+                            @else
+                                <div class="mb-4">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-sm text-gray-600">Прогрес</span>
+                                        <span class="text-sm font-semibold {{ $isCompleted ? 'text-emerald-600' : 'text-teal-600' }}">{{ $progress->progressPercentage }}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="{{ $isCompleted ? 'bg-emerald-500' : 'bg-teal-500' }} h-2 rounded-full transition-all duration-300"
+                                             style="width: {{ $progress->progressPercentage }}%"></div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="flex items-center text-sm text-gray-600 mb-4">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                </svg>
-                                {{ $progress->lessonsCompleted }}/{{ $progress->totalLessons }} уроків
-                            </div>
+                                <div class="flex items-center text-sm text-gray-600 mb-4">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
+                                    {{ $progress->lessonsCompleted }}/{{ $progress->totalLessons }} уроків
+                                </div>
+                            @endif
 
-                            <a href="{{ route('student.courses.show', $course) }}"
-                               class="block w-full text-center px-4 py-2.5 rounded-lg font-medium transition bg-teal-500 hover:bg-teal-600 text-white">
-                                <span class="flex items-center justify-center">
-                                    @if($isCompleted)
+                            @if(! $hasStarted)
+                                <a href="{{ route('student.courses.show', $course) }}"
+                                   class="block w-full text-center px-4 py-2.5 rounded-lg font-medium transition bg-teal-100 hover:bg-teal-200 text-teal-800 border border-teal-300">
+                                    <span class="flex items-center justify-center">
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
-                                        Переглянути
-                                    @else
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                        </svg>
-                                        Продовжити
-                                    @endif
-                                </span>
-                            </a>
+                                        Очікується старт
+                                    </span>
+                                </a>
+                            @else
+                                <a href="{{ route('student.courses.show', $course) }}"
+                                   class="block w-full text-center px-4 py-2.5 rounded-lg font-medium transition bg-teal-500 hover:bg-teal-600 text-white">
+                                    <span class="flex items-center justify-center">
+                                        @if($isCompleted)
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            Переглянути
+                                        @else
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                            </svg>
+                                            Продовжити
+                                        @endif
+                                    </span>
+                                </a>
+                            @endif
                         </div>
                     </div>
                 @endforeach

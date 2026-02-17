@@ -113,6 +113,11 @@ class Course extends Model
         return $this->students()->where('student_id', $student->id)->exists();
     }
 
+    public function hasStarted(): bool
+    {
+        return $this->starts_at === null || $this->starts_at->isPast();
+    }
+
     /**
      * Effective registration end: explicitly set, or falls back to starts_at if only start is given.
      */
