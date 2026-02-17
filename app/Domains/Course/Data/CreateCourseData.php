@@ -56,6 +56,12 @@ class CreateCourseData extends Data
         #[Nullable, Date]
         public readonly ?string $starts_at,
 
+        #[Nullable, Date]
+        public readonly ?string $registration_starts_at,
+
+        #[Nullable, Date]
+        public readonly ?string $registration_ends_at,
+
         #[Nullable, StringType, Max(50)]
         public readonly ?string $label,
 
@@ -70,11 +76,23 @@ class CreateCourseData extends Data
             'tags.*' => ['string', 'max:50'],
             'type' => ['nullable', 'string', 'in:upcoming,recorded,free'],
             'starts_at' => ['nullable', 'date', 'date_format:d.m.Y H:i'],
+            'registration_starts_at' => ['nullable', 'date', 'date_format:d.m.Y H:i', 'required_with:registration_ends_at', 'before_or_equal:starts_at'],
+            'registration_ends_at' => ['nullable', 'date', 'date_format:d.m.Y H:i', 'after_or_equal:registration_starts_at', 'before_or_equal:starts_at'],
             'old_price' => ['nullable', 'numeric', 'min:0', 'gte:price'],
             'discount_percentage' => ['nullable', 'integer', 'min:0', 'max:100'],
             'teacher_id' => ['required', 'integer', 'exists:teachers,id'],
             'label' => ['nullable', new Enum(CourseLabel::class)],
             'number' => ['required', 'digits:7', 'unique:courses,number'],
+        ];
+    }
+
+    public static function messages(): array
+    {
+        return [
+            'registration_starts_at.required_with' => 'Вкажіть дату початку реєстрації, якщо задано дату кінця реєстрації.',
+            'registration_starts_at.before_or_equal' => 'Дата початку реєстрації має бути не пізніше дати початку курсу.',
+            'registration_ends_at.after_or_equal' => 'Дата кінця реєстрації має бути не раніше дати початку реєстрації.',
+            'registration_ends_at.before_or_equal' => 'Дата кінця реєстрації має бути не пізніше дати початку курсу.',
         ];
     }
 }

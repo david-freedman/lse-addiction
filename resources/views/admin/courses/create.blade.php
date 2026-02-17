@@ -279,6 +279,40 @@
             </div>
         </div>
 
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div>
+                <label for="registration_starts_at" class="mb-2 block text-sm font-medium text-gray-700">Реєстрація з</label>
+                <input
+                    type="text"
+                    name="registration_starts_at"
+                    id="registration_starts_at"
+                    x-datepicker.datetime
+                    value="{{ old('registration_starts_at') }}"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('registration_starts_at') border-error-500 @enderror"
+                >
+                <p class="mt-1 text-xs text-gray-500">Початок реєстрації (залиште порожнім щоб унеможливити реєстрацію ДО початку курсу)</p>
+                @error('registration_starts_at')
+                    <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div>
+                <label for="registration_ends_at" class="mb-2 block text-sm font-medium text-gray-700">Реєстрація до</label>
+                <input
+                    type="text"
+                    name="registration_ends_at"
+                    id="registration_ends_at"
+                    x-datepicker.datetime
+                    value="{{ old('registration_ends_at') }}"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('registration_ends_at') border-error-500 @enderror"
+                >
+                <p class="mt-1 text-xs text-gray-500">Кінець реєстрації (залиште порожнім, щоб дата кінця реєстрації дорівнювала даті початку курсі)</p>
+                @error('registration_ends_at')
+                    <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
+
         <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
             <div class="flex items-start gap-3">
                 <input

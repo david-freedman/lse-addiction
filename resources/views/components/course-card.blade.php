@@ -84,9 +84,9 @@
                 >
                     Купити
                 </button>
-            @elseif($showPurchaseButton && !(isset($course->is_purchased) && $course->is_purchased) && !$course->isAvailableByDate())
+            @elseif($showPurchaseButton && !(isset($course->is_purchased) && $course->is_purchased) && !$course->isAvailableByDate() && $course->registration_starts_at)
                 <span class="bg-amber-100 text-amber-800 font-semibold py-2 px-4 rounded-lg ml-2 text-sm whitespace-nowrap">
-                    з {{ $course->formatted_date }}
+                    Реєстрація {{ $course->formatted_registration_period }}
                 </span>
             @elseif(isset($course->is_purchased) && $course->is_purchased)
                 <span class="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition ml-2">

@@ -19,7 +19,8 @@ class UpdateCourseAction
         $oldValues = $course->only([
             'name', 'number', 'description', 'price', 'old_price',
             'discount_percentage', 'teacher_id', 'status', 'type',
-            'starts_at', 'label', 'requires_certificate_approval', 'banner',
+            'starts_at', 'registration_starts_at', 'registration_ends_at',
+            'label', 'requires_certificate_approval', 'banner',
         ]);
         $oldTagNames = $course->tags->pluck('name')->toArray();
 
@@ -48,6 +49,9 @@ class UpdateCourseAction
         if ($data->starts_at !== null) {
             $updateData['starts_at'] = $data->starts_at;
         }
+
+        $updateData['registration_starts_at'] = $data->registration_starts_at;
+        $updateData['registration_ends_at'] = $data->registration_ends_at;
 
         if ($data->label !== null) {
             $updateData['label'] = $data->label;

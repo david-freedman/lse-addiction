@@ -36,6 +36,8 @@ class CreateCourseAction
             'status' => $data->status,
             'type' => $data->type,
             'starts_at' => $data->starts_at,
+            'registration_starts_at' => $data->registration_starts_at,
+            'registration_ends_at' => $data->registration_ends_at,
             'label' => $data->label,
             'requires_certificate_approval' => $data->requires_certificate_approval,
         ]);

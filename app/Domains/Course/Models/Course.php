@@ -42,6 +42,8 @@ class Course extends Model
         'status',
         'type',
         'starts_at',
+        'registration_starts_at',
+        'registration_ends_at',
         'label',
         'is_sequential',
         'requires_certificate_approval',
@@ -51,6 +53,8 @@ class Course extends Model
         'price' => 'decimal:2',
         'old_price' => 'decimal:2',
         'starts_at' => 'datetime',
+        'registration_starts_at' => 'datetime',
+        'registration_ends_at' => 'datetime',
         'type' => CourseType::class,
         'status' => CourseStatus::class,
         'is_sequential' => 'boolean',
@@ -109,17 +113,55 @@ class Course extends Model
         return $this->students()->where('student_id', $student->id)->exists();
     }
 
+    /**
+     * Effective registration end: explicitly set, or falls back to starts_at if only start is given.
+     */
+    public function effectiveRegistrationEndsAt(): ?\Illuminate\Support\Carbon
+    {
+        if ($this->registration_ends_at !== null) {
+            return $this->registration_ends_at;
+        }
+        if ($this->registration_starts_at !== null) {
+            return $this->starts_at;
+        }
+
+        return null;
+    }
+
     public function isAvailableByDate(): bool
     {
-        return $this->starts_at === null || $this->starts_at->isPast() || $this->starts_at->isToday();
+        // Both fields must be set (or implicitly derived) for registration to be available
+        if ($this->registration_starts_at === null) {
+            return false;
+        }
+
+        $endsAt = $this->effectiveRegistrationEndsAt();
+
+        if ($this->registration_starts_at->isFuture()) {
+            return false;
+        }
+        if ($endsAt !== null && $endsAt->isPast()) {
+            return false;
+        }
+
+        return true;
     }
 
     public function scopeAvailableForPurchase($query, ?Student $student = null)
     {
         $query->where('status', CourseStatus::Active)
+            ->where('registration_starts_at', '<=', now())
             ->where(function ($q) {
-                $q->whereNull('starts_at')
-                    ->orWhere('starts_at', '<=', now());
+                // registration_ends_at is set and not expired
+                $q->where('registration_ends_at', '>=', now())
+                  // or only registration_starts_at is set — use starts_at as implicit end
+                  ->orWhere(function ($sq) {
+                      $sq->whereNull('registration_ends_at')
+                          ->where(function ($inner) {
+                              $inner->whereNull('starts_at')
+                                  ->orWhere('starts_at', '>=', now());
+                          });
+                  });
             });
 
         if ($student) {
@@ -170,6 +212,26 @@ class Course extends Model
             get: fn () => $this->starts_at
                 ? $this->starts_at->locale('uk')->isoFormat('D MMMM')
                 : null
+        );
+    }
+
+    protected function formattedRegistrationPeriod(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $start = $this->registration_starts_at;
+                $end = $this->effectiveRegistrationEndsAt();
+
+                if (! $start) {
+                    return null;
+                }
+
+                if ($end) {
+                    return $start->locale('uk')->isoFormat('D MMMM').' — '.$end->locale('uk')->isoFormat('D MMMM');
+                }
+
+                return 'з '.$start->locale('uk')->isoFormat('D MMMM');
+            }
         );
     }
 
