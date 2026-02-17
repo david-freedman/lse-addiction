@@ -99,6 +99,14 @@
                         @endif
 
                         <div class="p-5">
+                            @if($course->tags->isNotEmpty())
+                                <div class="flex flex-wrap gap-1 mb-2">
+                                    @foreach($course->tags->take(2) as $tag)
+                                        <span class="px-2 py-0.5 bg-teal-50 text-teal-700 text-xs rounded-full">{{ $tag->name }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+
                             <h3 class="text-lg font-bold text-gray-900 mb-1 line-clamp-2">{{ $course->name }}</h3>
 
                             <div class="flex items-center text-sm text-gray-600 mb-4">
