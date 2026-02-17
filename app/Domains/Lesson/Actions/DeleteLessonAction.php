@@ -16,6 +16,8 @@ class DeleteLessonAction
         $attributes = $lesson->only(['id', 'name', 'type', 'status']);
         $attributes['type'] = $lesson->type?->value;
 
+        $lesson->quiz?->delete();
+
         $result = $lesson->delete();
 
         if ($result) {
