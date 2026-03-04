@@ -106,6 +106,8 @@
                             <div class="field__error" x-show="phoneError" x-text="phoneError"></div>
                         </div>
                     </div>
+                    <input type="hidden" name="email_token" :value="emailToken">
+                    <input type="hidden" name="phone_token" :value="phoneToken">
                     <button
                         type="submit"
                         class="auth__button button button--fill"
@@ -134,6 +136,8 @@ function registrationForm() {
         phone: '{{ old('phone') }}',
         phoneVerified: false,
         emailVerified: false,
+        emailToken: '',
+        phoneToken: '',
         phoneSending: false,
         emailSending: false,
         phoneError: '',
@@ -300,8 +304,10 @@ function registrationForm() {
 
                 if (this.currentVerificationType === 'email') {
                     this.emailVerified = true;
+                    this.emailToken = data.token || '';
                 } else {
                     this.phoneVerified = true;
+                    this.phoneToken = data.token || '';
                 }
 
                 this.closeVerificationPopup();

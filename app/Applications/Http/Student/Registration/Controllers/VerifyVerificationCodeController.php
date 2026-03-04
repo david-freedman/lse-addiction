@@ -50,10 +50,17 @@ final class VerifyVerificationCodeController
             $verifiedContactKey => $contact,
         ]);
 
+        $token = encrypt([
+            'contact' => $contact,
+            'type' => $type,
+            'expires_at' => now()->addMinutes(30)->timestamp,
+        ]);
+
         return response()->json([
             'success' => true,
             'message' => $type === 'email' ? 'Email верифіковано' : 'Телефон верифіковано',
             'verified' => true,
+            'token' => $token,
         ]);
     }
 }
