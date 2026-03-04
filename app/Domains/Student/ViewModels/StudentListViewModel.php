@@ -71,7 +71,10 @@ readonly class StudentListViewModel
             $query->onlyTrashed();
         }
 
-        $this->students = $query->orderBy('created_at', 'desc')->paginate($perPage);
+        $sortBy = in_array($filters->sort_by, ['number', 'created_at']) ? $filters->sort_by : 'created_at';
+        $sortDirection = in_array($filters->sort_direction, ['asc', 'desc']) ? $filters->sort_direction : 'desc';
+
+        $this->students = $query->orderBy($sortBy, $sortDirection)->paginate($perPage);
     }
 
     public function students(): LengthAwarePaginator
@@ -107,5 +110,36 @@ readonly class StudentListViewModel
             || $this->filters->only_deleted !== null
             || $this->filters->created_from !== null
             || $this->filters->created_to !== null;
+    }
+
+    public function currentSort(): string
+    {
+        return $this->filters->sort_by ?? 'created_at';
+    }
+
+    public function currentDirection(): string
+    {
+        return $this->filters->sort_direction ?? 'desc';
+    }
+
+    public function sortUrl(string $column): string
+    {
+        $currentSort = $this->currentSort();
+        $currentDirection = $this->currentDirection();
+
+        $direction = ($currentSort === $column && $currentDirection === 'asc') ? 'desc' : 'asc';
+
+        $params = array_filter([
+            'search' => $this->filters->search,
+            'course_id' => $this->filters->course_id,
+            'is_new' => $this->filters->is_new ? '1' : null,
+            'only_deleted' => $this->filters->only_deleted ? '1' : null,
+            'created_from' => $this->filters->created_from?->format('d.m.Y'),
+            'created_to' => $this->filters->created_to?->format('d.m.Y'),
+            'sort_by' => $column,
+            'sort_direction' => $direction,
+        ]);
+
+        return route('admin.students.index', $params);
     }
 }

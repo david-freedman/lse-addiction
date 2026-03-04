@@ -128,13 +128,31 @@
                                     class="h-4 w-4 rounded border-gray-300 text-brand-600"
                                 >
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Номер</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">
+                                <a href="{{ $viewModel->sortUrl('number') }}" class="inline-flex items-center gap-1 hover:text-gray-900">
+                                    Номер
+                                    @if($viewModel->currentSort() === 'number')
+                                        <span>{{ $viewModel->currentDirection() === 'asc' ? '↑' : '↓' }}</span>
+                                    @else
+                                        <span class="text-gray-300">↕</span>
+                                    @endif
+                                </a>
+                            </th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">ПІБ</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Email / Телефон</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Курси</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Прогрес</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Останній вхід</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Реєстрація</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">
+                                <a href="{{ $viewModel->sortUrl('created_at') }}" class="inline-flex items-center gap-1 hover:text-gray-900">
+                                    Реєстрація
+                                    @if($viewModel->currentSort() === 'created_at')
+                                        <span>{{ $viewModel->currentDirection() === 'asc' ? '↑' : '↓' }}</span>
+                                    @else
+                                        <span class="text-gray-300">↕</span>
+                                    @endif
+                                </a>
+                            </th>
                             <th class="px-4 py-3 text-right text-xs font-semibold uppercase text-gray-600">Дії</th>
                         </tr>
                     </thead>
