@@ -5,6 +5,7 @@ namespace App\Domains\Student\Data;
 use Carbon\Carbon;
 use Spatie\LaravelData\Attributes\Validation\BooleanType;
 use Spatie\LaravelData\Attributes\Validation\Exists;
+use Spatie\LaravelData\Attributes\Validation\In;
 use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\Nullable;
 use Spatie\LaravelData\Attributes\Validation\Numeric;
@@ -33,5 +34,11 @@ class StudentFilterData extends Data
 
         #[Nullable, WithCast(DateTimeInterfaceCast::class, format: 'd.m.Y')]
         public readonly ?Carbon $created_to,
+
+        #[Nullable, StringType, In(['number', 'created_at'])]
+        public readonly ?string $sort_by,
+
+        #[Nullable, StringType, In(['asc', 'desc'])]
+        public readonly ?string $sort_direction,
     ) {}
 }

@@ -44,6 +44,13 @@
             </div>
 
             <div>
+                <label for="patronymic" class="mb-2 block text-sm font-medium text-gray-700">По-батькові</label>
+                <input type="text" name="patronymic" id="patronymic" value="{{ old('patronymic') }}"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('patronymic') border-error-500 @enderror">
+                @error('patronymic')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
+            </div>
+
+            <div>
                 <label for="birthday" class="mb-2 block text-sm font-medium text-gray-700">Дата народження</label>
                 <input type="text" name="birthday" id="birthday" x-datepicker value="{{ old('birthday') }}"
                     class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('birthday') border-error-500 @enderror">
@@ -55,6 +62,29 @@
                 <input type="text" name="city" id="city" value="{{ old('city') }}"
                     class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('city') border-error-500 @enderror">
                 @error('city')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div>
+                <label for="institution" class="mb-2 block text-sm font-medium text-gray-700">Заклад навчання</label>
+                <input type="text" name="profile_fields[institution]" id="institution" value="{{ old('profile_fields.institution') }}"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('profile_fields.institution') border-error-500 @enderror">
+                @error('profile_fields.institution')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
+            </div>
+
+            <div>
+                <label for="diploma_number" class="mb-2 block text-sm font-medium text-gray-700">Номер диплому</label>
+                <input type="text" name="profile_fields[diploma_number]" id="diploma_number" value="{{ old('profile_fields.diploma_number') }}"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('profile_fields.diploma_number') border-error-500 @enderror">
+                @error('profile_fields.diploma_number')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
+            </div>
+
+            <div>
+                <label for="workplace" class="mb-2 block text-sm font-medium text-gray-700">Місце роботи</label>
+                <input type="text" name="profile_fields[workplace]" id="workplace" value="{{ old('profile_fields.workplace') }}"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('profile_fields.workplace') border-error-500 @enderror">
+                @error('profile_fields.workplace')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
             </div>
         </div>
 

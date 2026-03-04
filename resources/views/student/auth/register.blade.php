@@ -26,6 +26,9 @@
                     <div class="header-auth__subtitle">LifeScanEducation</div>
                 </div>
             </div>
+            @if($errors->has('error'))
+                <div class="field__error" style="margin-bottom:12px">{{ $errors->first('error') }}</div>
+            @endif
             <form action="{{ route('student.register') }}" method="POST" class="auth__content" @submit="handleSubmit">
                 @csrf
                 <div class="auth__wrapper">
