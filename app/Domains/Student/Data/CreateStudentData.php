@@ -44,6 +44,9 @@ class CreateStudentData extends Data
         #[Required, StringType, Min(2), Max(100)]
         public readonly string $surname,
 
+        #[Nullable, StringType, Max(100)]
+        public readonly ?string $patronymic,
+
         #[Nullable, Before('today')]
         public readonly ?string $birthday,
 
@@ -58,12 +61,17 @@ class CreateStudentData extends Data
 
         #[Nullable, BooleanType]
         public readonly ?bool $phone_verified,
+
+        #[Nullable]
+        public readonly ?array $profile_fields,
     ) {}
 
     public static function rules(): array
     {
         return [
             'birthday' => ['nullable', 'date', 'date_format:d.m.Y', 'before:today'],
+            'profile_fields' => ['nullable', 'array'],
+            'profile_fields.*' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

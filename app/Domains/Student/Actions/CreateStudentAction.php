@@ -8,6 +8,7 @@ use App\Domains\ActivityLog\Enums\ActivitySubject;
 use App\Domains\ActivityLog\Enums\ActivityType;
 use App\Domains\Student\Data\CreateStudentData;
 use App\Domains\Student\Models\Student;
+use App\Domains\Student\Actions\SaveStudentProfileFieldValuesAction;
 
 class CreateStudentAction
 {
@@ -19,6 +20,7 @@ class CreateStudentAction
             'phone' => $data->phone,
             'name' => $data->name,
             'surname' => $data->surname,
+            'patronymic' => $data->patronymic,
             'birthday' => $data->birthday,
             'city' => $data->city,
         ];
@@ -36,6 +38,10 @@ class CreateStudentAction
         }
 
         $student = Student::create($attributes);
+
+        if ($data->profile_fields) {
+            SaveStudentProfileFieldValuesAction::execute($student, $data->profile_fields);
+        }
 
         LogActivityAction::execute(ActivityLogData::from([
             'subject_type' => ActivitySubject::Student,
