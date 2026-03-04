@@ -14,6 +14,7 @@ class CreateStudentAction
     public static function execute(CreateStudentData $data): Student
     {
         $attributes = [
+            'number' => Student::generateNumber(),
             'email' => $data->email,
             'phone' => $data->phone,
             'name' => $data->name,
