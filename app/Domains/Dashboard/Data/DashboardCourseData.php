@@ -12,5 +12,7 @@ readonly class DashboardCourseData
         public int $totalLessons,
         public int $progressPercentage,
         public string $continueUrl,
+        public bool $hasStarted = true,
+        public ?string $formattedStartsAt = null,
     ) {}
 }

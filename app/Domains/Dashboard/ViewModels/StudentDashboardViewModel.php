@@ -153,6 +153,8 @@ readonly class StudentDashboardViewModel
             totalLessons: $totalLessons,
             progressPercentage: $progressPercentage,
             continueUrl: route('student.courses.show', $course->slug),
+            hasStarted: $course->hasStarted(),
+            formattedStartsAt: $course->starts_at?->locale('uk')->isoFormat('D MMMM YYYY'),
         );
     }
 
