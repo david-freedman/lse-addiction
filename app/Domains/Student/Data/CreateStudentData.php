@@ -53,6 +53,12 @@ class CreateStudentData extends Data
         #[Nullable, StringType, Max(100)]
         public readonly ?string $city,
 
+        #[Nullable, StringType, Max(255)]
+        public readonly ?string $specialty_1,
+
+        #[Nullable, StringType, Max(255)]
+        public readonly ?string $specialty_2,
+
         #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png', 'webp']), Max(5120)]
         public readonly ?UploadedFile $profile_photo,
 
