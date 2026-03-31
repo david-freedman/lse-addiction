@@ -202,8 +202,7 @@ class Student extends Authenticatable
 
     public static function generateNumber(): string
     {
-        $maxNumber = self::withTrashed()->max('number');
-        $next = $maxNumber ? (int) $maxNumber + 1 : 1;
+        $next = \DB::selectOne("SELECT nextval('student_number_seq') as val")->val;
 
         return str_pad((string) $next, 6, '0', STR_PAD_LEFT);
     }
