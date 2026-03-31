@@ -72,6 +72,20 @@
                     </div>
                 @endif
 
+                @if($student->specialty_1)
+                    <div>
+                        <p class="text-xs font-medium text-gray-500">Спеціальність 1</p>
+                        <p class="text-sm text-gray-900">{{ $student->specialty_1 }}</p>
+                    </div>
+                @endif
+
+                @if($student->specialty_2)
+                    <div>
+                        <p class="text-xs font-medium text-gray-500">Спеціальність 2</p>
+                        <p class="text-sm text-gray-900">{{ $student->specialty_2 }}</p>
+                    </div>
+                @endif
+
                 <div>
                     <p class="text-xs font-medium text-gray-500">Зареєстровано</p>
                     <p class="text-sm text-gray-900">{{ $student->created_at->format('d.m.Y H:i') }}</p>

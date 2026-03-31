@@ -63,6 +63,20 @@
                     class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('city') border-error-500 @enderror">
                 @error('city')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
             </div>
+
+            <div>
+                <label for="specialty_1" class="mb-2 block text-sm font-medium text-gray-700">Спеціальність 1</label>
+                <input type="text" name="specialty_1" id="specialty_1" value="{{ old('specialty_1') }}"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('specialty_1') border-error-500 @enderror">
+                @error('specialty_1')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
+            </div>
+
+            <div>
+                <label for="specialty_2" class="mb-2 block text-sm font-medium text-gray-700">Спеціальність 2</label>
+                <input type="text" name="specialty_2" id="specialty_2" value="{{ old('specialty_2') }}"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('specialty_2') border-error-500 @enderror">
+                @error('specialty_2')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
+            </div>
         </div>
 
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
