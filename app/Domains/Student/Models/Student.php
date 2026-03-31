@@ -202,7 +202,7 @@ class Student extends Authenticatable
 
     public static function generateNumber(): string
     {
-        $maxNumber = self::query()->max('number');
+        $maxNumber = self::withTrashed()->max('number');
         $next = $maxNumber ? (int) $maxNumber + 1 : 1;
 
         return str_pad((string) $next, 6, '0', STR_PAD_LEFT);
