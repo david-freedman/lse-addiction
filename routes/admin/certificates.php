@@ -1,6 +1,8 @@
 <?php
 
 use App\Applications\Http\Admin\Certificate\Controllers\DownloadCertificateController;
+use App\Applications\Http\Admin\Certificate\Controllers\ExportCertificateListController;
+use App\Applications\Http\Admin\Certificate\Controllers\ExportStudentQuizAnswersController;
 use App\Applications\Http\Admin\Certificate\Controllers\GetCertificatesController;
 use App\Applications\Http\Admin\Certificate\Controllers\GetPendingCertificatesController;
 use App\Applications\Http\Admin\Certificate\Controllers\IssueCertificateController;
@@ -14,6 +16,8 @@ Route::middleware(['auth:admin', 'verified.user', 'role:admin,teacher'])->group(
     Route::prefix('certificates')->name('certificates.')->group(function () {
         Route::get('/', GetCertificatesController::class)->name('index');
         Route::get('/pending', GetPendingCertificatesController::class)->name('pending');
+        Route::get('/export/list', ExportCertificateListController::class)->name('export.list');
+        Route::get('/export/quiz-answers', ExportStudentQuizAnswersController::class)->name('export.quiz-answers');
         Route::get('/{certificate}/download', DownloadCertificateController::class)->name('download');
         Route::get('/{certificate}/preview', PreviewCertificateController::class)->name('preview');
         Route::post('/publish', PublishCertificatesController::class)->name('publish');
