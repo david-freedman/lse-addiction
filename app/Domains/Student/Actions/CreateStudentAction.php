@@ -23,8 +23,6 @@ class CreateStudentAction
             'patronymic' => $data->patronymic,
             'birthday' => $data->birthday,
             'city' => $data->city,
-            'specialty_1' => $data->specialty_1,
-            'specialty_2' => $data->specialty_2,
         ];
 
         if ($data->profile_photo) {

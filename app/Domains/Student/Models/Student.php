@@ -36,8 +36,6 @@ class Student extends Authenticatable
         'birthday',
         'city',
         'profile_photo',
-        'specialty_1',
-        'specialty_2',
         'email_verified_at',
         'phone_verified_at',
         'last_login_at',

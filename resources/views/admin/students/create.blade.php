@@ -64,43 +64,112 @@
                 @error('city')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
             </div>
 
-            <div>
-                <label for="specialty_1" class="mb-2 block text-sm font-medium text-gray-700">Спеціальність 1</label>
-                <input type="text" name="specialty_1" id="specialty_1" value="{{ old('specialty_1') }}"
-                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('specialty_1') border-error-500 @enderror">
-                @error('specialty_1')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
-            </div>
-
-            <div>
-                <label for="specialty_2" class="mb-2 block text-sm font-medium text-gray-700">Спеціальність 2</label>
-                <input type="text" name="specialty_2" id="specialty_2" value="{{ old('specialty_2') }}"
-                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('specialty_2') border-error-500 @enderror">
-                @error('specialty_2')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
-            </div>
         </div>
 
+        @if($fields->isNotEmpty())
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div>
-                <label for="institution" class="mb-2 block text-sm font-medium text-gray-700">Заклад навчання</label>
-                <input type="text" name="profile_fields[institution]" id="institution" value="{{ old('profile_fields.institution') }}"
-                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('profile_fields.institution') border-error-500 @enderror">
-                @error('profile_fields.institution')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
-            </div>
+            @foreach($fields as $field)
+            <div @if($field->type->value === 'tags') class="md:col-span-2" @endif>
+                <label for="field_{{ $field->key }}" class="mb-2 block text-sm font-medium text-gray-700">
+                    {{ $field->label }}
+                    @if($field->is_required)<span class="text-error-500">*</span>@endif
+                </label>
 
-            <div>
-                <label for="diploma_number" class="mb-2 block text-sm font-medium text-gray-700">Номер диплому</label>
-                <input type="text" name="profile_fields[diploma_number]" id="diploma_number" value="{{ old('profile_fields.diploma_number') }}"
-                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('profile_fields.diploma_number') border-error-500 @enderror">
-                @error('profile_fields.diploma_number')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
-            </div>
+                @switch($field->type->value)
+                    @case('select')
+                        @php
+                            $selectedValue = old('profile_fields.' . $field->key, '');
+                            $selectedLabel = $field->options[$selectedValue] ?? '';
+                        @endphp
+                        <div x-data="{ open: false, selected: '{{ $selectedValue }}', label: '{{ $selectedLabel }}' }"
+                             @click.away="open = false" class="relative">
+                            <input type="hidden" name="profile_fields[{{ $field->key }}]" :value="selected">
+                            <button type="button" @click="open = !open"
+                                class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-left text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('profile_fields.'.$field->key) border-error-500 @enderror">
+                                <span x-text="label || 'Оберіть варіант'" :class="{ 'text-gray-400': !selected }"></span>
+                                <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="open" x-cloak class="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+                                @if($field->options)
+                                    @foreach($field->options as $optionKey => $optionLabel)
+                                        <div class="cursor-pointer px-4 py-2 text-sm text-gray-900 hover:bg-gray-50"
+                                             @click="selected = '{{ $optionKey }}'; label = '{{ $optionLabel }}'; open = false">
+                                            {{ $optionLabel }}
+                                        </div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                        @break
 
-            <div>
-                <label for="workplace" class="mb-2 block text-sm font-medium text-gray-700">Місце роботи</label>
-                <input type="text" name="profile_fields[workplace]" id="workplace" value="{{ old('profile_fields.workplace') }}"
-                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('profile_fields.workplace') border-error-500 @enderror">
-                @error('profile_fields.workplace')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
+                    @case('date')
+                        <input type="text" x-datepicker
+                            name="profile_fields[{{ $field->key }}]"
+                            id="field_{{ $field->key }}"
+                            value="{{ old('profile_fields.' . $field->key) }}"
+                            {{ $field->is_required ? 'required' : '' }}
+                            class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('profile_fields.'.$field->key) border-error-500 @enderror">
+                        @break
+
+                    @case('number')
+                        <input type="number"
+                            name="profile_fields[{{ $field->key }}]"
+                            id="field_{{ $field->key }}"
+                            placeholder="Введіть {{ mb_strtolower($field->label) }}"
+                            value="{{ old('profile_fields.' . $field->key) }}"
+                            {{ $field->is_required ? 'required' : '' }}
+                            class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('profile_fields.'.$field->key) border-error-500 @enderror">
+                        @break
+
+                    @case('tags')
+                        @php
+                            $maxItems = $field->options['max_items'] ?? 5;
+                            $existingTags = old("profile_fields.{$field->key}", []);
+                            if (!is_array($existingTags)) { $existingTags = []; }
+                        @endphp
+                        <div x-data="adminTagInput(@js($existingTags), {{ $maxItems }}, '{{ $field->key }}')">
+                            <div class="flex flex-wrap gap-1.5 rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 @error('profile_fields.'.$field->key) border-error-500 @enderror"
+                                 @click="$refs.tagField.focus()">
+                                <template x-for="(tag, index) in tags" :key="index">
+                                    <span class="inline-flex items-center gap-1 rounded bg-brand-50 px-2 py-0.5 text-sm text-brand-700">
+                                        <span x-text="tag"></span>
+                                        <button type="button" @click.stop="removeTag(index)" class="text-brand-400 hover:text-red-500">&times;</button>
+                                    </span>
+                                </template>
+                                <input x-show="tags.length < maxItems"
+                                    x-ref="tagField"
+                                    x-model="input"
+                                    @keydown.enter.prevent="addTag()"
+                                    @keydown.,.prevent="addTag()"
+                                    @keydown.backspace="handleBackspace()"
+                                    type="text"
+                                    placeholder="Введіть і натисніть Enter"
+                                    class="min-w-[120px] flex-1 border-none bg-transparent text-sm outline-none">
+                            </div>
+                            <p class="mt-1 text-xs text-gray-500" x-text="`${tags.length}/${maxItems}`"></p>
+                            <template x-for="(tag, i) in tags" :key="'h-'+i">
+                                <input type="hidden" :name="`profile_fields[${fieldKey}][]`" :value="tag">
+                            </template>
+                        </div>
+                        @break
+
+                    @default
+                        <input type="text"
+                            name="profile_fields[{{ $field->key }}]"
+                            id="field_{{ $field->key }}"
+                            placeholder="Введіть {{ mb_strtolower($field->label) }}"
+                            value="{{ old('profile_fields.' . $field->key) }}"
+                            {{ $field->is_required ? 'required' : '' }}
+                            class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('profile_fields.'.$field->key) border-error-500 @enderror">
+                @endswitch
+
+                @error('profile_fields.' . $field->key)
+                    <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
+                @enderror
             </div>
+            @endforeach
         </div>
+        @endif
 
         <div>
             <label for="profile_photo" class="mb-2 block text-sm font-medium text-gray-700">Фото профілю</label>
@@ -134,4 +203,26 @@
         </div>
     </form>
 </div>
+@push('scripts')
+<script>
+function adminTagInput(initialTags, maxItems, fieldKey) {
+    return {
+        tags: initialTags || [],
+        input: '',
+        maxItems: maxItems,
+        fieldKey: fieldKey,
+        addTag() {
+            const tag = this.input.trim();
+            if (tag.length < 2 || tag.length > 50) { this.input = ''; return; }
+            if (this.tags.length >= this.maxItems) return;
+            if (this.tags.some(t => t.toLowerCase() === tag.toLowerCase())) { this.input = ''; return; }
+            this.tags.push(tag);
+            this.input = '';
+        },
+        removeTag(index) { this.tags.splice(index, 1); },
+        handleBackspace() { if (this.input === '' && this.tags.length > 0) this.tags.pop(); }
+    };
+}
+</script>
+@endpush
 @endsection

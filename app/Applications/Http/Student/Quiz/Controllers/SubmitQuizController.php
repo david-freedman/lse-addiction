@@ -88,7 +88,7 @@ final class SubmitQuizController
                 'student_id' => $student->id,
                 'student_email' => $student->email->value,
                 'attempt_id' => $attempt->id,
-                'score_percentage' => $result->score_percentage,
+                'score_percentage' => $result->scorePercentage(),
                 'passed' => $result->passed,
                 'lesson_type' => $lesson->type->value,
             ],
