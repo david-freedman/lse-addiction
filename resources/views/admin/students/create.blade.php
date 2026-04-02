@@ -64,18 +64,29 @@
                 @error('city')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
             </div>
 
-            <div>
-                <label for="specialty_1" class="mb-2 block text-sm font-medium text-gray-700">Спеціальність 1</label>
-                <input type="text" name="specialty_1" id="specialty_1" value="{{ old('specialty_1') }}"
-                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('specialty_1') border-error-500 @enderror">
-                @error('specialty_1')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
-            </div>
-
-            <div>
-                <label for="specialty_2" class="mb-2 block text-sm font-medium text-gray-700">Спеціальність 2</label>
-                <input type="text" name="specialty_2" id="specialty_2" value="{{ old('specialty_2') }}"
-                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('specialty_2') border-error-500 @enderror">
-                @error('specialty_2')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
+            <div class="md:col-span-2">
+                <label class="mb-2 block text-sm font-medium text-gray-700">Спеціальності</label>
+                <div x-data="{ open: false, selected: {{ json_encode(array_map('intval', old('specialty_ids', []))) }} }"
+                     @click.away="open = false" class="relative">
+                    <button type="button" @click="open = !open"
+                        class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-left text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('specialty_ids') border-error-500 @enderror">
+                        <span x-text="selected.length ? selected.length + ' обрано' : 'Оберіть спеціальності'"></span>
+                        <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div x-show="open" x-cloak class="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+                        @forelse($specialties as $specialty)
+                            <label class="flex cursor-pointer items-center gap-3 px-4 py-2 hover:bg-gray-50">
+                                <input type="checkbox" name="specialty_ids[]" value="{{ $specialty->id }}"
+                                    x-model.number="selected"
+                                    class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                                <span class="text-sm text-gray-900">{{ $specialty->name }}</span>
+                            </label>
+                        @empty
+                            <p class="px-4 py-2 text-sm text-gray-500">Немає спеціальностей. <a href="{{ route('admin.specialties.create') }}" class="text-brand-600 hover:underline">Додати</a>.</p>
+                        @endforelse
+                    </div>
+                </div>
+                @error('specialty_ids')<p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>@enderror
             </div>
         </div>
 

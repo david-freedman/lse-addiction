@@ -72,17 +72,14 @@
                     </div>
                 @endif
 
-                @if($student->specialty_1)
+                @if($student->specialties->isNotEmpty())
                     <div>
-                        <p class="text-xs font-medium text-gray-500">Спеціальність 1</p>
-                        <p class="text-sm text-gray-900">{{ $student->specialty_1 }}</p>
-                    </div>
-                @endif
-
-                @if($student->specialty_2)
-                    <div>
-                        <p class="text-xs font-medium text-gray-500">Спеціальність 2</p>
-                        <p class="text-sm text-gray-900">{{ $student->specialty_2 }}</p>
+                        <p class="text-xs font-medium text-gray-500">Спеціальності</p>
+                        <div class="mt-1 flex flex-wrap gap-1">
+                            @foreach($student->specialties as $specialty)
+                                <span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-teal-50 text-teal-700">{{ $specialty->name }}</span>
+                            @endforeach
+                        </div>
                     </div>
                 @endif
 

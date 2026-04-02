@@ -21,8 +21,6 @@ class UpdateStudentAction
             'surname' => $data->surname,
             'birthday' => $data->birthday,
             'city' => $data->city,
-            'specialty_1' => $data->specialty_1,
-            'specialty_2' => $data->specialty_2,
         ];
 
         if ($data->profile_photo) {
@@ -41,6 +39,8 @@ class UpdateStudentAction
         }
 
         $student->update($attributes);
+
+        $student->specialties()->sync($data->specialty_ids ?? []);
 
         LogActivityAction::execute(ActivityLogData::from([
             'subject_type' => ActivitySubject::Student,

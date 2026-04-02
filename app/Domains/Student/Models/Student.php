@@ -36,8 +36,6 @@ class Student extends Authenticatable
         'birthday',
         'city',
         'profile_photo',
-        'specialty_1',
-        'specialty_2',
         'email_verified_at',
         'phone_verified_at',
         'last_login_at',
@@ -109,6 +107,11 @@ class Student extends Authenticatable
     public function consents(): HasMany
     {
         return $this->hasMany(StudentConsent::class);
+    }
+
+    public function specialties(): BelongsToMany
+    {
+        return $this->belongsToMany(Specialty::class, 'student_specialty');
     }
 
     public function webinars(): BelongsToMany

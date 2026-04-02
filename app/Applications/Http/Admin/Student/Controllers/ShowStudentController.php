@@ -10,7 +10,7 @@ final class ShowStudentController
 {
     public function __invoke(int $id): View
     {
-        $student = Student::withTrashed()->findOrFail($id);
+        $student = Student::withTrashed()->with('specialties')->findOrFail($id);
 
         $viewModel = new StudentDetailViewModel($student);
 
