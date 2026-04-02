@@ -6,6 +6,7 @@ use App\Domains\ActivityLog\Actions\LogActivityAction;
 use App\Domains\ActivityLog\Data\ActivityLogData;
 use App\Domains\ActivityLog\Enums\ActivitySubject;
 use App\Domains\ActivityLog\Enums\ActivityType;
+use App\Domains\Student\Actions\SaveStudentProfileFieldValuesAction;
 use App\Domains\Student\Data\UpdateStudentData;
 use App\Domains\Student\Models\Student;
 use Illuminate\Support\Facades\Storage;
@@ -40,7 +41,9 @@ class UpdateStudentAction
 
         $student->update($attributes);
 
-        $student->specialties()->sync($data->specialty_ids ?? []);
+        if ($data->profile_fields !== null) {
+            SaveStudentProfileFieldValuesAction::execute($student, $data->profile_fields);
+        }
 
         LogActivityAction::execute(ActivityLogData::from([
             'subject_type' => ActivitySubject::Student,

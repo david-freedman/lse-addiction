@@ -46,9 +46,6 @@ class UpdateStudentData extends Data
         #[Nullable, StringType, Max(100)]
         public readonly ?string $city,
 
-        #[Nullable]
-        public readonly ?array $specialty_ids,
-
         #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png', 'webp']), Max(5120)]
         public readonly ?UploadedFile $profile_photo,
 
@@ -57,6 +54,9 @@ class UpdateStudentData extends Data
 
         #[Nullable, BooleanType]
         public readonly ?bool $phone_verified,
+
+        #[Nullable]
+        public readonly ?array $profile_fields,
     ) {}
 
     public static function rules(): array
@@ -75,8 +75,7 @@ class UpdateStudentData extends Data
                 Rule::unique('students', 'phone')->ignore(request()->route('student')),
             ],
             'birthday' => ['nullable', 'date', 'date_format:d.m.Y', 'before:today'],
-            'specialty_ids' => ['nullable', 'array'],
-            'specialty_ids.*' => ['nullable', 'integer', 'exists:specialties,id'],
+            'profile_fields' => ['nullable', 'array'],
         ];
     }
 }

@@ -39,10 +39,6 @@ class CreateStudentAction
 
         $student = Student::create($attributes);
 
-        if ($data->specialty_ids) {
-            $student->specialties()->sync($data->specialty_ids);
-        }
-
         if ($data->profile_fields) {
             SaveStudentProfileFieldValuesAction::execute($student, $data->profile_fields);
         }

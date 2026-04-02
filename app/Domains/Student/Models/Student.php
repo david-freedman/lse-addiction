@@ -109,11 +109,6 @@ class Student extends Authenticatable
         return $this->hasMany(StudentConsent::class);
     }
 
-    public function specialties(): BelongsToMany
-    {
-        return $this->belongsToMany(Specialty::class, 'student_specialty');
-    }
-
     public function webinars(): BelongsToMany
     {
         return $this->belongsToMany(Webinar::class, 'webinar_student')

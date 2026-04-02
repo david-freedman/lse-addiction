@@ -42,5 +42,4 @@ Route::prefix('admin')->name('admin.')->group(function () {
     require __DIR__.'/admin/quizzes.php';
     require __DIR__.'/admin/homework.php';
     require __DIR__.'/admin/comments.php';
-    require __DIR__.'/admin/specialties.php';
 });
