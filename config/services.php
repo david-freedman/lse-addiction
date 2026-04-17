@@ -58,4 +58,8 @@ return [
         ],
     ],
 
+    'wp_sync' => [
+        'secret' => env('WP_SYNC_SECRET', ''),
+    ],
+
 ];
