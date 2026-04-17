@@ -35,6 +35,11 @@ return [
         ],
     ],
 
+    'lse_wp' => [
+        'secret' => env('LSE_WP_SECRET'),
+        'url'    => env('LSE_WP_URL', 'https://lse.com.ua/wp-json/lse/v1/courses/sync'),
+    ],
+
     'sendpulse' => [
         'event_url' => env('SENDPULSE_EVENT_URL', 'https://events.sendpulse.com/events/id/f01bde8af10944ffd2227377cfa782bd/9258227'),
     ],
