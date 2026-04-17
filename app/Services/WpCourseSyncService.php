@@ -53,14 +53,16 @@ class WpCourseSyncService
             'old_price'               => $course->old_price,
             'discount_percentage'     => $course->discount_percentage,
             'status'                  => $course->status->value,
-            'type'                    => $course->type?->value,
-            'label'                   => $course->label,
+            'type'                    => $course->type?->label(),
+            'label'                   => $course->label ? \App\Domains\Course\Enums\CourseLabel::tryFrom($course->label)?->label() : null,
             'starts_at'               => $course->starts_at?->toIso8601String(),
             'registration_starts_at'  => $course->registration_starts_at?->toIso8601String(),
             'registration_ends_at'    => $course->registration_ends_at?->toIso8601String(),
             'banner_url'              => $course->banner_url,
             'teacher_name'            => $course->teacher?->full_name,
             'teacher_position'        => $course->teacher?->position,
+            'teacher_description'     => $course->teacher?->description,
+            'teacher_avatar_url'      => $course->teacher?->avatar_url,
             'tags'                    => $course->tags->pluck('name')->all(),
         ];
     }
