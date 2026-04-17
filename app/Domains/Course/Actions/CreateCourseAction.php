@@ -9,6 +9,7 @@ use App\Domains\ActivityLog\Enums\ActivityType;
 use App\Domains\Course\Data\CreateCourseData;
 use App\Domains\Course\Models\Course;
 use App\Domains\Course\Models\CourseTag;
+use App\Jobs\SyncCourseToWpJob;
 use Illuminate\Support\Str;
 
 class CreateCourseAction
@@ -40,6 +41,7 @@ class CreateCourseAction
             'registration_ends_at' => $data->registration_ends_at,
             'label' => $data->label,
             'requires_certificate_approval' => $data->requires_certificate_approval,
+            'sync_to_wp' => $data->sync_to_wp,
         ]);
 
         if ($data->tags) {
@@ -74,6 +76,10 @@ class CreateCourseAction
             ],
             'course_id' => $course->id,
         ]));
+
+        if ($data->sync_to_wp) {
+            SyncCourseToWpJob::dispatch($course);
+        }
 
         return $course;
     }

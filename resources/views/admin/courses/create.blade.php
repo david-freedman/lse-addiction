@@ -339,6 +339,32 @@
             </div>
         </div>
 
+        <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <div class="flex items-start gap-3">
+                <input
+                    type="hidden"
+                    name="sync_to_wp"
+                    value="0"
+                >
+                <input
+                    type="checkbox"
+                    name="sync_to_wp"
+                    id="sync_to_wp"
+                    value="1"
+                    {{ old('sync_to_wp') ? 'checked' : '' }}
+                    class="mt-1 rounded border-gray-300 text-brand-500 focus:ring-brand-500"
+                >
+                <div>
+                    <label for="sync_to_wp" class="block text-sm font-medium text-gray-700">
+                        Синхронізувати з сайтом (WP)
+                    </label>
+                    <p class="mt-0.5 text-xs text-gray-500">
+                        Якщо увімкнено, курс буде синхронізований із WordPress-сайтом — створений або оновлений там автоматично.
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <div class="flex items-center justify-between border-t border-gray-200 pt-5">
             <a href="{{ route('admin.courses.index') }}" class="rounded-lg px-5 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100">
                 Скасувати

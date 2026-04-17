@@ -10,6 +10,7 @@ use App\Domains\Certificate\Actions\AutoPublishPendingCertificatesAction;
 use App\Domains\Course\Data\UpdateCourseData;
 use App\Domains\Course\Models\Course;
 use App\Domains\Course\Models\CourseTag;
+use App\Jobs\SyncCourseToWpJob;
 use Illuminate\Support\Facades\Storage;
 
 class UpdateCourseAction
@@ -62,6 +63,8 @@ class UpdateCourseAction
             $updateData['requires_certificate_approval'] = $data->requires_certificate_approval;
         }
 
+        $updateData['sync_to_wp'] = $data->sync_to_wp;
+
         $course->update($updateData);
 
         $newTagNames = [];
@@ -110,7 +113,13 @@ class UpdateCourseAction
             }
         }
 
-        return $course->fresh();
+        $fresh = $course->fresh();
+
+        if ($data->sync_to_wp) {
+            SyncCourseToWpJob::dispatch($fresh);
+        }
+
+        return $fresh;
     }
 
     private static function computeChanges(array $oldValues, array $newValues): array
