@@ -47,6 +47,7 @@ class Course extends Model
         'label',
         'is_sequential',
         'requires_certificate_approval',
+        'sync_to_wp',
     ];
 
     protected $casts = [
@@ -59,6 +60,7 @@ class Course extends Model
         'status' => CourseStatus::class,
         'is_sequential' => 'boolean',
         'requires_certificate_approval' => 'boolean',
+        'sync_to_wp' => 'boolean',
     ];
 
     public function teacher(): BelongsTo

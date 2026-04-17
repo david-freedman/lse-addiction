@@ -66,6 +66,8 @@ class CreateCourseData extends Data
         public readonly ?string $label,
 
         public readonly bool $requires_certificate_approval = false,
+
+        public readonly bool $sync_to_wp = false,
     ) {}
 
     public static function rules(): array

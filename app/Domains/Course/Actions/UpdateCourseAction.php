@@ -62,6 +62,8 @@ class UpdateCourseAction
             $updateData['requires_certificate_approval'] = $data->requires_certificate_approval;
         }
 
+        $updateData['sync_to_wp'] = $data->sync_to_wp;
+
         $course->update($updateData);
 
         $newTagNames = [];

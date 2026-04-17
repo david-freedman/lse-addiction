@@ -40,6 +40,7 @@ class CreateCourseAction
             'registration_ends_at' => $data->registration_ends_at,
             'label' => $data->label,
             'requires_certificate_approval' => $data->requires_certificate_approval,
+            'sync_to_wp' => $data->sync_to_wp,
         ]);
 
         if ($data->tags) {

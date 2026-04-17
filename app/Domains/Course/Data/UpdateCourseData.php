@@ -69,6 +69,8 @@ class UpdateCourseData extends Data
 
         #[Nullable, BooleanType]
         public readonly ?bool $requires_certificate_approval = null,
+
+        public readonly bool $sync_to_wp = false,
     ) {}
 
     public static function rules(): array
