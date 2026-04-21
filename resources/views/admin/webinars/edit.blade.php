@@ -12,6 +12,22 @@
         @csrf
         @method('PATCH')
 
+        <div x-data="{ copied: false }">
+            <label class="mb-2 block text-sm font-medium text-gray-700">Зовнішній ID вебінару</label>
+            <div class="relative">
+                <input
+                    type="text"
+                    value="w{{ $webinar->id }}"
+                    readonly
+                    @click="navigator.clipboard.writeText('w{{ $webinar->id }}'); copied = true; setTimeout(() => copied = false, 2000)"
+                    class="w-full cursor-pointer rounded-lg border border-gray-200 bg-gray-100 px-4 py-3 text-gray-500 outline-none select-all"
+                    title="Натисніть, щоб скопіювати"
+                >
+                <span x-show="copied" x-transition class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-green-600 font-medium">Скопійовано!</span>
+            </div>
+            <p class="mt-1 text-xs text-gray-500">Натисніть на поле, щоб скопіювати ідентифікатор (використовується при реєстрації з WP)</p>
+        </div>
+
         <div>
             <label for="title" class="mb-2 block text-sm font-medium text-gray-700">Назва вебінару <span class="text-error-500">*</span></label>
             <input

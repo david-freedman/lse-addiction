@@ -43,7 +43,7 @@ class WpCourseSyncService
     private function buildPayload(Course $course): array
     {
         return [
-            'external_id'             => $course->number,
+            'external_id'             => 'c' . $course->id,
             'name'                    => $course->name,
             'slug'                    => $course->slug,
             'number'                  => $course->number,
