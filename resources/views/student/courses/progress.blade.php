@@ -17,7 +17,7 @@
         <p class="mb-6 text-sm text-gray-500">Для отримання доступу до матеріалів курсу необхідно здійснити оплату.</p>
         <form method="POST" action="{{ route('student.catalog.purchase', $course) }}">
             @csrf
-            <button type="submit" class="w-full inline-flex items-center hover:bg-amber-200 duration-300 transition-all justify-center gap-2 bg-amber-100 text-amber-800 font-semibold py-3 px-6 rounded-lg text-center">
+            <button type="submit" class="w-full inline-flex items-center hover:bg-amber-200 duration-300 transition-all cursor-pointer justify-center gap-2 bg-amber-100 text-amber-800 font-semibold py-3 px-6 rounded-lg text-center">
                 Перейти до оплати
             </button>
         </form>
