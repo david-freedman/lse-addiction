@@ -3,6 +3,7 @@
 namespace App\Applications\Http\Student\Auth\Controllers;
 
 use App\Domains\Student\Actions\AuthenticateStudentAction;
+use App\Domains\Student\Actions\EnrollFromSessionAction;
 use App\Domains\Student\Actions\VerifyCodeAction;
 use App\Domains\Student\Data\VerifyCodeData;
 use Illuminate\Http\RedirectResponse;
@@ -28,6 +29,7 @@ final class VerifyLoginController
         }
 
         AuthenticateStudentAction::execute($student);
+        EnrollFromSessionAction::execute($student);
 
         session()->forget(['login_contact', 'login_type']);
 

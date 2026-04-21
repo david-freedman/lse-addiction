@@ -3,6 +3,7 @@
 namespace App\Applications\Http\Student\Auth\Controllers;
 
 use App\Domains\Student\Actions\AuthenticateStudentAction;
+use App\Domains\Student\Actions\EnrollFromSessionAction;
 use App\Domains\Student\Actions\VerifyCodeAction;
 use App\Domains\Student\Data\VerifyCodeData;
 use Illuminate\Http\RedirectResponse;
@@ -27,6 +28,7 @@ final class VerifyCompleteVerificationController
         }
 
         AuthenticateStudentAction::execute($student);
+        EnrollFromSessionAction::execute($student);
         session()->forget('verification_student_id');
 
         return redirect()->route('student.dashboard');
