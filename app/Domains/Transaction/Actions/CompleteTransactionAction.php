@@ -6,6 +6,8 @@ use App\Domains\ActivityLog\Actions\LogActivityAction;
 use App\Domains\ActivityLog\Data\ActivityLogData;
 use App\Domains\ActivityLog\Enums\ActivitySubject;
 use App\Domains\ActivityLog\Enums\ActivityType;
+use App\Domains\Course\Enums\CourseStudentStatus;
+use App\Domains\Course\Models\Course;
 use App\Domains\Transaction\Enums\TransactionStatus;
 use App\Domains\Transaction\Models\Transaction;
 
@@ -21,6 +23,24 @@ class CompleteTransactionAction
             'status' => TransactionStatus::Completed,
             'completed_at' => now(),
         ]);
+
+        if ($transaction->purchasable_type === Course::class) {
+            $student = $transaction->student;
+            $courseId = $transaction->purchasable_id;
+
+            $enrolled = $student->courses()->where('course_id', $courseId)->exists();
+
+            if ($enrolled) {
+                $student->courses()->updateExistingPivot($courseId, [
+                    'status' => CourseStudentStatus::Active->value,
+                ]);
+            } else {
+                $student->courses()->attach($courseId, [
+                    'status'      => CourseStudentStatus::Active->value,
+                    'enrolled_at' => now(),
+                ]);
+            }
+        }
 
         LogActivityAction::execute(ActivityLogData::from([
             'subject_type' => ActivitySubject::Transaction,

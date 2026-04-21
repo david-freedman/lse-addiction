@@ -168,6 +168,14 @@ class Student extends Authenticatable
 
     public function hasAccessToCourse(Course $course): bool
     {
+        return $this->courses()
+            ->where('course_id', $course->id)
+            ->wherePivot('status', \App\Domains\Course\Enums\CourseStudentStatus::Active->value)
+            ->exists();
+    }
+
+    public function isEnrolledInCourse(Course $course): bool
+    {
         return $this->courses()->where('course_id', $course->id)->exists();
     }
 
