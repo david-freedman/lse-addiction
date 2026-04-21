@@ -5,6 +5,7 @@ namespace App\Applications\Http\Api\CourseRegistration\Controllers;
 use App\Domains\Course\Enums\CourseStudentStatus;
 use App\Domains\Course\Models\Course;
 use App\Domains\Student\Models\Student;
+use App\Domains\Webinar\Models\Webinar;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -14,7 +15,7 @@ class CourseRegistrationController
     public function __invoke(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'course_id'               => ['required', 'integer'],
+            'external_id'             => ['required', 'string', 'regex:/^[cw]\d+$/'],
             'email'                   => ['required', 'email'],
             'first_name'              => ['required', 'string'],
             'last_name'               => ['required', 'string'],
@@ -34,18 +35,31 @@ class CourseRegistrationController
             'position'                => ['nullable', 'string'],
         ]);
 
+        $externalId = $validated['external_id'];
+        $prefix = $externalId[0];
+        $id = (int) substr($externalId, 1);
+
         Log::info('[WP Registration] Incoming registration', [
-            'course_id' => $validated['course_id'],
-            'email'     => $validated['email'],
+            'external_id' => $externalId,
+            'email'       => $validated['email'],
         ]);
 
-        $course = Course::find($validated['course_id']);
+        $student = $this->findOrCreateStudent($validated);
+
+        if ($prefix === 'c') {
+            return $this->registerForCourse($id, $student, $validated);
+        }
+
+        return $this->registerForWebinar($id, $student, $validated);
+    }
+
+    private function registerForCourse(int $courseId, Student $student, array $data): JsonResponse
+    {
+        $course = Course::find($courseId);
 
         if (! $course) {
             return response()->json(['error' => 'Course not found'], 404);
         }
-
-        $student = $this->findOrCreateStudent($validated);
 
         if ($student->courses()->where('course_id', $course->id)->exists()) {
             return response()->json([
@@ -55,20 +69,7 @@ class CourseRegistrationController
             ]);
         }
 
-        $metadata = array_filter([
-            'full_name'               => $validated['full_name'] ?? null,
-            'education_level'         => $validated['education_level'] ?? null,
-            'university'              => $validated['university'] ?? null,
-            'faculty'                 => $validated['faculty'] ?? null,
-            'graduation_year'         => $validated['graduation_year'] ?? null,
-            'speciality'              => $validated['speciality'] ?? null,
-            'additional_specialities' => $validated['additional_specialities'] ?? null,
-            'diploma_series'          => $validated['diploma_series'] ?? null,
-            'diploma_number'          => $validated['diploma_number'] ?? null,
-            'workplace'               => $validated['workplace'] ?? null,
-            'position'                => $validated['position'] ?? null,
-            'source'                  => 'wp_registration',
-        ], fn ($v) => $v !== null);
+        $metadata = $this->buildMetadata($data);
 
         $student->courses()->attach($course->id, [
             'status'      => CourseStudentStatus::Active->value,
@@ -83,11 +84,54 @@ class CourseRegistrationController
         ]);
     }
 
+    private function registerForWebinar(int $webinarId, Student $student, array $data): JsonResponse
+    {
+        $webinar = Webinar::find($webinarId);
+
+        if (! $webinar) {
+            return response()->json(['error' => 'Webinar not found'], 404);
+        }
+
+        if ($webinar->students()->where('student_id', $student->id)->whereNull('webinar_student.cancelled_at')->exists()) {
+            return response()->json([
+                'success'         => true,
+                'status'          => 'already_registered',
+                'registration_id' => $student->id,
+            ]);
+        }
+
+        $webinar->students()->attach($student->id, [
+            'registered_at' => now(),
+        ]);
+
+        return response()->json([
+            'success'         => true,
+            'status'          => 'registered',
+            'registration_id' => $student->id,
+        ]);
+    }
+
+    private function buildMetadata(array $data): array
+    {
+        return array_filter([
+            'full_name'               => $data['full_name'] ?? null,
+            'education_level'         => $data['education_level'] ?? null,
+            'university'              => $data['university'] ?? null,
+            'faculty'                 => $data['faculty'] ?? null,
+            'graduation_year'         => $data['graduation_year'] ?? null,
+            'speciality'              => $data['speciality'] ?? null,
+            'additional_specialities' => $data['additional_specialities'] ?? null,
+            'diploma_series'          => $data['diploma_series'] ?? null,
+            'diploma_number'          => $data['diploma_number'] ?? null,
+            'workplace'               => $data['workplace'] ?? null,
+            'position'                => $data['position'] ?? null,
+            'source'                  => 'wp_registration',
+        ], fn ($v) => $v !== null);
+    }
+
     private function findOrCreateStudent(array $data): Student
     {
-        $email = $data['email'];
-
-        $student = Student::where('email', $email)->first();
+        $student = Student::where('email', $data['email'])->first();
 
         if ($student) {
             return $student;
@@ -97,7 +141,7 @@ class CourseRegistrationController
 
         return Student::create([
             'number'   => Student::generateNumber(),
-            'email'    => $email,
+            'email'    => $data['email'],
             'name'     => $data['first_name'],
             'surname'  => $data['last_name'],
             'phone'    => $phone,
@@ -106,9 +150,6 @@ class CourseRegistrationController
         ]);
     }
 
-    /**
-     * Normalize a phone string to +380XXXXXXXXX format, or return null if not possible.
-     */
     private function normalizePhone(?string $phone): ?string
     {
         if ($phone === null) {
@@ -117,7 +158,6 @@ class CourseRegistrationController
 
         $digits = preg_replace('/\D/', '', $phone);
 
-        // Handle leading "380" without "+"
         if (strlen($digits) === 12 && str_starts_with($digits, '380')) {
             $normalized = '+' . $digits;
             if (preg_match('/^\+380\d{9}$/', $normalized)) {
