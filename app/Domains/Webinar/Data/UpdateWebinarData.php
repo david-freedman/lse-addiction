@@ -4,6 +4,7 @@ namespace App\Domains\Webinar\Data;
 
 use App\Domains\Webinar\Enums\WebinarStatus;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Spatie\LaravelData\Attributes\Validation\Image;
 use Spatie\LaravelData\Attributes\Validation\Max;
@@ -21,6 +22,9 @@ class UpdateWebinarData extends Data
     public function __construct(
         #[Required, StringType, Min(3), Max(255)]
         public readonly string $title,
+
+        #[Required, StringType]
+        public readonly string $number,
 
         #[Nullable, StringType, Max(255)]
         public readonly ?string $slug,
@@ -59,11 +63,14 @@ class UpdateWebinarData extends Data
         public readonly ?float $old_price,
 
         public readonly ?int $webinar_id = null,
+
+        public readonly bool $sync_to_wp = false,
     ) {}
 
     public static function rules(): array
     {
         return [
+            'number' => ['required', 'digits:7', Rule::unique('webinars', 'number')->ignore(request()->route('webinar')?->id)],
             'status' => ['required', new Enum(WebinarStatus::class)],
             'teacher_id' => ['required', 'integer', 'exists:teachers,id'],
             'starts_at' => ['required', 'date', 'date_format:d.m.Y H:i'],

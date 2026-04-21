@@ -23,6 +23,7 @@ class Webinar extends Model
     protected $fillable = [
         'title',
         'slug',
+        'number',
         'description',
         'banner',
         'teacher_id',
@@ -34,6 +35,7 @@ class Webinar extends Model
         'max_participants',
         'price',
         'old_price',
+        'sync_to_wp',
     ];
 
     protected function casts(): array
@@ -45,6 +47,7 @@ class Webinar extends Model
             'max_participants' => 'integer',
             'price' => 'decimal:2',
             'old_price' => 'decimal:2',
+            'sync_to_wp' => 'boolean',
         ];
     }
 
