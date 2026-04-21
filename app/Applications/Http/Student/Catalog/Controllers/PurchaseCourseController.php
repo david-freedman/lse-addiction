@@ -16,10 +16,10 @@ final class PurchaseCourseController
     {
         $student = auth()->user();
 
-        if ($course->hasStudent($student)) {
+        if ($student->hasAccessToCourse($course)) {
             return redirect()
                 ->back()
-                ->with('error', 'Ви вже придбали цей курс');
+                ->with('error', 'Ви вже маєте доступ до цього курсу');
         }
 
         if (!$course->isActive()) {

@@ -3,7 +3,28 @@
 @section('title', $viewModel->courseName())
 
 @section('content')
-<div>
+@if($requiresPayment ?? false)
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="mx-4 w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl text-center">
+        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
+            <svg class="h-8 w-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+        </div>
+        <h2 class="mb-2 text-xl font-bold text-gray-900">Потрібна оплата</h2>
+        <p class="mb-2 text-gray-600">Ви зареєстровані на курс</p>
+        <p class="mb-6 text-lg font-semibold text-gray-900">{{ $viewModel->courseName() }}</p>
+        <p class="mb-6 text-sm text-gray-500">Для отримання доступу до матеріалів курсу необхідно здійснити оплату.</p>
+        <form method="POST" action="{{ route('student.catalog.purchase', $viewModel->courseSlug()) }}">
+            @csrf
+            <button type="submit" class="w-full rounded-xl bg-brand-500 px-6 py-3 text-base font-semibold text-white transition hover:bg-brand-600 focus:outline-none focus:ring-4 focus:ring-brand-500/20">
+                Перейти до оплати
+            </button>
+        </form>
+    </div>
+</div>
+@endif
+<div class="{{ ($requiresPayment ?? false) ? 'pointer-events-none select-none blur-sm' : '' }}">
     <div class="mb-6">
         <x-breadcrumbs :items="[
             ['title' => 'Мої курси', 'url' => route('student.my-courses')],
