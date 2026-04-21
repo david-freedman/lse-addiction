@@ -3,7 +3,28 @@
 @section('title', $webinar->title)
 
 @section('content')
-<div class="space-y-6">
+@if($requiresPayment ?? false)
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="mx-4 w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl text-center">
+        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
+            <svg class="h-8 w-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+        </div>
+        <h2 class="mb-2 text-xl font-bold text-gray-900">Потрібна оплата</h2>
+        <p class="mb-2 text-gray-600">Ви зареєстровані на вебінар</p>
+        <p class="mb-6 text-lg font-semibold text-gray-900">{{ $webinar->title }}</p>
+        <p class="mb-6 text-sm text-gray-500">Для отримання доступу до вебінару необхідно здійснити оплату.</p>
+        <form method="POST" action="{{ route('student.webinar.register', $webinar) }}">
+            @csrf
+            <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-semibold py-3 px-6 rounded-lg transition-all duration-300 cursor-pointer">
+                Перейти до оплати
+            </button>
+        </form>
+    </div>
+</div>
+@endif
+<div class="{{ ($requiresPayment ?? false) ? 'pointer-events-none select-none blur-sm' : '' }} space-y-6">
     <a href="{{ route('student.dashboard') }}" class="inline-flex items-center gap-2 text-gray-500 hover:text-teal-500 font-medium transition">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
