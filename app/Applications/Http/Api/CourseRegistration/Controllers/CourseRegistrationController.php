@@ -140,15 +140,13 @@ class CourseRegistrationController
         $phone = $this->normalizePhone($data['phone'] ?? null);
 
         return Student::create([
-            'number'            => Student::generateNumber(),
-            'email'             => $data['email'],
-            'name'              => $data['first_name'],
-            'surname'           => $data['last_name'],
-            'phone'             => $phone,
-            'birthday'          => $data['birth_date'] ?? null,
-            'city'              => $data['city'] ?? null,
-            'email_verified_at' => now(),
-            'phone_verified_at' => $phone ? now() : null,
+            'number'   => Student::generateNumber(),
+            'email'    => $data['email'],
+            'name'     => $data['first_name'],
+            'surname'  => $data['last_name'],
+            'phone'    => $phone,
+            'birthday' => $data['birth_date'] ?? null,
+            'city'     => $data['city'] ?? null,
         ]);
     }
 
