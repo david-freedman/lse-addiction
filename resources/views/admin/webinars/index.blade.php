@@ -106,6 +106,7 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Номер</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Назва</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Викладач</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата/Час</th>
@@ -118,6 +119,9 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($viewModel->webinars() as $webinar)
                         <tr class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600">
+                                {{ $webinar->number }}
+                            </td>
                             <td class="px-6 py-4">
                                 <a href="{{ route('admin.webinars.show', $webinar) }}" class="font-medium text-brand-600 hover:text-brand-700 hover:underline">
                                     {{ $webinar->title }}
