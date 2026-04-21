@@ -47,8 +47,12 @@ class EnrollFromSessionAction
             return;
         }
 
+        $status = $course->price > 0
+            ? CourseStudentStatus::Inactive
+            : CourseStudentStatus::Active;
+
         $student->courses()->attach($course->id, [
-            'status'      => CourseStudentStatus::Active->value,
+            'status'      => $status->value,
             'enrolled_at' => now(),
             'notes'       => json_encode(['source' => 'wp_redirect'], JSON_UNESCAPED_UNICODE),
         ]);
