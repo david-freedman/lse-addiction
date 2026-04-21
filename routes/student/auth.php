@@ -1,5 +1,6 @@
 <?php
 
+use App\Applications\Http\Student\Auth\Controllers\EnrollAndRedirectController;
 use App\Applications\Http\Student\Auth\Controllers\LogoutController;
 use App\Applications\Http\Student\Auth\Controllers\ResendLoginCodeController;
 use App\Applications\Http\Student\Auth\Controllers\ResendVerificationCodeController;
@@ -10,6 +11,8 @@ use App\Applications\Http\Student\Auth\Controllers\ShowVerifyLoginController;
 use App\Applications\Http\Student\Auth\Controllers\VerifyCompleteVerificationController;
 use App\Applications\Http\Student\Auth\Controllers\VerifyLoginController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('enroll', EnrollAndRedirectController::class)->name('enroll');
 
 Route::middleware('guest')->group(function () {
     Route::get('login', ShowLoginFormController::class)->name('login');

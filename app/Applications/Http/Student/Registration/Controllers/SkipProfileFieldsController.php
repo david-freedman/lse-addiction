@@ -3,6 +3,7 @@
 namespace App\Applications\Http\Student\Registration\Controllers;
 
 use App\Domains\Student\Actions\AuthenticateStudentAction;
+use App\Domains\Student\Actions\EnrollFromSessionAction;
 use App\Domains\Student\Actions\StoreStudentConsentsAction;
 use App\Domains\Student\Models\Student;
 use Illuminate\Http\RedirectResponse;
@@ -37,6 +38,7 @@ final class SkipProfileFieldsController
         StoreStudentConsentsAction::execute($student, $request->ip());
 
         AuthenticateStudentAction::execute($student);
+        EnrollFromSessionAction::execute($student);
 
         session()->forget(['student_id', 'student_email', 'student_phone', 'phone_code_expires_at', 'email_code_expires_at']);
 
