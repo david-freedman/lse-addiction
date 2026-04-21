@@ -32,6 +32,7 @@ class CreateWebinarAction
         $webinar = Webinar::create([
             'title' => $data->title,
             'slug' => $slug,
+            'number' => $data->number,
             'description' => $data->description,
             'banner' => $bannerPath,
             'teacher_id' => $data->teacher_id,

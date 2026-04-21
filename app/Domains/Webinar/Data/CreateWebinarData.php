@@ -22,6 +22,9 @@ class CreateWebinarData extends Data
         #[Required, StringType, Min(3), Max(255)]
         public readonly string $title,
 
+        #[Required, StringType]
+        public readonly string $number,
+
         #[Nullable, StringType, Max(255)]
         public readonly ?string $slug,
 
@@ -64,6 +67,7 @@ class CreateWebinarData extends Data
     public static function rules(): array
     {
         return [
+            'number' => ['required', 'digits:7', 'unique:webinars,number'],
             'status' => ['required', new Enum(WebinarStatus::class)],
             'teacher_id' => ['required', 'integer', 'exists:teachers,id'],
             'starts_at' => ['required', 'date', 'date_format:d.m.Y H:i'],

@@ -23,6 +23,7 @@ class Webinar extends Model
     protected $fillable = [
         'title',
         'slug',
+        'number',
         'description',
         'banner',
         'teacher_id',

@@ -44,7 +44,7 @@ class WpWebinarSyncService
     {
         return [
             'resource_type'       => 'webinar',
-            'external_id'         => $webinar->id,
+            'external_id'         => $webinar->number,
             'name'                => $webinar->title,
             'slug'                => $webinar->slug,
             'description'         => $webinar->description,

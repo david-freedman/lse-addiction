@@ -19,6 +19,7 @@ class UpdateWebinarAction
     {
         $updateData = [
             'title' => $data->title,
+            'number' => $data->number,
             'description' => $data->description,
             'teacher_id' => $data->teacher_id,
             'starts_at' => Carbon::createFromFormat('d.m.Y H:i', $data->starts_at),
