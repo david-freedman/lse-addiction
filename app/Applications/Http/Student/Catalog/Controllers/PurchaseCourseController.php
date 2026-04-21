@@ -22,16 +22,20 @@ final class PurchaseCourseController
                 ->with('error', 'Ви вже маєте доступ до цього курсу');
         }
 
-        if (!$course->isActive()) {
-            return redirect()
-                ->back()
-                ->with('error', 'Цей курс недоступний для покупки');
-        }
+        $alreadyEnrolled = $course->hasStudent($student);
 
-        if (!$course->isAvailableByDate()) {
-            return redirect()
-                ->back()
-                ->with('error', 'Цей курс ще не доступний для покупки');
+        if (!$alreadyEnrolled) {
+            if (!$course->isActive()) {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Цей курс недоступний для покупки');
+            }
+
+            if (!$course->isAvailableByDate()) {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Цей курс ще не доступний для покупки');
+            }
         }
 
         $existingTransaction = Transaction::where('student_id', $student->id)
