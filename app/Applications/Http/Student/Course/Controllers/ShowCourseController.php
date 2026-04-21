@@ -40,7 +40,7 @@ final class ShowCourseController
 
             $viewModel = new CourseProgressViewModel($course, $student);
 
-            return view('student.courses.progress', compact('viewModel', 'requiresPayment'));
+            return view('student.courses.progress', compact('viewModel', 'requiresPayment', 'course'));
         }
 
         $course->load(['teacher', 'author', 'tags']);

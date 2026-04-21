@@ -15,7 +15,7 @@
         <p class="mb-2 text-gray-600">Ви зареєстровані на курс</p>
         <p class="mb-6 text-lg font-semibold text-gray-900">{{ $viewModel->courseName() }}</p>
         <p class="mb-6 text-sm text-gray-500">Для отримання доступу до матеріалів курсу необхідно здійснити оплату.</p>
-        <form method="POST" action="{{ route('student.catalog.purchase', $viewModel->courseSlug()) }}">
+        <form method="POST" action="{{ route('student.catalog.purchase', $course) }}">
             @csrf
             <button type="submit" class="w-full rounded-xl bg-brand-500 px-6 py-3 text-base font-semibold text-white transition hover:bg-brand-600 focus:outline-none focus:ring-4 focus:ring-brand-500/20">
                 Перейти до оплати
