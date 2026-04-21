@@ -18,11 +18,14 @@ class CompleteWebinarRegistrationAction
         $student = $transaction->student;
 
         if ($webinar->isRegistered($student)) {
+            $webinar->students()->updateExistingPivot($student->id, [
+                'transaction_id' => $transaction->id,
+            ]);
             return;
         }
 
         $webinar->students()->attach($student->id, [
-            'registered_at' => now(),
+            'registered_at'  => now(),
             'transaction_id' => $transaction->id,
         ]);
     }
