@@ -8,6 +8,7 @@ use App\Domains\ActivityLog\Enums\ActivitySubject;
 use App\Domains\ActivityLog\Enums\ActivityType;
 use App\Domains\Webinar\Data\UpdateWebinarData;
 use App\Domains\Webinar\Models\Webinar;
+use App\Jobs\SyncWebinarToWpJob;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -28,6 +29,7 @@ class UpdateWebinarAction
             'max_participants' => $data->max_participants,
             'price' => $data->price,
             'old_price' => $data->old_price,
+            'sync_to_wp' => $data->sync_to_wp,
         ];
 
         if ($data->slug && $data->slug !== $webinar->slug) {
@@ -63,6 +65,10 @@ class UpdateWebinarAction
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
         ]));
+
+        if ($data->sync_to_wp) {
+            SyncWebinarToWpJob::dispatch($webinar);
+        }
 
         return $webinar->fresh();
     }

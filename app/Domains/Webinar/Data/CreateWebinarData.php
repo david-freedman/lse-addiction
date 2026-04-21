@@ -57,6 +57,8 @@ class CreateWebinarData extends Data
 
         #[Nullable, Numeric, Min(0)]
         public readonly ?float $old_price,
+
+        public readonly bool $sync_to_wp = false,
     ) {}
 
     public static function rules(): array

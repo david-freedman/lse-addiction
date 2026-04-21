@@ -59,6 +59,8 @@ class UpdateWebinarData extends Data
         public readonly ?float $old_price,
 
         public readonly ?int $webinar_id = null,
+
+        public readonly bool $sync_to_wp = false,
     ) {}
 
     public static function rules(): array
