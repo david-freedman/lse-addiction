@@ -6,7 +6,6 @@ use App\Domains\Webinar\Enums\WebinarStatus;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
-use Illuminate\Http\UploadedFile;
 use Spatie\LaravelData\Attributes\Validation\Image;
 use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\Mimes;
