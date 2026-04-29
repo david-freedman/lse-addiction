@@ -23,7 +23,7 @@ class UpdateWebinarAction
             'number' => $data->number,
             'description' => $data->description,
             'teacher_id' => $data->teacher_id,
-            'starts_at' => Carbon::createFromFormat('d.m.Y H:i', $data->starts_at),
+            'starts_at' => $data->starts_at ? Carbon::createFromFormat('d.m.Y H:i', $data->starts_at) : null,
             'duration_minutes' => $data->duration_minutes,
             'meeting_url' => $data->meeting_url,
             'recording_url' => $data->recording_url,
