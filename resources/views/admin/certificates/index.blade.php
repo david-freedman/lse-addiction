@@ -157,7 +157,7 @@
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Номер</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Студент</th>
-                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Курс</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Курс / Вебінар</th>
                         <th class="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Оцінка</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата видачі</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Статус</th>
@@ -183,9 +183,14 @@
                                 <div class="text-xs text-gray-500">{{ $certificate->student->email }}</div>
                             </td>
                             <td class="px-6 py-4">
-                                <a href="{{ route('admin.courses.show', $certificate->course) }}" class="text-gray-900 hover:text-brand-600 hover:underline">
-                                    {{ $certificate->course->name }}
-                                </a>
+                                @if($certificate->isWebinarCertificate())
+                                    <span class="text-gray-900">{{ $certificate->webinar->title }}</span>
+                                    <div class="text-xs text-brand-600">Вебінар</div>
+                                @else
+                                    <a href="{{ route('admin.courses.show', $certificate->course) }}" class="text-gray-900 hover:text-brand-600 hover:underline">
+                                        {{ $certificate->course->name }}
+                                    </a>
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-center whitespace-nowrap">
                                 <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $certificate->grade_level->badgeClasses() }}">

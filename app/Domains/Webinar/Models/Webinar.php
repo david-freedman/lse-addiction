@@ -249,6 +249,11 @@ class Webinar extends Model
         return $this->starts_at->diffInHours(now()) >= 24;
     }
 
+    public function requiresCertificateApproval(): bool
+    {
+        return true;
+    }
+
     public function isDraft(): bool
     {
         return $this->status === WebinarStatus::Draft;

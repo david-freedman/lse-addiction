@@ -6,6 +6,7 @@ use App\Domains\Certificate\Enums\CertificateGrade;
 use App\Domains\Certificate\Enums\CertificateStatus;
 use App\Domains\Course\Models\Course;
 use App\Domains\Student\Models\Student;
+use App\Domains\Webinar\Models\Webinar;
 use App\Models\User;
 use Database\Factories\CertificateFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -29,6 +30,7 @@ class Certificate extends Model
         'certificate_number',
         'student_id',
         'course_id',
+        'webinar_id',
         'grade',
         'study_hours',
         'issued_at',
@@ -59,6 +61,11 @@ class Certificate extends Model
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function webinar(): BelongsTo
+    {
+        return $this->belongsTo(Webinar::class);
     }
 
     public function issuedBy(): BelongsTo
@@ -139,9 +146,14 @@ class Certificate extends Model
         return CertificateStatus::Pending;
     }
 
-    public static function generateNumber(Course $course, Student $student): string
+    public static function generateNumber(Course|Webinar $source, Student $student): string
     {
-        return sprintf('%d-2556-%s-%s', now()->year, $course->number, $student->number);
+        return sprintf('%d-2556-%s-%s', now()->year, $source->number, $student->number);
+    }
+
+    public function isWebinarCertificate(): bool
+    {
+        return $this->webinar_id !== null;
     }
 
     public function scopeForStudent($query, int $studentId)
@@ -155,8 +167,9 @@ class Certificate extends Model
             return $query;
         }
 
-        return $query->whereHas('course', function ($q) use ($search) {
-            $q->where('name', 'ilike', "%{$search}%");
+        return $query->where(function ($q) use ($search) {
+            $q->whereHas('course', fn ($q) => $q->where('name', 'ilike', "%{$search}%"))
+                ->orWhereHas('webinar', fn ($q) => $q->where('title', 'ilike', "%{$search}%"));
         });
     }
 

@@ -22,7 +22,7 @@ readonly class CertificateListViewModel
     {
         $query = Certificate::query()
             ->withTrashed()
-            ->with(['student', 'course', 'issuedBy']);
+            ->with(['student', 'course', 'webinar', 'issuedBy']);
 
         if ($this->restrictToCourseIds !== null) {
             $query->whereIn('course_id', $this->restrictToCourseIds);
@@ -39,6 +39,9 @@ readonly class CertificateListViewModel
                     })
                     ->orWhereHas('course', function ($q) use ($search) {
                         $q->where('name', 'ilike', "%{$search}%");
+                    })
+                    ->orWhereHas('webinar', function ($q) use ($search) {
+                        $q->where('title', 'ilike', "%{$search}%");
                     });
             });
         }

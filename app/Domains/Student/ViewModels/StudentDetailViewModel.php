@@ -93,7 +93,7 @@ readonly class StudentDetailViewModel
 
         $this->certificates = Certificate::forStudent($student->id)
             ->withTrashed()
-            ->with(['course.teacher'])
+            ->with(['course.teacher', 'webinar'])
             ->orderBy('issued_at', 'desc')
             ->get();
 
@@ -281,6 +281,20 @@ readonly class StudentDetailViewModel
     public function hasCoursesEligibleForManualCertificate(): bool
     {
         return $this->coursesEligibleForManualCertificate()->isNotEmpty();
+    }
+
+    public function webinarsEligibleForManualCertificate(): Collection
+    {
+        $certifiedWebinarIds = $this->certificates->pluck('webinar_id')->filter();
+
+        return $this->registeredWebinars->reject(function ($webinar) use ($certifiedWebinarIds) {
+            return $certifiedWebinarIds->contains($webinar->id);
+        });
+    }
+
+    public function hasWebinarsEligibleForManualCertificate(): bool
+    {
+        return $this->webinarsEligibleForManualCertificate()->isNotEmpty();
     }
 
     public function registeredWebinars(): Collection

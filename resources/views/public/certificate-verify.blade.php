@@ -47,12 +47,18 @@
                         <p class="font-semibold text-gray-900">{{ $certificate->student->name }} {{ $certificate->student->surname }}</p>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-500">Курс</p>
-                        <p class="font-semibold text-gray-900">{{ $certificate->course->name }}</p>
+                        <p class="text-sm text-gray-500">{{ $certificate->isWebinarCertificate() ? 'Вебінар' : 'Курс' }}</p>
+                        <p class="font-semibold text-gray-900">
+                            {{ $certificate->isWebinarCertificate() ? $certificate->webinar->title : $certificate->course->name }}
+                        </p>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-500">Викладач</p>
-                        <p class="font-semibold text-gray-900">{{ $certificate->course->teacher?->full_name ?? 'Не вказано' }}</p>
+                        <p class="text-sm text-gray-500">{{ $certificate->isWebinarCertificate() ? 'Доповідач' : 'Викладач' }}</p>
+                        <p class="font-semibold text-gray-900">
+                            {{ $certificate->isWebinarCertificate()
+                                ? ($certificate->webinar->teacher?->full_name ?? 'Не вказано')
+                                : ($certificate->course->teacher?->full_name ?? 'Не вказано') }}
+                        </p>
                     </div>
                     <div class="flex gap-6">
                         <div>
