@@ -48,6 +48,12 @@ class Course extends Model
         'is_sequential',
         'requires_certificate_approval',
         'sync_to_wp',
+        'cert_company_name',
+        'cert_signature',
+        'cert_stamp',
+        'cert_bpr_hours',
+        'cert_specialties',
+        'cert_participant_type',
     ];
 
     protected $casts = [

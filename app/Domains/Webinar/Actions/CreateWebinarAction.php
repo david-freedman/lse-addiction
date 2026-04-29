@@ -21,6 +21,16 @@ class CreateWebinarAction
             $bannerPath = $data->banner->store('webinars', 'public');
         }
 
+        $signaturePath = null;
+        if ($data->cert_signature) {
+            $signaturePath = $data->cert_signature->store('certificates/signatures', 'public');
+        }
+
+        $stampPath = null;
+        if ($data->cert_stamp) {
+            $stampPath = $data->cert_stamp->store('certificates/stamps', 'public');
+        }
+
         $slug = $data->slug ?: Str::slug($data->title);
         $originalSlug = $slug;
         $counter = 1;
@@ -45,6 +55,12 @@ class CreateWebinarAction
             'price' => $data->price,
             'old_price' => $data->old_price,
             'sync_to_wp' => $data->sync_to_wp,
+            'cert_company_name' => $data->cert_company_name ?? 'Медична академія',
+            'cert_signature' => $signaturePath,
+            'cert_stamp' => $stampPath,
+            'cert_bpr_hours' => $data->cert_bpr_hours,
+            'cert_specialties' => $data->cert_specialties,
+            'cert_participant_type' => $data->cert_participant_type,
         ]);
 
         LogActivityAction::execute(ActivityLogData::from([

@@ -6,6 +6,7 @@ use App\Domains\Webinar\Enums\WebinarStatus;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Http\UploadedFile;
 use Spatie\LaravelData\Attributes\Validation\Image;
 use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\Mimes;
@@ -65,6 +66,24 @@ class UpdateWebinarData extends Data
         public readonly ?int $webinar_id = null,
 
         public readonly bool $sync_to_wp = false,
+
+        #[Nullable, StringType, Max(255)]
+        public readonly ?string $cert_company_name = null,
+
+        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(2048)]
+        public readonly ?UploadedFile $cert_signature = null,
+
+        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(2048)]
+        public readonly ?UploadedFile $cert_stamp = null,
+
+        #[Nullable, Numeric, Min(1)]
+        public readonly ?int $cert_bpr_hours = null,
+
+        #[Nullable, StringType, Max(500)]
+        public readonly ?string $cert_specialties = null,
+
+        #[Nullable, StringType, Max(20)]
+        public readonly ?string $cert_participant_type = null,
     ) {}
 
     public static function rules(): array
@@ -76,6 +95,8 @@ class UpdateWebinarData extends Data
             'starts_at' => ['required', 'date', 'date_format:d.m.Y H:i'],
             'old_price' => ['nullable', 'numeric', 'min:0', 'gte:price'],
             'recording_url' => ['nullable', 'url', 'max:500', 'required_if:status,recorded'],
+            'cert_participant_type' => ['nullable', 'string', 'in:trainer,student'],
+            'cert_bpr_hours' => ['nullable', 'integer', 'min:1'],
         ];
     }
 

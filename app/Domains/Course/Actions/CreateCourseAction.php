@@ -21,6 +21,16 @@ class CreateCourseAction
             $bannerPath = $data->banner->store('courses', 'public');
         }
 
+        $signaturePath = null;
+        if ($data->cert_signature) {
+            $signaturePath = $data->cert_signature->store('certificates/signatures', 'public');
+        }
+
+        $stampPath = null;
+        if ($data->cert_stamp) {
+            $stampPath = $data->cert_stamp->store('certificates/stamps', 'public');
+        }
+
         $slug = self::generateUniqueSlug($data->name);
 
         $course = Course::create([
@@ -42,6 +52,12 @@ class CreateCourseAction
             'label' => $data->label,
             'requires_certificate_approval' => $data->requires_certificate_approval,
             'sync_to_wp' => $data->sync_to_wp,
+            'cert_company_name' => $data->cert_company_name ?? 'Медична академія',
+            'cert_signature' => $signaturePath,
+            'cert_stamp' => $stampPath,
+            'cert_bpr_hours' => $data->cert_bpr_hours,
+            'cert_specialties' => $data->cert_specialties,
+            'cert_participant_type' => $data->cert_participant_type,
         ]);
 
         if ($data->tags) {

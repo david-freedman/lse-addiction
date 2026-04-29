@@ -68,6 +68,24 @@ class CreateCourseData extends Data
         public readonly bool $requires_certificate_approval = false,
 
         public readonly bool $sync_to_wp = false,
+
+        #[Nullable, StringType, Max(255)]
+        public readonly ?string $cert_company_name = null,
+
+        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(2048)]
+        public readonly ?UploadedFile $cert_signature = null,
+
+        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(2048)]
+        public readonly ?UploadedFile $cert_stamp = null,
+
+        #[Nullable, Numeric, Min(1)]
+        public readonly ?int $cert_bpr_hours = null,
+
+        #[Nullable, StringType, Max(500)]
+        public readonly ?string $cert_specialties = null,
+
+        #[Nullable, StringType, Max(20)]
+        public readonly ?string $cert_participant_type = null,
     ) {}
 
     public static function rules(): array
@@ -85,6 +103,8 @@ class CreateCourseData extends Data
             'teacher_id' => ['required', 'integer', 'exists:teachers,id'],
             'label' => ['nullable', new Enum(CourseLabel::class)],
             'number' => ['required', 'digits:7', 'unique:courses,number'],
+            'cert_participant_type' => ['nullable', 'string', 'in:trainer,student'],
+            'cert_bpr_hours' => ['nullable', 'integer', 'min:1'],
         ];
     }
 

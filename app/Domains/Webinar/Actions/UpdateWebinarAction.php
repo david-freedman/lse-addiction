@@ -51,6 +51,25 @@ class UpdateWebinarAction
             $updateData['banner'] = $data->banner->store('webinars', 'public');
         }
 
+        if ($data->cert_signature) {
+            if ($webinar->cert_signature) {
+                Storage::disk('public')->delete($webinar->cert_signature);
+            }
+            $updateData['cert_signature'] = $data->cert_signature->store('certificates/signatures', 'public');
+        }
+
+        if ($data->cert_stamp) {
+            if ($webinar->cert_stamp) {
+                Storage::disk('public')->delete($webinar->cert_stamp);
+            }
+            $updateData['cert_stamp'] = $data->cert_stamp->store('certificates/stamps', 'public');
+        }
+
+        $updateData['cert_company_name'] = $data->cert_company_name ?? 'Медична академія';
+        $updateData['cert_bpr_hours'] = $data->cert_bpr_hours;
+        $updateData['cert_specialties'] = $data->cert_specialties;
+        $updateData['cert_participant_type'] = $data->cert_participant_type;
+
         $webinar->update($updateData);
 
         LogActivityAction::execute(ActivityLogData::from([

@@ -36,6 +36,12 @@ class Webinar extends Model
         'price',
         'old_price',
         'sync_to_wp',
+        'cert_company_name',
+        'cert_signature',
+        'cert_stamp',
+        'cert_bpr_hours',
+        'cert_specialties',
+        'cert_participant_type',
     ];
 
     protected function casts(): array

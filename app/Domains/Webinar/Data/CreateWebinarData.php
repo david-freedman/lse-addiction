@@ -62,6 +62,24 @@ class CreateWebinarData extends Data
         public readonly ?float $old_price,
 
         public readonly bool $sync_to_wp = false,
+
+        #[Nullable, StringType, Max(255)]
+        public readonly ?string $cert_company_name = null,
+
+        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(2048)]
+        public readonly ?UploadedFile $cert_signature = null,
+
+        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(2048)]
+        public readonly ?UploadedFile $cert_stamp = null,
+
+        #[Nullable, Numeric, Min(1)]
+        public readonly ?int $cert_bpr_hours = null,
+
+        #[Nullable, StringType, Max(500)]
+        public readonly ?string $cert_specialties = null,
+
+        #[Nullable, StringType, Max(20)]
+        public readonly ?string $cert_participant_type = null,
     ) {}
 
     public static function rules(): array
@@ -74,6 +92,8 @@ class CreateWebinarData extends Data
             'old_price' => ['nullable', 'numeric', 'min:0', 'gte:price'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:webinars,slug'],
             'recording_url' => ['nullable', 'url', 'max:500', 'required_if:status,recorded'],
+            'cert_participant_type' => ['nullable', 'string', 'in:trainer,student'],
+            'cert_bpr_hours' => ['nullable', 'integer', 'min:1'],
         ];
     }
 
