@@ -16,6 +16,7 @@ class UpdateStudentPersonalDetailsAction
         $student->update([
             'surname' => $data->surname,
             'name' => $data->name,
+            'patronymic' => $data->patronymic,
             'birthday' => $data->birthday,
             'city' => $data->city,
         ]);

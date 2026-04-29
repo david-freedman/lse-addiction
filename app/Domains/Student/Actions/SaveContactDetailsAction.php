@@ -16,6 +16,7 @@ class SaveContactDetailsAction
         $student->update([
             'name' => $data->name,
             'surname' => $data->surname,
+            'patronymic' => $data->patronymic,
             'birthday' => $data->birthday,
             'city' => $data->city,
         ]);

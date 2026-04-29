@@ -52,6 +52,17 @@
                         </div>
                         <div class="auth__field field">
                             <div class="field__label">
+                                По-батькові
+                            </div>
+                            <div class="field__input">
+                                <input type="text" name="patronymic" id="patronymic" placeholder="Введіть своє по-батькові" value="{{ old('patronymic') }}">
+                            </div>
+                            @error('patronymic')
+                                <div class="field__error">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="auth__field field">
+                            <div class="field__label">
                                 Дата народження
                             </div>
                             <div class="field__input">
