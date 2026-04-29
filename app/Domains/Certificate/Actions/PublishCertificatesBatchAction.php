@@ -4,7 +4,6 @@ namespace App\Domains\Certificate\Actions;
 
 use App\Domains\Certificate\Models\Certificate;
 use App\Models\User;
-use App\Notifications\CertificatePublishedNotification;
 use Illuminate\Support\Collection;
 
 final class PublishCertificatesBatchAction
@@ -17,16 +16,13 @@ final class PublishCertificatesBatchAction
     {
         $certificates = Certificate::whereIn('id', $certificateIds)
             ->pending()
-            ->with(['student', 'course'])
+            ->with(['student', 'course', 'webinar'])
             ->get();
 
         $published = collect();
 
         foreach ($certificates as $certificate) {
-            $publishedCertificate = ($this->publishAction)($certificate, $publisher);
-            $published->push($publishedCertificate);
-
-            $certificate->student->notify(new CertificatePublishedNotification($publishedCertificate));
+            $published->push(($this->publishAction)($certificate, $publisher));
         }
 
         return $published;

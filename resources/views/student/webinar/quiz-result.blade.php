@@ -48,7 +48,7 @@
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
                         <div>
                             <p class="text-4xl font-bold mb-1 {{ $result->passed ? 'text-green-600' : 'text-red-600' }}">
-                                {{ $result->scorePercentage }}%
+                                {{ $result->scorePercentage() }}%
                             </p>
                             <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Ваш результат</p>
                         </div>

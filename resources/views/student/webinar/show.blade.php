@@ -236,17 +236,17 @@
                                 $isPassed = $userAttempt && $userAttempt->passed;
                                 $noAttemptsLeft = $userAttempt && $webinar->quiz->max_attempts > 0 && $webinar->quiz->attempts()->where('student_id', auth()->id())->count() >= $webinar->quiz->max_attempts;
                             @endphp
-                            
+
                             <div class="mt-4 p-4 border border-gray-200 rounded-lg bg-gray-50 text-center">
                                 <h4 class="font-medium text-gray-900 mb-2">Тестування після вебінару</h4>
                                 @if($isPassed)
                                     <p class="text-green-600 font-medium mb-3">Ви успішно пройшли тестування!</p>
-                                    <a href="{{ route('student.webinar.quiz.show', $webinar) }}" class="text-brand-500 font-semibold hover:underline">Переглянути результати</a>
+                                    <a href="{{ route('student.webinar.quiz.show', $webinar) }}" class="w-full inline-flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg transition">Переглянути результати</a>
                                 @elseif($noAttemptsLeft)
                                     <p class="text-red-600 font-medium mb-3">Ви використали всі спроби для проходження тесту.</p>
-                                    <a href="{{ route('student.webinar.quiz.show', $webinar) }}" class="text-brand-500 font-semibold hover:underline">Переглянути результати</a>
+                                    <a href="{{ route('student.webinar.quiz.show', $webinar) }}" class="w-full inline-flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg transition">Переглянути результати</a>
                                 @else
-                                    <a href="{{ route('student.webinar.quiz.show', $webinar) }}" class="w-full inline-flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold py-2 px-4 rounded-lg transition">
+                                    <a href="{{ route('student.webinar.quiz.show', $webinar) }}" class="w-full inline-flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg transition">
                                         Пройти тестування
                                     </a>
                                 @endif

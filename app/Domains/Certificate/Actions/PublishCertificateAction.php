@@ -8,6 +8,7 @@ use App\Domains\ActivityLog\Enums\ActivitySubject;
 use App\Domains\ActivityLog\Enums\ActivityType;
 use App\Domains\Certificate\Models\Certificate;
 use App\Models\User;
+use App\Notifications\CertificatePublishedNotification;
 
 final class PublishCertificateAction
 {
@@ -35,6 +36,9 @@ final class PublishCertificateAction
             'user_agent' => request()->userAgent(),
         ]));
 
-        return $certificate->fresh();
+        $published = $certificate->fresh(['student']);
+        $published->student->notify(new CertificatePublishedNotification($published));
+
+        return $published;
     }
 }
