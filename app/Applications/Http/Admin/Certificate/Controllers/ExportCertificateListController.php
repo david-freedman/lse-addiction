@@ -18,9 +18,11 @@ final class ExportCertificateListController
             'status'     => $request->string('status')->toString() ?: null,
         ]);
 
+        $certificateIds = $request->has('certificate_ids') ? $request->array('certificate_ids') : null;
+
         $user = $request->user('admin');
         $restrictToCourseIds = $user->isTeacher() ? $user->getTeacherCourseIds() : null;
 
-        return $action->toExcel($filters, $restrictToCourseIds);
+        return $action->toExcel($filters, $restrictToCourseIds, $certificateIds);
     }
 }

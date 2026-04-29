@@ -3,6 +3,7 @@
 @section('title', 'Сертифікати')
 
 @section('content')
+<div x-data="{ selectedIds: [], showFilters: {{ $viewModel->isFiltered() ? 'true' : 'false' }} }">
 <div class="flex items-center justify-between mb-6">
     <h1 class="text-title-xl font-bold text-gray-900">Сертифікати</h1>
     @if($viewModel->pendingCount() > 0)
@@ -15,7 +16,7 @@
     @endif
 </div>
 
-<div class="mb-6 rounded-2xl border border-gray-200 bg-white p-4" x-data="{ showFilters: {{ $viewModel->isFiltered() ? 'true' : 'false' }} }">
+<div class="mb-6 rounded-2xl border border-gray-200 bg-white p-4">
     <form method="GET" action="{{ route('admin.certificates.index') }}">
         <div class="flex items-center gap-4">
             <div class="flex-1">
@@ -44,7 +45,9 @@
                     Скинути
                 </a>
             @endif
-            <a href="{{ route('admin.certificates.export.list', request()->query()) }}"
+            <a :href="selectedIds.length > 0
+                    ? '{{ route('admin.certificates.export.list', request()->query()) }}' + '{{ request()->query() ? '&' : '?' }}' + selectedIds.map(id => 'certificate_ids[]=' + id).join('&')
+                    : '{{ route('admin.certificates.export.list', request()->query()) }}'"
                class="ml-auto inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -110,7 +113,7 @@
         <p class="mt-4 text-gray-600">Сертифікатів ще немає.</p>
     </div>
 @else
-    <div x-data="{ selectedIds: [] }" class="rounded-2xl border border-gray-200 bg-white overflow-hidden">
+    <div class="rounded-2xl border border-gray-200 bg-white overflow-hidden">
         <div x-show="selectedIds.length > 0" class="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-3">
             <span class="text-sm text-gray-600">Вибрано: <span x-text="selectedIds.length"></span></span>
             <div class="flex items-center gap-2">
@@ -228,4 +231,5 @@
         {{ $viewModel->certificates()->links() }}
     </div>
 @endif
+</div>
 @endsection
