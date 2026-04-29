@@ -219,13 +219,46 @@
                     <div class="auth__wrapper">
                         <div class="auth__fields">
                             @foreach($fields as $field)
-                                <div class="auth__field field">
+                                <div class="auth__field field" @if($field->key === 'diploma_number') x-data="{ showDiiaModal: false }" @endif>
                                     <div class="field__label">
                                         {{ $field->label }}
                                         @if($field->is_required)
                                             <span style="color: #dc2626;">*</span>
                                         @endif
+                                        @if($field->key === 'diploma_number')
+                                            <button type="button"
+                                                @click="showDiiaModal = true"
+                                                style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#00AE9D;color:#fff;font-size:11px;font-weight:700;border:none;cursor:pointer;margin-left:6px;vertical-align:middle;line-height:1;flex-shrink:0;"
+                                                title="Підказка">і</button>
+                                        @endif
                                     </div>
+
+                                    @if($field->key === 'diploma_number')
+                                        <template x-teleport="body">
+                                            <div x-show="showDiiaModal" x-cloak>
+                                                <div @click="showDiiaModal = false"
+                                                     style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;"></div>
+                                                <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10000;background:#fff;border-radius:20px;padding:36px 32px 32px;max-width:340px;width:90%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.18);">
+                                                    <button type="button"
+                                                        @click="showDiiaModal = false"
+                                                        style="position:absolute;top:14px;right:18px;background:none;border:none;font-size:22px;cursor:pointer;color:#aaa;line-height:1;">&times;</button>
+                                                    <div style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+                                                        <span style="color:#fff;font-size:20px;font-weight:800;letter-spacing:-0.5px;"><svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 1000 1000" fill="none">
+                                                        <path d="M500 1000C719.101 1000 840.901 1000 920.45 920.45C1000 840.901 1000 719.174 1000 500C1000 280.826 1000 159.099 920.45 79.5496C840.901 0 719.101 0 500 0C280.899 0 159.099 0 79.5496 79.5496C0 159.099 0 280.899 0 500C0 719.101 0 840.901 79.5496 920.45C159.099 1000 280.899 1000 500 1000Z" fill="black"/>
+                                                        <path d="M687.788 401.139C650.017 401.139 621.983 430.297 621.983 466.273C621.983 495.648 642.637 518.568 668.784 525.35L615.183 607.457H665.248L710.817 531.044H744.925V607.457H786.722V401.139H687.788ZM693.536 496.138C676.346 496.138 665.702 482.647 665.702 467.27C665.702 451.893 675.457 437.242 693.536 437.242H744.979V496.138H693.536Z" fill="white"/>
+                                                        <path d="M458.891 401.139L445.019 439.327L501.939 439.001L468.229 562.632C458.619 598.68 496.19 625.916 528.25 604.718L601.163 555.252L579.693 523.7L506.871 574.146L555.957 401.139H458.891Z" fill="white"/>
+                                                        <path d="M537.391 374.611C553.365 374.611 566.314 362.944 566.314 348.553C566.314 334.162 553.365 322.496 537.391 322.496C521.418 322.496 508.469 334.162 508.469 348.553C508.469 362.944 521.418 374.611 537.391 374.611Z" fill="white"/>
+                                                        <path d="M389.86 569.374V353.192H229.473V468.572C229.473 522.863 213.752 556.427 204.486 569.283H185.483V663.575H226.155V607.834H378.219V663.666H418.873V569.374H389.86ZM269.91 466.197V391.543H348.154V569.247H247.153C256.31 554.269 269.91 516.154 269.91 466.197Z" fill="white"/>
+                                                        <script xmlns=""/></svg>
+                                                    </span>
+                                                    </div>
+                                                    <p style="color:#333;font-size:15px;line-height:1.6;margin:0;">
+                                                        Ви можете переглянути документи в додатку <strong>Дія</strong> з мобільного пристрою
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    @endif
 
                                     @switch($field->type->value)
                                         @case('select')
