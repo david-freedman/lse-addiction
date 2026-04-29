@@ -131,6 +131,14 @@ class ExportCertificateListAction
             };
         }
 
+        if ($filters->issued_from) {
+            $query->whereDate('issued_at', '>=', \Carbon\Carbon::parse($filters->issued_from)->format('Y-m-d'));
+        }
+
+        if ($filters->issued_to) {
+            $query->whereDate('issued_at', '<=', \Carbon\Carbon::parse($filters->issued_to)->format('Y-m-d'));
+        }
+
         return $query->orderByDesc('issued_at')->get();
     }
 }

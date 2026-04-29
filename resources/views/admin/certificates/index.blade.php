@@ -65,7 +65,7 @@
             @endif
         </div>
 
-        <div x-show="showFilters" x-collapse class="mt-4 grid grid-cols-1 gap-4 border-t border-gray-200 pt-4 md:grid-cols-4">
+        <div x-show="showFilters" x-transition class="mt-4 grid grid-cols-1 gap-4 border-t border-gray-200 pt-4 md:grid-cols-4">
             <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700">Курс</label>
                 <select name="course_id" class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white">
@@ -100,6 +100,26 @@
                         </option>
                     @endforeach
                 </select>
+            </div>
+
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-gray-700">Видано від</label>
+                <input
+                    type="date"
+                    name="issued_from"
+                    value="{{ $viewModel->filters()->issued_from }}"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white"
+                >
+            </div>
+
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-gray-700">Видано до</label>
+                <input
+                    type="date"
+                    name="issued_to"
+                    value="{{ $viewModel->filters()->issued_to }}"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white"
+                >
             </div>
         </div>
     </form>

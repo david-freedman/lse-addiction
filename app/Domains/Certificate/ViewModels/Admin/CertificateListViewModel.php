@@ -60,6 +60,14 @@ readonly class CertificateListViewModel
             };
         }
 
+        if ($this->filters->issued_from) {
+            $query->whereDate('issued_at', '>=', \Carbon\Carbon::parse($this->filters->issued_from)->format('Y-m-d'));
+        }
+
+        if ($this->filters->issued_to) {
+            $query->whereDate('issued_at', '<=', \Carbon\Carbon::parse($this->filters->issued_to)->format('Y-m-d'));
+        }
+
         return $query->orderByDesc('issued_at')->paginate($this->perPage)->withQueryString();
     }
 
@@ -96,7 +104,9 @@ readonly class CertificateListViewModel
         return $this->filters->search !== null
             || $this->filters->course_id !== null
             || $this->filters->student_id !== null
-            || $this->filters->status !== null;
+            || $this->filters->status !== null
+            || $this->filters->issued_from !== null
+            || $this->filters->issued_to !== null;
     }
 
     public function pendingCount(): int
