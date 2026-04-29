@@ -187,14 +187,14 @@
                             <span class="font-medium">{{ $webinar->isRecorded() ? 'Ви маєте доступ' : 'Ви зареєстровані' }}</span>
                         </div>
                         @if($webinar->isEnded())
-                            <div class="w-full inline-flex items-center justify-center gap-2 bg-gray-100 text-gray-500 font-medium py-3 px-6 rounded-lg text-center">
+                            <div class="w-full inline-flex items-center justify-center gap-2 bg-gray-100 text-gray-500 font-medium py-3 px-6 rounded-lg text-center mb-4">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
                                 <span>Вебінар завершився</span>
                             </div>
                         @elseif($webinar->isRecorded() && $meetingUrl)
-                            <a href="{{ $meetingUrl }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition">
+                            <a href="{{ $meetingUrl }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition mb-4">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -206,7 +206,7 @@
                                 <p class="text-sm text-rose-600 font-medium mb-3 text-center">
                                     Вебінар вже триває {{ (int) $webinar->starts_at->diffInMinutes(now()) }} хв
                                 </p>
-                                <a href="{{ $meetingUrl }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 px-6 rounded-lg transition">
+                                <a href="{{ $meetingUrl }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 px-6 rounded-lg transition mb-4">
                                     <span class="relative flex h-3 w-3">
                                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
                                         <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
@@ -214,7 +214,7 @@
                                     Приєднатися до вебінару
                                 </a>
                             @else
-                                <a href="{{ $meetingUrl }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 px-6 rounded-lg transition">
+                                <a href="{{ $meetingUrl }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 px-6 rounded-lg transition mb-4">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                     </svg>
@@ -222,11 +222,34 @@
                                 </a>
                             @endif
                         @else
-                            <div class="w-full inline-flex items-center justify-center gap-2 bg-gray-100 text-gray-500 font-medium py-3 px-6 rounded-lg text-center">
+                            <div class="w-full inline-flex items-center justify-center gap-2 bg-gray-100 text-gray-500 font-medium py-3 px-6 rounded-lg text-center mb-4">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 <span class="text-sm">Посилання буде доступне за 30 хв до початку</span>
+                            </div>
+                        @endif
+
+                        @if(in_array($webinar->status->value, ['ended', 'recorded']) && $webinar->quiz)
+                            @php
+                                $userAttempt = $webinar->quiz->attempts()->where('student_id', auth()->id())->latest()->first();
+                                $isPassed = $userAttempt && $userAttempt->passed;
+                                $noAttemptsLeft = $userAttempt && $webinar->quiz->max_attempts > 0 && $webinar->quiz->attempts()->where('student_id', auth()->id())->count() >= $webinar->quiz->max_attempts;
+                            @endphp
+                            
+                            <div class="mt-4 p-4 border border-gray-200 rounded-lg bg-gray-50 text-center">
+                                <h4 class="font-medium text-gray-900 mb-2">Тестування після вебінару</h4>
+                                @if($isPassed)
+                                    <p class="text-green-600 font-medium mb-3">Ви успішно пройшли тестування!</p>
+                                    <a href="{{ route('student.webinar.quiz.show', $webinar) }}" class="text-brand-500 font-semibold hover:underline">Переглянути результати</a>
+                                @elseif($noAttemptsLeft)
+                                    <p class="text-red-600 font-medium mb-3">Ви використали всі спроби для проходження тесту.</p>
+                                    <a href="{{ route('student.webinar.quiz.show', $webinar) }}" class="text-brand-500 font-semibold hover:underline">Переглянути результати</a>
+                                @else
+                                    <a href="{{ route('student.webinar.quiz.show', $webinar) }}" class="w-full inline-flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold py-2 px-4 rounded-lg transition">
+                                        Пройти тестування
+                                    </a>
+                                @endif
                             </div>
                         @endif
                     @else

@@ -21,15 +21,16 @@ final class QuizResultsIndexViewModel
     public function attempts(): LengthAwarePaginator
     {
         $query = StudentQuizAttempt::query()
-            ->with(['student', 'quiz.quizzable.module.course']);
+            ->with(['student', 'quiz.quizzable']);
 
         $isSurvey = $this->filters->isSurveysTab();
         $query->whereHas('quiz', fn ($q) => $q->where('is_survey', $isSurvey));
 
-        $query->whereHas('quiz', fn ($q) => $q->where('quizzable_type', Lesson::class));
-
         if ($this->restrictToCourseIds !== null) {
-            $query->whereHas('quiz.quizzable.module', fn ($q) => $q->whereIn('course_id', $this->restrictToCourseIds));
+            $query->where(function ($q) {
+                $q->whereHas('quiz.quizzable.module', fn ($mq) => $mq->whereIn('course_id', $this->restrictToCourseIds))
+                  ->orWhereHas('quiz', fn ($qq) => $qq->where('quizzable_type', \App\Domains\Webinar\Models\Webinar::class));
+            });
         }
 
         if ($this->filters->isQuizzesTab() && ($passed = $this->filters->getPassedFilter()) !== null) {
@@ -216,11 +217,13 @@ final class QuizResultsIndexViewModel
         $isSurvey = $this->filters->isSurveysTab();
 
         $query = StudentQuizAttempt::query()
-            ->whereHas('quiz', fn ($q) => $q->where('is_survey', $isSurvey))
-            ->whereHas('quiz', fn ($q) => $q->where('quizzable_type', Lesson::class));
+            ->whereHas('quiz', fn ($q) => $q->where('is_survey', $isSurvey));
 
         if ($this->restrictToCourseIds !== null) {
-            $query->whereHas('quiz.quizzable.module', fn ($q) => $q->whereIn('course_id', $this->restrictToCourseIds));
+            $query->where(function ($q) {
+                $q->whereHas('quiz.quizzable.module', fn ($mq) => $mq->whereIn('course_id', $this->restrictToCourseIds))
+                  ->orWhereHas('quiz', fn ($qq) => $qq->where('quizzable_type', \App\Domains\Webinar\Models\Webinar::class)); // For now, assume teachers can see all webinar quizzes or add logic for teacher webinar restrict
+            });
         }
 
         if ($this->filters->course_id) {
