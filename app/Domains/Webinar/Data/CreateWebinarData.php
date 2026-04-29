@@ -37,8 +37,8 @@ class CreateWebinarData extends Data
         #[Required, Numeric]
         public readonly int $teacher_id,
 
-        #[Required]
-        public readonly string $starts_at,
+        #[Nullable]
+        public readonly ?string $starts_at,
 
         #[Required, Numeric, Min(15), Max(480)]
         public readonly int $duration_minutes,
@@ -88,7 +88,7 @@ class CreateWebinarData extends Data
             'number' => ['required', 'digits:7', 'unique:webinars,number'],
             'status' => ['required', new Enum(WebinarStatus::class)],
             'teacher_id' => ['required', 'integer', 'exists:teachers,id'],
-            'starts_at' => ['required', 'date', 'date_format:d.m.Y H:i'],
+            'starts_at' => ['nullable', 'date', 'date_format:d.m.Y H:i'],
             'old_price' => ['nullable', 'numeric', 'min:0', 'gte:price'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:webinars,slug'],
             'recording_url' => ['nullable', 'url', 'max:500', 'required_if:status,recorded'],

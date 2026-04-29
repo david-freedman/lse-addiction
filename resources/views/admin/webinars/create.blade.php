@@ -171,14 +171,13 @@
 
                 <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                     <div>
-                        <label for="starts_at" class="mb-2 block text-sm font-medium text-gray-700">Дата та час початку <span class="text-error-500">*</span></label>
+                        <label for="starts_at" class="mb-2 block text-sm font-medium text-gray-700">Дата та час початку</label>
                         <input
                             type="text"
                             name="starts_at"
                             id="starts_at"
                             x-datepicker.datetime
                             value="{{ old('starts_at') }}"
-                            required
                             class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('starts_at') border-error-500 @enderror"
                         >
                         @error('starts_at')

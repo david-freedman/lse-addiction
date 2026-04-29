@@ -38,8 +38,8 @@ class UpdateWebinarData extends Data
         #[Required, Numeric]
         public readonly int $teacher_id,
 
-        #[Required]
-        public readonly string $starts_at,
+        #[Nullable]
+        public readonly ?string $starts_at,
 
         #[Required, Numeric, Min(15), Max(480)]
         public readonly int $duration_minutes,
@@ -104,7 +104,7 @@ class UpdateWebinarData extends Data
             'number' => ['required', 'digits:7', Rule::unique('webinars', 'number')->ignore(request()->route('webinar')?->id)],
             'status' => ['required', new Enum(WebinarStatus::class)],
             'teacher_id' => ['required', 'integer', 'exists:teachers,id'],
-            'starts_at' => ['required', 'date', 'date_format:d.m.Y H:i'],
+            'starts_at' => ['nullable', 'date', 'date_format:d.m.Y H:i'],
             'old_price' => ['nullable', 'numeric', 'min:0', 'gte:price'],
             'recording_url' => ['nullable', 'url', 'max:500', 'required_if:status,recorded'],
             'cert_participant_type' => ['nullable', 'string', 'in:trainer,student'],
