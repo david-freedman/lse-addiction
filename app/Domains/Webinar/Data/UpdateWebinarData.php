@@ -83,6 +83,19 @@ class UpdateWebinarData extends Data
 
         #[Nullable, StringType, Max(20)]
         public readonly ?string $cert_participant_type = null,
+
+        public readonly bool $has_quiz = false,
+
+        #[Nullable]
+        public readonly ?int $quiz_passing_score = null,
+
+        #[Nullable]
+        public readonly ?int $quiz_max_attempts = null,
+
+        #[Nullable]
+        public readonly ?int $quiz_time_limit_minutes = null,
+
+        public readonly bool $quiz_show_correct_answers = true,
     ) {}
 
     public static function rules(): array

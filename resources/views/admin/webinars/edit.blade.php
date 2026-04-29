@@ -9,6 +9,7 @@
 
 @php
     $hasCertErrors = $errors->hasAny(['cert_company_name', 'cert_signature', 'cert_stamp', 'cert_bpr_hours', 'cert_specialties', 'cert_participant_type']);
+    $hasQuizErrors = $errors->hasAny(['quiz_passing_score', 'quiz_max_attempts', 'quiz_time_limit_minutes']);
 @endphp
 
 <div class="rounded-2xl border border-gray-200 bg-white p-6">
@@ -16,7 +17,7 @@
         @csrf
         @method('PATCH')
 
-        <div x-data="{ activeTab: '{{ $hasCertErrors ? 'certificate' : 'main' }}' }">
+        <div x-data="{ activeTab: '{{ $hasCertErrors ? 'certificate' : ($hasQuizErrors ? 'quiz' : 'main') }}' }">
             {{-- Tab navigation --}}
             <div class="mb-6 flex border-b border-gray-200">
                 <button
@@ -26,6 +27,17 @@
                     class="mr-6 pb-3 text-sm font-medium transition"
                 >
                     Основне
+                </button>
+                <button
+                    type="button"
+                    @click="activeTab = 'quiz'"
+                    :class="activeTab === 'quiz' ? 'border-b-2 border-brand-500 text-brand-600' : 'text-gray-500 hover:text-gray-700'"
+                    class="mr-6 pb-3 text-sm font-medium transition"
+                >
+                    Тест
+                    @if($hasQuizErrors)
+                        <span class="ml-1.5 inline-flex h-2 w-2 rounded-full bg-error-500"></span>
+                    @endif
                 </button>
                 <button
                     type="button"
@@ -367,6 +379,103 @@
                             <p class="mt-0.5 text-xs text-gray-500">Якщо увімкнено, вебінар буде синхронізований із WordPress-сайтом — створений або оновлений там автоматично.</p>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            {{-- Quiz tab --}}
+            <div x-show="activeTab === 'quiz'" x-data="{ hasQuiz: {{ old('has_quiz', $webinar->quiz ? '1' : '0') }} }" class="space-y-5">
+                <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input type="hidden" name="has_quiz" :value="hasQuiz ? 1 : 0">
+                        <input type="checkbox" x-model="hasQuiz" value="1"
+                               class="mt-1 rounded border-gray-300 text-brand-500 focus:ring-brand-500">
+                        <div>
+                            <span class="block text-sm font-medium text-gray-700">Додати тест після вебінару</span>
+                            <p class="mt-0.5 text-xs text-gray-500">Студенти зможуть пройти тест після перегляду вебінару</p>
+                        </div>
+                    </label>
+                </div>
+
+                <div x-show="hasQuiz" class="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-4">
+                    <h3 class="text-sm font-semibold text-gray-900">Налаштування тесту</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Прохідний бал (%)</label>
+                            <input type="number" name="quiz_passing_score"
+                                   value="{{ old('quiz_passing_score', $webinar->quiz->passing_score ?? 70) }}"
+                                   min="0" max="100"
+                                   class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 outline-none transition focus:border-brand-500">
+                            @error('quiz_passing_score')<p class="mt-1 text-sm text-error-600">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Макс. спроб</label>
+                            <input type="number" name="quiz_max_attempts"
+                                   value="{{ old('quiz_max_attempts', $webinar->quiz->max_attempts ?? '') }}"
+                                   min="1" placeholder="Без обмежень"
+                                   class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 outline-none transition focus:border-brand-500">
+                            @error('quiz_max_attempts')<p class="mt-1 text-sm text-error-600">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Ліміт часу (хвилин)</label>
+                            <input type="number" name="quiz_time_limit_minutes"
+                                   value="{{ old('quiz_time_limit_minutes', $webinar->quiz->time_limit_minutes ?? '') }}"
+                                   min="1" placeholder="Без обмежень"
+                                   class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 outline-none transition focus:border-brand-500">
+                            @error('quiz_time_limit_minutes')<p class="mt-1 text-sm text-error-600">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="flex items-center">
+                            <label class="flex items-center gap-2">
+                                <input type="hidden" name="quiz_show_correct_answers" value="0">
+                                <input type="checkbox" name="quiz_show_correct_answers" value="1"
+                                       {{ old('quiz_show_correct_answers', $webinar->quiz->show_correct_answers ?? true) ? 'checked' : '' }}
+                                       class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                                <span class="text-sm text-gray-700">Показувати правильні відповіді</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    @if(!$webinar->quiz)
+                        <div class="p-3 rounded-lg bg-blue-50 text-sm text-blue-700">
+                            <div class="flex items-start gap-2">
+                                <svg class="w-5 h-5 text-blue-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>Після збереження ви зможете додати питання до тесту.</span>
+                            </div>
+                        </div>
+                    @else
+                        <div class="pt-4 border-t border-gray-200 flex items-center justify-between">
+                            <div class="text-sm text-gray-600">
+                                Питань: <span class="font-medium">{{ $webinar->quiz->questions->count() }}</span>
+                                @if($webinar->quiz->attempts()->count() > 0)
+                                    <span class="mx-2">•</span>
+                                    Спроб: <span class="font-medium">{{ $webinar->quiz->attempts()->count() }}</span>
+                                @endif
+                            </div>
+                            <div class="flex items-center gap-2">
+                                @if($webinar->quiz->attempts()->count() > 0)
+                                    <a href="{{ route('admin.quizzes.results', $webinar->quiz) }}"
+                                       class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                        </svg>
+                                        Результати
+                                    </a>
+                                @endif
+                                <a href="{{ route('admin.webinar-quiz.questions.index', $webinar) }}"
+                                   class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                    Редагувати питання
+                                </a>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
 

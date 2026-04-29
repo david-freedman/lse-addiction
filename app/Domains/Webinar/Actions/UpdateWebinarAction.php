@@ -6,6 +6,7 @@ use App\Domains\ActivityLog\Actions\LogActivityAction;
 use App\Domains\ActivityLog\Data\ActivityLogData;
 use App\Domains\ActivityLog\Enums\ActivitySubject;
 use App\Domains\ActivityLog\Enums\ActivityType;
+use App\Domains\Quiz\Actions\DeleteQuizAction;
 use App\Domains\Webinar\Data\UpdateWebinarData;
 use App\Domains\Webinar\Models\Webinar;
 use App\Jobs\SyncWebinarToWpJob;
@@ -90,6 +91,49 @@ class UpdateWebinarAction
             SyncWebinarToWpJob::dispatch($webinar);
         }
 
+        self::handleQuizChange($webinar, $data);
+
         return $webinar->fresh();
+    }
+
+    private static function handleQuizChange(Webinar $webinar, UpdateWebinarData $data): void
+    {
+        $webinar->load('quiz');
+
+        if (!$data->has_quiz) {
+            if ($webinar->quiz) {
+                DeleteQuizAction::execute($webinar->quiz);
+            }
+            return;
+        }
+
+        if (!$webinar->quiz) {
+            $webinar->quiz()->create([
+                'title' => $webinar->title,
+                'passing_score' => $data->quiz_passing_score ?? 70,
+                'max_attempts' => $data->quiz_max_attempts,
+                'time_limit_minutes' => $data->quiz_time_limit_minutes,
+                'show_correct_answers' => $data->quiz_show_correct_answers,
+                'is_survey' => false,
+            ]);
+            return;
+        }
+
+        $quizUpdateData = [];
+
+        if ($data->quiz_passing_score !== null) {
+            $quizUpdateData['passing_score'] = $data->quiz_passing_score;
+        }
+        if ($data->quiz_max_attempts !== null) {
+            $quizUpdateData['max_attempts'] = $data->quiz_max_attempts;
+        }
+        if ($data->quiz_time_limit_minutes !== null) {
+            $quizUpdateData['time_limit_minutes'] = $data->quiz_time_limit_minutes;
+        }
+        $quizUpdateData['show_correct_answers'] = $data->quiz_show_correct_answers;
+
+        if (!empty($quizUpdateData)) {
+            $webinar->quiz->update($quizUpdateData);
+        }
     }
 }
