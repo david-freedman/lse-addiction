@@ -7,6 +7,7 @@ use Spatie\LaravelData\Attributes\Validation\Date;
 use Spatie\LaravelData\Attributes\Validation\DateFormat;
 use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\Min;
+use Spatie\LaravelData\Attributes\Validation\Nullable;
 use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Attributes\Validation\StringType;
 use Spatie\LaravelData\Data;
@@ -18,6 +19,8 @@ class UpdatePersonalDetailsData extends Data
         public readonly string $surname,
         #[Required, StringType, Min(2), Max(255)]
         public readonly string $name,
+        #[Nullable, StringType, Min(2), Max(255)]
+        public readonly ?string $patronymic,
         #[Required, Date, DateFormat('d.m.Y'), Before('today')]
         public readonly string $birthday,
         #[Required, StringType, Min(2), Max(255)]

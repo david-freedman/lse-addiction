@@ -14,7 +14,17 @@ final readonly class WebinarDetailViewModel
 
     public function webinar(): Webinar
     {
-        return $this->webinar->load(['teacher', 'students']);
+        return $this->webinar->load([
+            'teacher',
+            'students' => function ($query) {
+                $query->with(['quizAttempts' => function ($q) {
+                    if ($this->webinar->quiz) {
+                        $q->where('quiz_id', $this->webinar->quiz->id);
+                    }
+                }]);
+            },
+            'quiz'
+        ]);
     }
 
     public function title(): string

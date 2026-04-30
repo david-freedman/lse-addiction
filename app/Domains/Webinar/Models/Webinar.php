@@ -10,8 +10,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Domains\Quiz\Models\Quiz;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 
@@ -36,6 +38,12 @@ class Webinar extends Model
         'price',
         'old_price',
         'sync_to_wp',
+        'cert_company_name',
+        'cert_signature',
+        'cert_stamp',
+        'cert_bpr_hours',
+        'cert_specialties',
+        'cert_participant_type',
     ];
 
     protected function casts(): array
@@ -49,6 +57,11 @@ class Webinar extends Model
             'old_price' => 'decimal:2',
             'sync_to_wp' => 'boolean',
         ];
+    }
+
+    public function quiz(): MorphOne
+    {
+        return $this->morphOne(Quiz::class, 'quizzable');
     }
 
     public function teacher(): BelongsTo
@@ -234,6 +247,11 @@ class Webinar extends Model
         }
 
         return $this->starts_at->diffInHours(now()) >= 24;
+    }
+
+    public function requiresCertificateApproval(): bool
+    {
+        return true;
     }
 
     public function isDraft(): bool

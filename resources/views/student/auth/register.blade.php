@@ -45,23 +45,7 @@
                                     placeholder="Введіть свій Email"
                                     value="{{ old('email') }}"
                                     x-model="email"
-                                    :disabled="emailVerified"
                                     required>
-                                <button
-                                    type="button"
-                                    class="field__send"
-                                    x-show="!emailVerified"
-                                    @click="sendCode('email')"
-                                    :disabled="!email || emailSending">
-                                    <span x-show="!emailSending">відправити код</span>
-                                    <span x-show="emailSending">відправка...</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    class="field__confirmed"
-                                    x-show="emailVerified">
-                                    ✓ Підтверджено
-                                </button>
                             </div>
                             @error('email')
                                 <div class="field__error">{{ $message }}</div>
@@ -106,7 +90,6 @@
                             <div class="field__error" x-show="phoneError" x-text="phoneError"></div>
                         </div>
                     </div>
-                    <input type="hidden" name="email_token" :value="emailToken">
                     <input type="hidden" name="phone_token" :value="phoneToken">
                     <button
                         type="submit"
@@ -168,7 +151,7 @@ function registrationForm() {
         },
 
         get canSubmit() {
-            return this.phoneVerified && this.emailVerified && this.email && this.phone;
+            return this.phoneVerified && this.email && this.phone;
         },
 
         async sendCode(type) {
@@ -464,9 +447,6 @@ function registrationForm() {
 
                 if (!this.phoneVerified) {
                     this.phoneError = 'Спочатку підтвердіть телефон';
-                }
-                if (!this.emailVerified) {
-                    this.emailError = 'Спочатку підтвердіть email';
                 }
             }
         }

@@ -10,7 +10,7 @@ final class VerifyCertificateController
     public function __invoke(string $certificateNumber): View
     {
         $certificate = Certificate::withTrashed()
-            ->with(['student', 'course.teacher'])
+            ->with(['student', 'course.teacher', 'webinar.teacher'])
             ->where('certificate_number', $certificateNumber)
             ->first();
 

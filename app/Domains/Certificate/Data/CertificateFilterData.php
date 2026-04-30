@@ -20,6 +20,12 @@ class CertificateFilterData extends Data
 
         #[Nullable]
         public readonly ?string $status = null,
+
+        #[Nullable]
+        public readonly ?string $issued_from = null,
+
+        #[Nullable]
+        public readonly ?string $issued_to = null,
     ) {}
 
     public function getStatusEnum(): ?CertificateStatus

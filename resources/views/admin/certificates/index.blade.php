@@ -3,6 +3,7 @@
 @section('title', 'Сертифікати')
 
 @section('content')
+<div x-data="{ selectedIds: [], showFilters: {{ $viewModel->isFiltered() ? 'true' : 'false' }} }">
 <div class="flex items-center justify-between mb-6">
     <h1 class="text-title-xl font-bold text-gray-900">Сертифікати</h1>
     @if($viewModel->pendingCount() > 0)
@@ -15,7 +16,7 @@
     @endif
 </div>
 
-<div class="mb-6 rounded-2xl border border-gray-200 bg-white p-4" x-data="{ showFilters: {{ $viewModel->isFiltered() ? 'true' : 'false' }} }">
+<div class="mb-6 rounded-2xl border border-gray-200 bg-white p-4">
     <form method="GET" action="{{ route('admin.certificates.index') }}">
         <div class="flex items-center gap-4">
             <div class="flex-1">
@@ -44,7 +45,9 @@
                     Скинути
                 </a>
             @endif
-            <a href="{{ route('admin.certificates.export.list', request()->query()) }}"
+            <a :href="selectedIds.length > 0
+                    ? '{{ route('admin.certificates.export.list', request()->query()) }}' + '{{ request()->query() ? '&' : '?' }}' + selectedIds.map(id => 'certificate_ids[]=' + id).join('&')
+                    : '{{ route('admin.certificates.export.list', request()->query()) }}'"
                class="ml-auto inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -62,7 +65,7 @@
             @endif
         </div>
 
-        <div x-show="showFilters" x-collapse class="mt-4 grid grid-cols-1 gap-4 border-t border-gray-200 pt-4 md:grid-cols-4">
+        <div x-show="showFilters" x-transition class="mt-4 grid grid-cols-1 gap-4 border-t border-gray-200 pt-4 md:grid-cols-4">
             <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700">Курс</label>
                 <select name="course_id" class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white">
@@ -98,6 +101,26 @@
                     @endforeach
                 </select>
             </div>
+
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-gray-700">Видано від</label>
+                <input
+                    type="date"
+                    name="issued_from"
+                    value="{{ $viewModel->filters()->issued_from }}"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white"
+                >
+            </div>
+
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-gray-700">Видано до</label>
+                <input
+                    type="date"
+                    name="issued_to"
+                    value="{{ $viewModel->filters()->issued_to }}"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white"
+                >
+            </div>
         </div>
     </form>
 </div>
@@ -110,7 +133,7 @@
         <p class="mt-4 text-gray-600">Сертифікатів ще немає.</p>
     </div>
 @else
-    <div x-data="{ selectedIds: [] }" class="rounded-2xl border border-gray-200 bg-white overflow-hidden">
+    <div class="rounded-2xl border border-gray-200 bg-white overflow-hidden">
         <div x-show="selectedIds.length > 0" class="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-3">
             <span class="text-sm text-gray-600">Вибрано: <span x-text="selectedIds.length"></span></span>
             <div class="flex items-center gap-2">
@@ -134,7 +157,7 @@
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Номер</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Студент</th>
-                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Курс</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Курс / Вебінар</th>
                         <th class="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Оцінка</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата видачі</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Статус</th>
@@ -160,9 +183,14 @@
                                 <div class="text-xs text-gray-500">{{ $certificate->student->email }}</div>
                             </td>
                             <td class="px-6 py-4">
-                                <a href="{{ route('admin.courses.show', $certificate->course) }}" class="text-gray-900 hover:text-brand-600 hover:underline">
-                                    {{ $certificate->course->name }}
-                                </a>
+                                @if($certificate->isWebinarCertificate())
+                                    <span class="text-gray-900">{{ $certificate->webinar->title }}</span>
+                                    <div class="text-xs text-brand-600">Вебінар</div>
+                                @else
+                                    <a href="{{ route('admin.courses.show', $certificate->course) }}" class="text-gray-900 hover:text-brand-600 hover:underline">
+                                        {{ $certificate->course->name }}
+                                    </a>
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-center whitespace-nowrap">
                                 <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $certificate->grade_level->badgeClasses() }}">
@@ -228,4 +256,5 @@
         {{ $viewModel->certificates()->links() }}
     </div>
 @endif
+</div>
 @endsection

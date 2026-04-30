@@ -51,8 +51,7 @@ readonly class QuizAttemptDetailViewModel
         $correctIds = $correctAnswers->pluck('id')->map(fn ($id) => (string) $id)->toArray();
         sort($correctIds);
 
-        $studentIds = is_array($studentAnswer) ? $studentAnswer : [(string) $studentAnswer];
-        $studentIds = array_filter($studentIds, fn ($id) => !is_array($id));
+        $studentIds = $this->extractAnswerIds($studentAnswer);
         $studentIds = array_map('strval', $studentIds);
         sort($studentIds);
 
@@ -65,11 +64,32 @@ readonly class QuizAttemptDetailViewModel
             return 'Не відповів';
         }
 
-        $answerIds = is_array($studentAnswer) ? $studentAnswer : [$studentAnswer];
-        $answerIds = array_filter($answerIds, fn ($id) => !is_array($id));
+        $answerIds = $this->extractAnswerIds($studentAnswer);
         $answers = $question->answers->whereIn('id', $answerIds);
 
         return $answers->pluck('answer_text')->filter()->implode(', ') ?: 'Не відповів';
+    }
+
+    private function extractAnswerIds($studentAnswer): array
+    {
+        if (!is_array($studentAnswer)) {
+            return [$studentAnswer];
+        }
+
+        $answerIds = [];
+        if (isset($studentAnswer['selected'])) {
+            $answerIds = is_array($studentAnswer['selected']) ? $studentAnswer['selected'] : [$studentAnswer['selected']];
+        } elseif (isset($studentAnswer['order'])) {
+            $answerIds = is_array($studentAnswer['order']) ? $studentAnswer['order'] : [$studentAnswer['order']];
+        } elseif (isset($studentAnswer['categories'])) {
+            foreach ($studentAnswer['categories'] as $catIds) {
+                $answerIds = array_merge($answerIds, is_array($catIds) ? $catIds : [$catIds]);
+            }
+        } else {
+            $answerIds = $studentAnswer;
+        }
+
+        return array_filter($answerIds, fn ($id) => !is_array($id));
     }
 
     private function formatCorrectAnswer($question, $correctAnswers): string

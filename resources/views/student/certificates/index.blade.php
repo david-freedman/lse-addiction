@@ -29,7 +29,10 @@
                 <div class="flex-1 min-w-0">
                     <p class="text-gray-600 text-sm mb-1">Останній отриманий</p>
                     @if($viewModel->lastCertificate())
-                        <p class="text-lg font-bold text-gray-900 truncate">{{ $viewModel->lastCertificate()->course->name }}</p>
+                        @php $last = $viewModel->lastCertificate(); @endphp
+                        <p class="text-lg font-bold text-gray-900 truncate">
+                            {{ $last->isWebinarCertificate() ? $last->webinar->title : $last->course->name }}
+                        </p>
                         <p class="text-sm text-gray-500">{{ $viewModel->lastCertificate()->formatted_issued_at }}</p>
                     @else
                         <p class="text-gray-400">Немає</p>
@@ -87,7 +90,7 @@
             @foreach($viewModel->certificates() as $certificate)
                 <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition">
                     <div class="relative p-6 text-center text-white overflow-hidden">
-                        @if($certificate->course->banner_url)
+                        @if(!$certificate->isWebinarCertificate() && $certificate->course->banner_url)
                             <div class="absolute inset-0" style="background-image: url('{{ $certificate->course->banner_url }}'); background-size: cover; background-position: center; filter: blur(4px); transform: scale(1.05);"></div>
                             <div class="absolute inset-0 bg-black/40"></div>
                         @else
@@ -108,20 +111,30 @@
                                 </svg>
                             </div>
                             <h3 class="text-xl font-bold mb-1">Сертифікат</h3>
-                            <p class="text-sm text-white/80 mb-2">про завершення курсу</p>
-                            <p class="font-semibold text-sm leading-tight">{{ $certificate->course->name }}</p>
+                            <p class="text-sm text-white/80 mb-2">
+                                {{ $certificate->isWebinarCertificate() ? 'про участь у вебінарі' : 'про завершення курсу' }}
+                            </p>
+                            <p class="font-semibold text-sm leading-tight">
+                                {{ $certificate->isWebinarCertificate() ? $certificate->webinar->title : $certificate->course->name }}
+                            </p>
                         </div>
                     </div>
 
                     <div class="p-5">
-                        <h4 class="font-semibold text-gray-900 mb-3">{{ $certificate->course->name }}</h4>
+                        <h4 class="font-semibold text-gray-900 mb-3">
+                            {{ $certificate->isWebinarCertificate() ? $certificate->webinar->title : $certificate->course->name }}
+                        </h4>
 
                         <div class="space-y-2 text-sm text-gray-600 mb-4">
                             <div class="flex items-center gap-2">
                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
-                                <span>Викладач: {{ $certificate->course->teacher?->full_name ?? 'Не вказано' }}</span>
+                                @if($certificate->isWebinarCertificate())
+                                    <span>Доповідач: {{ $certificate->webinar->teacher?->full_name ?? 'Не вказано' }}</span>
+                                @else
+                                    <span>Викладач: {{ $certificate->course->teacher?->full_name ?? 'Не вказано' }}</span>
+                                @endif
                             </div>
                             <div class="flex items-center gap-2">
                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

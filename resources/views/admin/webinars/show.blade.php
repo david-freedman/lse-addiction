@@ -112,6 +112,9 @@
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата реєстрації</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Присутність</th>
+                        @if($viewModel->webinar()->quiz)
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Тест</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -135,6 +138,20 @@
                                     <span class="inline-flex rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">Не відмічено</span>
                                 @endif
                             </td>
+                            @if($viewModel->webinar()->quiz)
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @php
+                                        $bestAttempt = $student->quizAttempts->sortByDesc('score')->first();
+                                    @endphp
+                                    @if($bestAttempt)
+                                        <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $bestAttempt->passed ? 'bg-success-100 text-success-700' : 'bg-error-100 text-error-700' }}">
+                                            {{ $bestAttempt->scorePercentage }}% ({{ $bestAttempt->passed ? 'Склав' : 'Не склав' }})
+                                        </span>
+                                    @else
+                                        <span class="text-sm text-gray-400">—</span>
+                                    @endif
+                                </td>
+                            @endif
                         </tr>
                     @endforeach
                 </tbody>

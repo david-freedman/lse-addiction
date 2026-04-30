@@ -11,7 +11,7 @@ final class EditWebinarController
 {
     public function __invoke(Webinar $webinar): View
     {
-        $webinar->load(['teacher']);
+        $webinar->load(['teacher', 'quiz.questions']);
 
         $teachers = Teacher::orderBy('last_name')->get();
         $statuses = WebinarStatus::cases();

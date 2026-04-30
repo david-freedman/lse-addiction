@@ -136,13 +136,23 @@
         <div class="certificate-inner">
             <div class="logo">LIFESCANEDUCATION</div>
             <div class="header">Сертифікат</div>
+            @if($certificate->isWebinarCertificate())
+            <div class="subtitle">про участь у вебінарі</div>
+            @else
             <div class="subtitle">про успішне завершення курсу</div>
+            @endif
             <div class="divider"></div>
             <div class="label">Цей сертифікат підтверджує, що</div>
             <div class="name">{{ $certificate->student->name }} {{ $certificate->student->surname }}</div>
+            @if($certificate->isWebinarCertificate())
+            <div class="course-label">взяв(-ла) участь у вебінарі</div>
+            <div class="course-name">«{{ $certificate->webinar->title }}»</div>
+            <div class="teacher">Доповідач: {{ $certificate->webinar->teacher?->full_name ?? 'Не вказано' }}</div>
+            @else
             <div class="course-label">успішно завершив(-ла) курс</div>
             <div class="course-name">«{{ $certificate->course->name }}»</div>
             <div class="teacher">Викладач: {{ $certificate->course->teacher?->full_name ?? 'Не вказано' }}</div>
+            @endif
             <div class="grade">
                 <div class="grade-label">Оцінка</div>
                 <div class="grade-value">{{ $certificate->grade_level->label() }}</div>

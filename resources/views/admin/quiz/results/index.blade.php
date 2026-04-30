@@ -98,7 +98,7 @@
                         </td>
                         <td class="px-4 py-3">
                             <span class="font-medium text-gray-900">{{ $attempt->score }}/{{ $attempt->max_score }}</span>
-                            <span class="text-gray-500">({{ $attempt->scorePercentage() }}%)</span>
+                            <span class="text-gray-500">({{ $attempt->scorePercentage }}%)</span>
                         </td>
                         <td class="px-4 py-3">
                             @if($attempt->passed)

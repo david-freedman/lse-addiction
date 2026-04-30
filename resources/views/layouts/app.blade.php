@@ -7,7 +7,10 @@
     <title>@yield('title', 'LifeScanEducation')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50 antialiased">
+<body class="bg-gray-50 antialiased"
+    x-data="{ sidebarToggle: false }"
+    x-init="$watch('sidebarToggle', value => localStorage.setItem('sidebarToggle', JSON.stringify(value))); sidebarToggle = JSON.parse(localStorage.getItem('sidebarToggle') || 'false')"
+    >
     @auth
         @php
             $newCertificatesCount = auth()->user()->certificates()
@@ -16,9 +19,25 @@
                 ->count();
         @endphp
         <div class="flex h-screen overflow-hidden">
-            <aside class="hidden lg:flex lg:flex-shrink-0">
-                <div class="flex flex-col w-64 bg-white border-r border-gray-200">
-                    <div class="flex items-center justify-center h-16 px-6 border-b border-gray-200">
+            <!-- Mobile overlay -->
+            <div x-show="sidebarToggle" 
+                 class="fixed inset-0 bg-gray-900/50 z-30 lg:hidden"
+                 @click="sidebarToggle = false"
+                 x-transition:enter="transition-opacity ease-linear duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition-opacity ease-linear duration-300"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 style="display: none;">
+            </div>
+
+            <aside
+                :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full'"
+                class="sidebar fixed left-0 top-0 z-40 flex h-screen w-[290px] flex-col overflow-y-hidden bg-white transition-transform duration-300 ease-in-out lg:static lg:translate-x-0"
+            >
+                <div class="flex flex-col h-full bg-white border-r border-gray-200">
+                    <div class="items-center justify-center h-16 px-6 border-b border-gray-200 hidden lg:flex">
                         <a href="{{ route('student.dashboard') }}" class="flex items-center">
                             <svg class="w-8 h-8 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -26,6 +45,9 @@
                             <span class="ml-2 text-xl font-semibold text-gray-900">LSE</span>
                         </a>
                     </div>
+
+                    <!-- Mobile sidebar top spacing to match header height -->
+                    <div class="h-16 lg:hidden shrink-0"></div>
 
                     <nav class="flex-1 py-6 space-y-1 overflow-y-auto">
                         <a href="{{ route('student.dashboard') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition {{ request()->routeIs('home') ? 'bg-teal-50 text-teal-600 font-medium' : '' }}">
@@ -108,16 +130,24 @@
             </aside>
 
             <div class="flex flex-col flex-1 overflow-hidden">
-                <header class="bg-white border-b border-gray-200">
+                <header class="bg-white border-b border-gray-200 relative z-50">
                     <div class="flex items-center justify-between h-16 px-6">
-                        <div class="flex items-center flex-1 gap-6">
-                            <button class="lg:hidden text-gray-500 hover:text-gray-700">
+                        <div class="flex items-center flex-1 gap-4 lg:gap-6">
+                            <button
+                                :class="sidebarToggle ? 'bg-gray-100 text-gray-700' : 'text-gray-500'"
+                                @click.stop="sidebarToggle = !sidebarToggle"
+                                class="lg:hidden hover:bg-gray-100 hover:text-gray-700 p-2 rounded-md transition-colors">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                                    <path x-show="!sidebarToggle" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                                    <path x-show="sidebarToggle" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" style="display: none;" />
                                 </svg>
                             </button>
 
-                            <div class="flex items-center gap-1">
+                            <a href="{{ route('student.dashboard') }}" class="flex items-center lg:hidden">
+                                <span class="text-xl font-semibold text-gray-900">LSE</span>
+                            </a>
+
+                            <div class="hidden sm:flex items-center gap-1">
                                 <a href="{{ route('student.my-courses') }}" class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />

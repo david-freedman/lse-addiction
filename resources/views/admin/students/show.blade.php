@@ -325,11 +325,18 @@
                                 <div class="flex items-start justify-between">
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2">
-                                            <h4 class="font-medium text-gray-900">{{ $certificate->course->name }}</h4>
+                                            @if($certificate->isWebinarCertificate())
+                                                <h4 class="font-medium text-gray-900">{{ $certificate->webinar->title }}</h4>
+                                                <span class="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-700">Вебінар</span>
+                                            @else
+                                                <h4 class="font-medium text-gray-900">{{ $certificate->course->name }}</h4>
+                                            @endif
                                             <span class="rounded-full px-2 py-0.5 text-xs font-medium {{ $certificate->grade_level->badgeClasses() }}">
                                                 {{ $certificate->grade_level->label() }}
                                             </span>
-                                            @if($certificate->isRevoked())
+                                            @if($certificate->isPending())
+                                                <span class="rounded-full bg-warning-100 px-2 py-0.5 text-xs font-medium text-warning-700">На модерації</span>
+                                            @elseif($certificate->isRevoked())
                                                 <span class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">Відкликано</span>
                                             @endif
                                         </div>
@@ -365,28 +372,61 @@
                     <p class="text-sm text-gray-500">Немає сертифікатів</p>
                 @endif
 
-                @if($viewModel->hasCoursesEligibleForManualCertificate())
+                @if($viewModel->hasCoursesEligibleForManualCertificate() || $viewModel->hasWebinarsEligibleForManualCertificate())
                     <details class="mt-4">
                         <summary class="cursor-pointer text-sm font-medium text-brand-600">Видати сертифікат вручну</summary>
-                        <form action="{{ route('admin.students.certificates.issue', $student) }}" method="POST" class="mt-4 space-y-4 rounded-lg bg-gray-50 p-4">
-                            @csrf
+                        <div
+                            x-data="{
+                                type: '{{ $viewModel->hasCoursesEligibleForManualCertificate() ? 'course' : 'webinar' }}',
+                                courseAction: '{{ route('admin.students.certificates.issue', $student) }}',
+                                webinarAction: '{{ route('admin.students.webinar-certificates.issue', $student) }}'
+                            }"
+                            class="mt-4 space-y-4 rounded-lg bg-gray-50 p-4"
+                        >
                             <div>
-                                <label class="mb-2 block text-sm font-medium text-gray-700">Курс</label>
-                                <select name="course_id" required class="w-full rounded-lg border border-gray-300 px-4 py-2">
-                                    @foreach($viewModel->coursesEligibleForManualCertificate() as $course)
-                                        <option value="{{ $course->id }}">{{ $course->name }}</option>
-                                    @endforeach
+                                <label class="mb-2 block text-sm font-medium text-gray-700">Тип</label>
+                                <select x-model="type" class="w-full rounded-lg border border-gray-300 px-4 py-2">
+                                    @if($viewModel->hasCoursesEligibleForManualCertificate())
+                                        <option value="course">Курс</option>
+                                    @endif
+                                    @if($viewModel->hasWebinarsEligibleForManualCertificate())
+                                        <option value="webinar">Вебінар</option>
+                                    @endif
                                 </select>
                             </div>
-                            <div>
-                                <label class="mb-2 block text-sm font-medium text-gray-700">Оцінка (%)</label>
-                                <input type="number" name="grade" min="0" max="100" step="0.01" placeholder="Залиште порожнім для автоматичного розрахунку" class="w-full rounded-lg border border-gray-300 px-4 py-2">
-                                <p class="mt-1 text-xs text-gray-500">Якщо не вказано, оцінка розраховується за результатами фінального тесту</p>
-                            </div>
-                            <button type="submit" class="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600">
-                                Видати сертифікат
-                            </button>
-                        </form>
+
+                            <form :action="type === 'course' ? courseAction : webinarAction" method="POST" class="space-y-4">
+                                @csrf
+                                <div x-show="type === 'course'">
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Курс</label>
+                                    <select name="course_id" :required="type === 'course'" class="w-full rounded-lg border border-gray-300 px-4 py-2">
+                                        @foreach($viewModel->coursesEligibleForManualCertificate() as $course)
+                                            <option value="{{ $course->id }}">{{ $course->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div x-show="type === 'webinar'">
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Вебінар</label>
+                                    <select name="webinar_id" :required="type === 'webinar'" class="w-full rounded-lg border border-gray-300 px-4 py-2">
+                                        @foreach($viewModel->webinarsEligibleForManualCertificate() as $webinar)
+                                            <option value="{{ $webinar->id }}">{{ $webinar->title }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Оцінка (%)</label>
+                                    <input type="number" name="grade" min="0" max="100" step="0.01" placeholder="Залиште порожнім (за замовчуванням 100%)" class="w-full rounded-lg border border-gray-300 px-4 py-2">
+                                    <p x-show="type === 'course'" class="mt-1 text-xs text-gray-500">Якщо не вказано, оцінка розраховується за результатами фінального тесту</p>
+                                    <p x-show="type === 'webinar'" class="mt-1 text-xs text-gray-500">Якщо не вказано, виставляється 100%</p>
+                                </div>
+
+                                <button type="submit" class="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600">
+                                    Видати сертифікат
+                                </button>
+                            </form>
+                        </div>
                     </details>
                 @endif
             </div>

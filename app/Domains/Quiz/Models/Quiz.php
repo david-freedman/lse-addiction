@@ -4,6 +4,7 @@ namespace App\Domains\Quiz\Models;
 
 use App\Domains\Lesson\Models\Lesson;
 use App\Domains\Module\Models\Module;
+use App\Domains\Webinar\Models\Webinar;
 use App\Domains\Progress\Models\StudentQuizAttempt;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -65,6 +66,11 @@ class Quiz extends Model
     public function isForLesson(): bool
     {
         return $this->quizzable_type === Lesson::class;
+    }
+
+    public function isForWebinar(): bool
+    {
+        return $this->quizzable_type === Webinar::class;
     }
 
     protected function maxScore(): Attribute

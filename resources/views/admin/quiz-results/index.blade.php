@@ -275,7 +275,11 @@
                             <div>
                                 <p class="font-medium text-gray-900">{{ $attempt->quiz->title }}</p>
                                 <p class="text-sm text-gray-500 truncate max-w-md">
-                                    {{ $attempt->quiz->quizzable->module->course->name }} / {{ $attempt->quiz->quizzable->module->name }} / {{ $attempt->quiz->quizzable->name }}
+                                    @if($attempt->quiz->quizzable_type === \App\Domains\Lesson\Models\Lesson::class)
+                                        Курс: {{ $attempt->quiz->quizzable->module->course->name }} / {{ $attempt->quiz->quizzable->module->name }} / {{ $attempt->quiz->quizzable->name }}
+                                    @elseif($attempt->quiz->quizzable_type === \App\Domains\Webinar\Models\Webinar::class)
+                                        Вебінар: {{ $attempt->quiz->quizzable->title }}
+                                    @endif
                                 </p>
                             </div>
                         </td>

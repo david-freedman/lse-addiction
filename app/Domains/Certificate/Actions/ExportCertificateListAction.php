@@ -11,9 +11,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportCertificateListAction
 {
-    public function toExcel(CertificateFilterData $filters, ?array $restrictToCourseIds = null): StreamedResponse
+    public function toExcel(CertificateFilterData $filters, ?array $restrictToCourseIds = null, ?array $certificateIds = null): StreamedResponse
     {
-        $certificates = $this->getFilteredCertificates($filters, $restrictToCourseIds);
+        $certificates = $this->getFilteredCertificates($filters, $restrictToCourseIds, $certificateIds);
 
         $spreadsheet = new Spreadsheet;
         $sheet = $spreadsheet->getActiveSheet();
@@ -85,11 +85,15 @@ class ExportCertificateListAction
         ]);
     }
 
-    private function getFilteredCertificates(CertificateFilterData $filters, ?array $restrictToCourseIds)
+    private function getFilteredCertificates(CertificateFilterData $filters, ?array $restrictToCourseIds, ?array $certificateIds = null)
     {
         $query = Certificate::query()
             ->withTrashed()
             ->with(['student.profileFieldValues.profileField', 'course']);
+
+        if ($certificateIds !== null) {
+            return $query->whereIn('id', $certificateIds)->orderByDesc('issued_at')->get();
+        }
 
         if ($restrictToCourseIds !== null) {
             $query->whereIn('course_id', $restrictToCourseIds);
@@ -125,6 +129,14 @@ class ExportCertificateListAction
                 CertificateStatus::Published => $query->published(),
                 CertificateStatus::Revoked => $query->revoked(),
             };
+        }
+
+        if ($filters->issued_from) {
+            $query->whereDate('issued_at', '>=', \Carbon\Carbon::parse($filters->issued_from)->format('Y-m-d'));
+        }
+
+        if ($filters->issued_to) {
+            $query->whereDate('issued_at', '<=', \Carbon\Carbon::parse($filters->issued_to)->format('Y-m-d'));
         }
 
         return $query->orderByDesc('issued_at')->get();

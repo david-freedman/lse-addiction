@@ -23,12 +23,20 @@ class CertificatePublishedNotification extends Notification implements ShouldQue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $this->certificate->load('course');
+        if ($this->certificate->isWebinarCertificate()) {
+            $this->certificate->loadMissing('webinar');
+            $sourceName = $this->certificate->webinar->title;
+            $sourceLabel = 'вебінар';
+        } else {
+            $this->certificate->loadMissing('course');
+            $sourceName = $this->certificate->course->name;
+            $sourceLabel = 'курс';
+        }
 
         return (new MailMessage)
             ->subject('Ваш сертифікат опубліковано!')
             ->greeting('Вітаємо, '.$notifiable->name.'!')
-            ->line('Ваш сертифікат за курс "'.$this->certificate->course->name.'" пройшов модерацію та тепер доступний для перегляду.')
+            ->line('Ваш сертифікат за '.$sourceLabel.' "'.$sourceName.'" пройшов модерацію та тепер доступний для перегляду.')
             ->line('Ваша оцінка: '.$this->certificate->grade_level->label().' ('.$this->certificate->grade.'%)')
             ->line('Номер сертифіката: '.$this->certificate->certificate_number)
             ->action('Переглянути сертифікати', route('student.certificates'))
@@ -41,6 +49,7 @@ class CertificatePublishedNotification extends Notification implements ShouldQue
             'certificate_id' => $this->certificate->id,
             'certificate_number' => $this->certificate->certificate_number,
             'course_id' => $this->certificate->course_id,
+            'webinar_id' => $this->certificate->webinar_id,
         ];
     }
 }

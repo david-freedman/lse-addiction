@@ -22,7 +22,7 @@ readonly class CertificateListViewModel
     {
         $query = Certificate::query()
             ->withTrashed()
-            ->with(['student', 'course', 'issuedBy']);
+            ->with(['student', 'course', 'webinar', 'issuedBy']);
 
         if ($this->restrictToCourseIds !== null) {
             $query->whereIn('course_id', $this->restrictToCourseIds);
@@ -39,6 +39,9 @@ readonly class CertificateListViewModel
                     })
                     ->orWhereHas('course', function ($q) use ($search) {
                         $q->where('name', 'ilike', "%{$search}%");
+                    })
+                    ->orWhereHas('webinar', function ($q) use ($search) {
+                        $q->where('title', 'ilike', "%{$search}%");
                     });
             });
         }
@@ -58,6 +61,14 @@ readonly class CertificateListViewModel
                 CertificateStatus::Published => $query->published(),
                 CertificateStatus::Revoked => $query->revoked(),
             };
+        }
+
+        if ($this->filters->issued_from) {
+            $query->whereDate('issued_at', '>=', \Carbon\Carbon::parse($this->filters->issued_from)->format('Y-m-d'));
+        }
+
+        if ($this->filters->issued_to) {
+            $query->whereDate('issued_at', '<=', \Carbon\Carbon::parse($this->filters->issued_to)->format('Y-m-d'));
         }
 
         return $query->orderByDesc('issued_at')->paginate($this->perPage)->withQueryString();
@@ -96,7 +107,9 @@ readonly class CertificateListViewModel
         return $this->filters->search !== null
             || $this->filters->course_id !== null
             || $this->filters->student_id !== null
-            || $this->filters->status !== null;
+            || $this->filters->status !== null
+            || $this->filters->issued_from !== null
+            || $this->filters->issued_to !== null;
     }
 
     public function pendingCount(): int

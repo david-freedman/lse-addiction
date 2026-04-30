@@ -28,16 +28,9 @@ final class RegisterWebinarController
         $student = auth()->user();
 
         if ($webinar->isRegistered($student)) {
-            $pivot = $webinar->students()
-                ->where('student_id', $student->id)
-                ->whereNull('webinar_student.cancelled_at')
-                ->first()?->pivot;
-
-            if (!empty($pivot?->transaction_id) || $webinar->is_free) {
-                return redirect()
-                    ->back()
-                    ->with('error', 'Ви вже зареєстровані на цей вебінар');
-            }
+            return redirect()
+                ->back()
+                ->with('error', 'Ви вже зареєстровані на цей вебінар');
         }
 
         if (!$webinar->hasCapacity()) {
