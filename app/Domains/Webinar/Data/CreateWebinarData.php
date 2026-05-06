@@ -66,10 +66,10 @@ class CreateWebinarData extends Data
         #[Nullable, StringType, Max(255)]
         public readonly ?string $cert_company_name = null,
 
-        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(2048)]
+        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(10240)]
         public readonly ?UploadedFile $cert_signature = null,
 
-        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(2048)]
+        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(10240)]
         public readonly ?UploadedFile $cert_stamp = null,
 
         #[Nullable, Numeric, Min(1)]
