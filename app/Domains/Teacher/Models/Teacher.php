@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Teacher extends Model
@@ -29,14 +30,14 @@ class Teacher extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function courses(): HasMany
+    public function courses(): BelongsToMany
     {
-        return $this->hasMany(Course::class);
+        return $this->belongsToMany(Course::class, 'course_teacher');
     }
 
-    public function webinars(): HasMany
+    public function webinars(): BelongsToMany
     {
-        return $this->hasMany(Webinar::class);
+        return $this->belongsToMany(Webinar::class, 'webinar_teacher');
     }
 
     public function getFullNameAttribute(): string

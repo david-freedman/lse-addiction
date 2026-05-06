@@ -27,7 +27,7 @@ final class ShowCourseController
             $requiresPayment = $course->price > 0 && ! $student->hasAccessToCourse($course);
 
             if (! $requiresPayment && ! $course->hasStarted()) {
-                $course->load(['teacher', 'author', 'tags']);
+                $course->load(['teachers', 'author', 'tags']);
                 $viewModel = new CourseDetailViewModel($course, $student);
 
                 return view('student.courses.not-started', compact('viewModel', 'course'));
@@ -43,7 +43,7 @@ final class ShowCourseController
             return view('student.courses.progress', compact('viewModel', 'requiresPayment', 'course'));
         }
 
-        $course->load(['teacher', 'author', 'tags']);
+        $course->load(['teachers', 'author', 'tags']);
         $viewModel = new CourseDetailViewModel($course, $student);
 
         return view('student.courses.show', compact('viewModel', 'course'));

@@ -69,6 +69,11 @@ class Webinar extends Model
         return $this->belongsTo(Teacher::class);
     }
 
+    public function teachers(): BelongsToMany
+    {
+        return $this->belongsToMany(Teacher::class, 'webinar_teacher');
+    }
+
     public function students(): BelongsToMany
     {
         return $this->belongsToMany(Student::class, 'webinar_student')

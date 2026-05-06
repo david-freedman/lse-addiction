@@ -13,7 +13,7 @@ final class ShowWebinarController
             abort(404);
         }
 
-        $webinar->load(['teacher', 'quiz']);
+        $webinar->load(['teachers', 'quiz']);
 
         $student = auth()->user();
         $isRegistered = $webinar->isRegistered($student);

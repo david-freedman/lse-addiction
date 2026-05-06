@@ -45,7 +45,7 @@ class CreateWebinarAction
             'number' => $data->number,
             'description' => $data->description,
             'banner' => $bannerPath,
-            'teacher_id' => $data->teacher_id,
+            'teacher_id' => $data->teacher_ids[0] ?? null,
             'starts_at' => $data->starts_at ? Carbon::createFromFormat('d.m.Y H:i', $data->starts_at) : null,
             'duration_minutes' => $data->duration_minutes,
             'meeting_url' => $data->meeting_url,
@@ -62,6 +62,8 @@ class CreateWebinarAction
             'cert_specialties' => $data->cert_specialties,
             'cert_participant_type' => $data->cert_participant_type,
         ]);
+
+        $webinar->teachers()->sync($data->teacher_ids);
 
         LogActivityAction::execute(ActivityLogData::from([
             'subject_type' => ActivitySubject::Webinar,

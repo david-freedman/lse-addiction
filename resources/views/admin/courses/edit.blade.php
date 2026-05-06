@@ -161,27 +161,46 @@
                 <div x-data="{
                     open: false,
                     search: '',
-                    selectedId: {{ old('teacher_id', $course->teacher_id) }},
+                    selectedIds: {{ Js::from(old('teacher_ids', $course->teachers->pluck('id')->all())) }},
                     teachers: {{ Js::from($teachers->map(fn($t) => ['id' => $t->id, 'full_name' => $t->full_name, 'position' => $t->position])) }},
-                    get selectedTeacher() {
-                        return this.teachers.find(t => t.id === this.selectedId);
+                    get selectedTeachers() {
+                        return this.teachers.filter(t => this.selectedIds.includes(t.id));
                     },
                     get filteredTeachers() {
-                        if (!this.search) return this.teachers;
                         const s = this.search.toLowerCase();
-                        return this.teachers.filter(t => t.full_name.toLowerCase().includes(s));
+                        return this.teachers.filter(t => !this.selectedIds.includes(t.id) && (!s || t.full_name.toLowerCase().includes(s)));
+                    },
+                    toggle(id) {
+                        if (this.selectedIds.includes(id)) {
+                            this.selectedIds = this.selectedIds.filter(i => i !== id);
+                        } else {
+                            this.selectedIds = [...this.selectedIds, id];
+                            this.search = '';
+                            this.open = false;
+                        }
                     }
                 }">
-                    <label class="mb-2 block text-sm font-medium text-gray-700">Викладач <span class="text-error-500">*</span></label>
-                    <input type="hidden" name="teacher_id" :value="selectedId">
+                    <label class="mb-2 block text-sm font-medium text-gray-700">Викладачі <span class="text-error-500">*</span></label>
+                    <template x-for="id in selectedIds" :key="id">
+                        <input type="hidden" name="teacher_ids[]" :value="id">
+                    </template>
+
+                    <div class="mb-2 flex flex-wrap gap-2">
+                        <template x-for="teacher in selectedTeachers" :key="teacher.id">
+                            <span class="inline-flex items-center gap-1 rounded-full bg-brand-100 px-3 py-1 text-sm font-medium text-brand-800">
+                                <span x-text="teacher.full_name"></span>
+                                <button type="button" @click="toggle(teacher.id)" class="ml-1 text-brand-500 hover:text-brand-800">&times;</button>
+                            </span>
+                        </template>
+                    </div>
 
                     <div class="relative">
                         <button
                             type="button"
                             @click="open = !open"
-                            class="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-left text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('teacher_id') border-error-500 @enderror"
+                            class="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-left text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('teacher_ids') border-error-500 @enderror"
                         >
-                            <span x-text="selectedTeacher ? selectedTeacher.full_name : 'Оберіть викладача'"></span>
+                            <span class="text-gray-500">Додати викладача...</span>
                             <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
@@ -205,9 +224,8 @@
                             <ul class="py-1">
                                 <template x-for="teacher in filteredTeachers" :key="teacher.id">
                                     <li
-                                        @click="selectedId = teacher.id; open = false; search = ''"
+                                        @click="toggle(teacher.id)"
                                         class="cursor-pointer px-4 py-2 hover:bg-gray-100"
-                                        :class="{ 'bg-brand-50': selectedId === teacher.id }"
                                     >
                                         <div class="font-medium" x-text="teacher.full_name"></div>
                                         <div class="text-xs text-gray-500" x-text="teacher.position || ''"></div>
@@ -219,7 +237,7 @@
                             </ul>
                         </div>
                     </div>
-                    @error('teacher_id')
+                    @error('teacher_ids')
                         <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
                     @enderror
                 </div>

@@ -41,7 +41,7 @@ class CreateCourseAction
             'price' => $data->price,
             'old_price' => $data->old_price,
             'discount_percentage' => $data->discount_percentage,
-            'teacher_id' => $data->teacher_id,
+            'teacher_id' => $data->teacher_ids[0] ?? null,
             'banner' => $bannerPath,
             'author_id' => auth()->id(),
             'status' => $data->status,
@@ -59,6 +59,8 @@ class CreateCourseAction
             'cert_specialties' => $data->cert_specialties,
             'cert_participant_type' => $data->cert_participant_type,
         ]);
+
+        $course->teachers()->sync($data->teacher_ids);
 
         if ($data->tags) {
             $tagIds = [];
@@ -82,7 +84,7 @@ class CreateCourseAction
                     'price' => $data->price,
                     'old_price' => $data->old_price,
                     'discount_percentage' => $data->discount_percentage,
-                    'teacher_id' => $data->teacher_id,
+                    'teacher_ids' => $data->teacher_ids,
                     'status' => $data->status,
                     'type' => $data->type,
                     'starts_at' => $data->starts_at,

@@ -19,7 +19,7 @@ class UpdateCourseAction
     {
         $oldValues = $course->only([
             'name', 'number', 'description', 'price', 'old_price',
-            'discount_percentage', 'teacher_id', 'status', 'type',
+            'discount_percentage', 'status', 'type',
             'starts_at', 'registration_starts_at', 'registration_ends_at',
             'label', 'requires_certificate_approval', 'banner',
         ]);
@@ -32,7 +32,7 @@ class UpdateCourseAction
             'price' => $data->price,
             'old_price' => $data->old_price,
             'discount_percentage' => $data->discount_percentage,
-            'teacher_id' => $data->teacher_id,
+            'teacher_id' => $data->teacher_ids[0] ?? null,
             'status' => $data->status,
         ];
 
@@ -85,6 +85,8 @@ class UpdateCourseAction
         $updateData['sync_to_wp'] = $data->sync_to_wp;
 
         $course->update($updateData);
+
+        $course->teachers()->sync($data->teacher_ids);
 
         $newTagNames = [];
         if ($data->tags !== null) {

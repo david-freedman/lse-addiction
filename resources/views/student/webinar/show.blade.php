@@ -86,25 +86,31 @@
         <div class="lg:col-span-1">
             <div class="sticky top-6 space-y-6">
                 <div class="bg-white rounded-xl shadow-md p-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">Викладач</h3>
-                    <div class="flex items-center gap-3">
-                        @if($webinar->teacher->avatar_url)
-                            <img src="{{ $webinar->teacher->avatar_url }}" alt="{{ $webinar->teacher->full_name }}" class="w-12 h-12 rounded-full object-cover">
-                        @else
-                            <div class="w-12 h-12 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center text-lg font-medium">
-                                {{ mb_substr($webinar->teacher->full_name, 0, 1) }}
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">{{ $webinar->teachers->count() > 1 ? 'Викладачі' : 'Викладач' }}</h3>
+                    @forelse($webinar->teachers as $teacher)
+                        <div class="{{ !$loop->first ? 'mt-4 pt-4 border-t border-gray-100' : '' }}">
+                            <div class="flex items-center gap-3">
+                                @if($teacher->avatar_url)
+                                    <img src="{{ $teacher->avatar_url }}" alt="{{ $teacher->full_name }}" class="w-12 h-12 rounded-full object-cover">
+                                @else
+                                    <div class="w-12 h-12 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center text-lg font-medium">
+                                        {{ mb_substr($teacher->full_name, 0, 1) }}
+                                    </div>
+                                @endif
+                                <div>
+                                    <p class="font-semibold text-gray-900">{{ $teacher->full_name }}</p>
+                                    @if($teacher->position)
+                                        <p class="text-sm text-gray-500">{{ $teacher->position }}</p>
+                                    @endif
+                                </div>
                             </div>
-                        @endif
-                        <div>
-                            <p class="font-semibold text-gray-900">{{ $webinar->teacher->full_name }}</p>
-                            @if($webinar->teacher->position)
-                                <p class="text-sm text-gray-500">{{ $webinar->teacher->position }}</p>
+                            @if($teacher->description)
+                                <p class="mt-3 text-sm text-gray-600 leading-relaxed">{{ $teacher->description }}</p>
                             @endif
                         </div>
-                    </div>
-                    @if($webinar->teacher->description)
-                        <p class="mt-4 text-sm text-gray-600 leading-relaxed">{{ $webinar->teacher->description }}</p>
-                    @endif
+                    @empty
+                        <p class="text-sm text-gray-500">Не вказано</p>
+                    @endforelse
                 </div>
 
                 <div class="bg-white rounded-xl shadow-md p-6">
@@ -264,7 +270,7 @@
                         @if($webinar->hasCapacity())
                             <button
                                 type="button"
-                                onclick="openRegisterModal('{{ $webinar->slug }}', '{{ addslashes($webinar->title) }}', '{{ $webinar->teacher->full_name }}', '{{ $webinar->isRecorded() ? 'Запис' : $webinar->starts_at->translatedFormat('d.m.Y') . ' о ' . $webinar->formatted_time }}', '{{ $webinar->isRecorded() ? 'Доступний відразу' : $webinar->formatted_duration }}', '{{ $webinar->isRecorded() ? 'необмежено' : ($webinar->available_spots !== null ? $webinar->available_spots : 'необмежено') }}', '{{ number_format($webinar->price, 0, ',', ' ') }} ₴', '{{ $webinar->banner_url ?? '' }}', {{ $webinar->is_free ? 'true' : 'false' }})"
+                                onclick="openRegisterModal('{{ $webinar->slug }}', '{{ addslashes($webinar->title) }}', '{{ $webinar->teachers->pluck('full_name')->join(', ') }}', '{{ $webinar->isRecorded() ? 'Запис' : $webinar->starts_at->translatedFormat('d.m.Y') . ' о ' . $webinar->formatted_time }}', '{{ $webinar->isRecorded() ? 'Доступний відразу' : $webinar->formatted_duration }}', '{{ $webinar->isRecorded() ? 'необмежено' : ($webinar->available_spots !== null ? $webinar->available_spots : 'необмежено') }}', '{{ number_format($webinar->price, 0, ',', ' ') }} ₴', '{{ $webinar->banner_url ?? '' }}', {{ $webinar->is_free ? 'true' : 'false' }})"
                                 class="w-full inline-flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 px-6 rounded-lg transition"
                             >
                                 {{ 'Зареєструватися' }}

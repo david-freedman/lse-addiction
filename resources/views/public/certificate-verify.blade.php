@@ -56,8 +56,8 @@
                         <p class="text-sm text-gray-500">{{ $certificate->isWebinarCertificate() ? 'Доповідач' : 'Викладач' }}</p>
                         <p class="font-semibold text-gray-900">
                             {{ $certificate->isWebinarCertificate()
-                                ? ($certificate->webinar->teacher?->full_name ?? 'Не вказано')
-                                : ($certificate->course->teacher?->full_name ?? 'Не вказано') }}
+                                ? ($certificate->webinar->teachers->pluck('full_name')->join(', ') ?: 'Не вказано')
+                                : ($certificate->course->teachers->pluck('full_name')->join(', ') ?: 'Не вказано') }}
                         </p>
                     </div>
                     <div class="flex gap-6">

@@ -10,7 +10,7 @@ class WpCourseSyncService
 {
     public function push(Course $course): array
     {
-        $course->loadMissing(['teacher', 'tags']);
+        $course->loadMissing(['teachers', 'tags']);
 
         $response = Http::withHeaders([
             'X-LSE-Secret' => config('services.lse_wp.secret'),
@@ -28,7 +28,7 @@ class WpCourseSyncService
 
     public function pushAll(): void
     {
-        Course::with(['teacher', 'tags'])
+        Course::with(['teachers', 'tags'])
             ->where('sync_to_wp', true)
             ->each(function (Course $course) {
                 try {
@@ -59,10 +59,12 @@ class WpCourseSyncService
             'registration_starts_at'  => $course->registration_starts_at?->toIso8601String(),
             'registration_ends_at'    => $course->registration_ends_at?->toIso8601String(),
             'banner_url'              => $course->banner_url,
-            'teacher_name'            => $course->teacher?->full_name,
-            'teacher_position'        => $course->teacher?->position,
-            'teacher_description'     => $course->teacher?->description,
-            'teacher_avatar_url'      => $course->teacher?->avatar_url,
+            'teachers'                => $course->teachers->map(fn ($t) => [
+                'name'        => $t->full_name,
+                'position'    => $t->position,
+                'description' => $t->description,
+                'avatar_url'  => $t->avatar_url,
+            ])->all(),
             'tags'                    => $course->tags->pluck('name')->all(),
         ];
     }

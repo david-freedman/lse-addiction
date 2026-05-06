@@ -52,25 +52,31 @@
         <div class="lg:col-span-1">
             <div class="sticky top-6 space-y-6">
                 <div class="bg-white rounded-xl shadow-md p-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">Викладач</h3>
-                    <div class="flex items-center gap-3">
-                        @if($course->teacher?->avatar_url)
-                            <img src="{{ $course->teacher->avatar_url }}" alt="{{ $course->teacher->full_name }}" class="w-12 h-12 rounded-full object-cover">
-                        @else
-                            <div class="w-12 h-12 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center text-lg font-medium">
-                                {{ mb_substr($course->teacher?->full_name ?? 'N', 0, 1) }}
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">{{ $course->teachers->count() > 1 ? 'Викладачі' : 'Викладач' }}</h3>
+                    @forelse($course->teachers as $teacher)
+                        <div class="{{ !$loop->first ? 'mt-4 pt-4 border-t border-gray-100' : '' }}">
+                            <div class="flex items-center gap-3">
+                                @if($teacher->avatar_url)
+                                    <img src="{{ $teacher->avatar_url }}" alt="{{ $teacher->full_name }}" class="w-12 h-12 rounded-full object-cover">
+                                @else
+                                    <div class="w-12 h-12 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center text-lg font-medium">
+                                        {{ mb_substr($teacher->full_name, 0, 1) }}
+                                    </div>
+                                @endif
+                                <div>
+                                    <p class="font-semibold text-gray-900">{{ $teacher->full_name }}</p>
+                                    @if($teacher->position)
+                                        <p class="text-sm text-gray-500">{{ $teacher->position }}</p>
+                                    @endif
+                                </div>
                             </div>
-                        @endif
-                        <div>
-                            <p class="font-semibold text-gray-900">{{ $course->teacher?->full_name ?? 'Не вказано' }}</p>
-                            @if($course->teacher?->position)
-                                <p class="text-sm text-gray-500">{{ $course->teacher->position }}</p>
+                            @if($teacher->description)
+                                <p class="mt-3 text-sm text-gray-600 leading-relaxed">{{ $teacher->description }}</p>
                             @endif
                         </div>
-                    </div>
-                    @if($course->teacher?->description)
-                        <p class="mt-4 text-sm text-gray-600 leading-relaxed">{{ $course->teacher->description }}</p>
-                    @endif
+                    @empty
+                        <p class="text-sm text-gray-500">Не вказано</p>
+                    @endforelse
                 </div>
 
                 <div class="bg-white rounded-xl shadow-md p-6">
