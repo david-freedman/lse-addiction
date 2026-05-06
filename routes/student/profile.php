@@ -2,6 +2,9 @@
 
 use App\Applications\Http\Student\Profile\Controllers\DeleteAccountController;
 use App\Applications\Http\Student\Profile\Controllers\EditProfileController;
+use App\Applications\Http\Student\Profile\Controllers\GoogleLinkCallbackController;
+use App\Applications\Http\Student\Profile\Controllers\GoogleLinkRedirectController;
+use App\Applications\Http\Student\Profile\Controllers\GoogleUnlinkController;
 use App\Applications\Http\Student\Profile\Controllers\ResendChangeCodeController;
 use App\Applications\Http\Student\Profile\Controllers\ShowProfileController;
 use App\Applications\Http\Student\Profile\Controllers\ShowVerifyChangeController;
@@ -20,4 +23,8 @@ Route::middleware(['auth', 'verified.student'])->group(function () {
     Route::get('verify-change', ShowVerifyChangeController::class)->name('verify-change.show');
     Route::post('verify-change', VerifyChangeController::class)->name('verify-change');
     Route::post('verify-change/resend', ResendChangeCodeController::class)->name('verify-change.resend');
+
+    Route::get('profile/google/link', GoogleLinkRedirectController::class)->name('profile.google.link');
+    Route::get('profile/google/callback', GoogleLinkCallbackController::class)->name('profile.google.callback');
+    Route::delete('profile/google', GoogleUnlinkController::class)->name('profile.google.unlink');
 });

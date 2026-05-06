@@ -95,4 +95,11 @@
         <img src="{{ asset('img/form-bg.webp') }}" alt="Image" class="ibg">
     </div>
 </div>
+
+<style>
+    .field__error{
+        color: red;
+    }
+</style>
+
 @endsection

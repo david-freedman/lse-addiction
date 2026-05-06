@@ -39,6 +39,7 @@ class Student extends Authenticatable
         'email_verified_at',
         'phone_verified_at',
         'last_login_at',
+        'google_id',
     ];
 
     protected $casts = [
@@ -140,6 +141,11 @@ class Student extends Authenticatable
 
     public function isFullyVerified(): bool
     {
+        // Google OAuth accounts are treated as fully verified
+        if ($this->google_id && $this->email_verified_at) {
+            return true;
+        }
+
         $requireEmail = config('verification.require_email', true);
         $requirePhone = config('verification.require_phone', true);
 
