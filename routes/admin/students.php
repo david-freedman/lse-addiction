@@ -10,6 +10,7 @@ use App\Applications\Http\Admin\Student\Controllers\DeleteStudentController;
 use App\Applications\Http\Admin\Student\Controllers\EditStudentController;
 use App\Applications\Http\Admin\Student\Controllers\GetStudentsController;
 use App\Applications\Http\Admin\Student\Controllers\RemoveDiscountController;
+use App\Applications\Http\Admin\Student\Controllers\ForceDeleteStudentController;
 use App\Applications\Http\Admin\Student\Controllers\RestoreStudentController;
 use App\Applications\Http\Admin\Student\Controllers\ShowStudentController;
 use App\Applications\Http\Admin\Student\Controllers\StoreStudentController;
@@ -36,6 +37,7 @@ Route::middleware(['auth:admin', 'verified.user', 'role:admin,teacher'])->group(
         Route::middleware('role:admin')->group(function () {
             Route::delete('/{student}', DeleteStudentController::class)->name('destroy');
             Route::post('/{studentId}/restore', RestoreStudentController::class)->name('restore');
+            Route::delete('/{studentId}/force-delete', ForceDeleteStudentController::class)->name('force-delete');
             Route::post('/{student}/assign-to-course', AssignStudentToCourseController::class)->name('assign-to-course');
             Route::delete('/{student}/courses/{course}', UnenrollStudentFromCourseController::class)->name('unenroll-from-course');
             Route::post('/{student}/assign-to-webinar', AssignStudentToWebinarController::class)->name('assign-to-webinar');

@@ -115,6 +115,13 @@
                         Відновити студента
                     </button>
                 </form>
+                <form action="{{ route('admin.students.force-delete', $student->id) }}" method="POST" class="mt-3" onsubmit="return confirm('Повністю видалити студента? Цю дію не можна скасувати.')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-full rounded-lg bg-error-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-error-600">
+                        Видалити повністю
+                    </button>
+                </form>
             @else
                 <form action="{{ route('admin.students.destroy', $student) }}" method="POST" class="mt-6" onsubmit="return confirm('Видалити студента?')">
                     @csrf
