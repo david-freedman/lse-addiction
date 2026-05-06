@@ -42,6 +42,8 @@ final class SaveProfileFieldsController
 
         StoreStudentConsentsAction::execute($student, $request->ip());
 
+        $student->update(['profile_fields_completed_at' => now()]);
+
         AuthenticateStudentAction::execute($student);
         EnrollFromSessionAction::execute($student);
 

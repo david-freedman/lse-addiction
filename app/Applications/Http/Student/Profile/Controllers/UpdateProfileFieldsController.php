@@ -16,6 +16,10 @@ final class UpdateProfileFieldsController
         try {
             SaveStudentProfileFieldValuesAction::execute($student, $profileFieldsData);
 
+            if (! $student->hasCompletedProfileStep()) {
+                $student->update(['profile_fields_completed_at' => now()]);
+            }
+
             return redirect()->route('student.profile.show')
                 ->with('success', 'Анкетні дані успішно оновлено');
         } catch (\Exception $e) {

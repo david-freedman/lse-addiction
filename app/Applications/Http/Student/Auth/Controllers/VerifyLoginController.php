@@ -28,6 +28,13 @@ final class VerifyLoginController
             return redirect()->route('student.complete-verification');
         }
 
+        if (! $student->hasContactDetails()) {
+            session()->forget(['login_contact', 'login_type']);
+            session(['student_id' => $student->id]);
+
+            return redirect()->route('student.contact-details.show');
+        }
+
         AuthenticateStudentAction::execute($student);
         EnrollFromSessionAction::execute($student);
 

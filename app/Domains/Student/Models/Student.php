@@ -157,6 +157,11 @@ class Student extends Authenticatable
             && $this->city !== null;
     }
 
+    public function hasCompletedProfileStep(): bool
+    {
+        return $this->profile_fields_completed_at !== null;
+    }
+
     public function hasPurchasedCourse(Course $course): bool
     {
         return $this->transactions()
