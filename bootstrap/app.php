@@ -2,6 +2,7 @@
 
 use App\Applications\Http\Middleware\CheckUserRole;
 use App\Applications\Http\Middleware\EnsureStudentIsVerified;
+use App\Applications\Http\Middleware\EnsureStudentProfileStepCompleted;
 use App\Applications\Http\Middleware\EnsureUserIsVerified;
 use App\Applications\Http\Middleware\SetSessionLifetimeByGuard;
 use App\Applications\Http\Middleware\VerifyWpSyncSecret;
@@ -32,10 +33,11 @@ return Application::configure(basePath: dirname(__DIR__))
         });
         $middleware->trustProxies(at: '*');
         $middleware->alias([
-            'verified.student'  => EnsureStudentIsVerified::class,
-            'verified.user'     => EnsureUserIsVerified::class,
-            'role'              => CheckUserRole::class,
-            'wp.sync.secret'    => VerifyWpSyncSecret::class,
+            'verified.student'       => EnsureStudentIsVerified::class,
+            'profile.step.completed' => EnsureStudentProfileStepCompleted::class,
+            'verified.user'          => EnsureUserIsVerified::class,
+            'role'                   => CheckUserRole::class,
+            'wp.sync.secret'         => VerifyWpSyncSecret::class,
         ]);
         $middleware->validateCsrfTokens(except: [
             'student/payment/callback',

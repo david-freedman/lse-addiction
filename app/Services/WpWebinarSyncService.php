@@ -10,7 +10,7 @@ class WpWebinarSyncService
 {
     public function push(Webinar $webinar): array
     {
-        $webinar->loadMissing(['teacher']);
+        $webinar->loadMissing(['teachers']);
 
         $response = Http::withHeaders([
             'X-LSE-Secret' => config('services.lse_wp.secret'),
@@ -28,7 +28,7 @@ class WpWebinarSyncService
 
     public function pushAll(): void
     {
-        Webinar::with(['teacher'])
+        Webinar::with(['teachers'])
             ->where('sync_to_wp', true)
             ->each(function (Webinar $webinar) {
                 try {
@@ -54,10 +54,12 @@ class WpWebinarSyncService
             'starts_at'           => $webinar->starts_at?->toIso8601String(),
             'duration_minutes'    => $webinar->duration_minutes,
             'banner_url'          => $webinar->banner_url,
-            'teacher_name'        => $webinar->teacher?->full_name,
-            'teacher_position'    => $webinar->teacher?->position,
-            'teacher_description' => $webinar->teacher?->description,
-            'teacher_avatar_url'  => $webinar->teacher?->avatar_url,
+            'teachers'            => $webinar->teachers->map(fn ($t) => [
+                'name'        => $t->full_name,
+                'position'    => $t->position,
+                'description' => $t->description,
+                'avatar_url'  => $t->avatar_url,
+            ])->all(),
         ];
     }
 }

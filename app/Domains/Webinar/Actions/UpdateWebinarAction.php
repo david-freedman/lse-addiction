@@ -22,7 +22,7 @@ class UpdateWebinarAction
             'title' => $data->title,
             'number' => $data->number,
             'description' => $data->description,
-            'teacher_id' => $data->teacher_id,
+            'teacher_id' => $data->teacher_ids[0] ?? null,
             'starts_at' => $data->starts_at ? Carbon::createFromFormat('d.m.Y H:i', $data->starts_at) : null,
             'duration_minutes' => $data->duration_minutes,
             'meeting_url' => $data->meeting_url,
@@ -72,6 +72,8 @@ class UpdateWebinarAction
         $updateData['cert_participant_type'] = $data->cert_participant_type;
 
         $webinar->update($updateData);
+
+        $webinar->teachers()->sync($data->teacher_ids);
 
         LogActivityAction::execute(ActivityLogData::from([
             'subject_type' => ActivitySubject::Webinar,

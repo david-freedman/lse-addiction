@@ -19,7 +19,7 @@ class ContactDetailsData extends Data
         public readonly string $surname,
         #[Required, StringType, Min(2)]
         public readonly string $name,
-        #[Nullable, StringType, Min(2), Max(255)]
+        #[Required, StringType, Min(2), Max(255)]
         public readonly ?string $patronymic,
         #[Required, Date, DateFormat('d.m.Y'), Before('today')]
         public readonly string $birthday,

@@ -131,9 +131,9 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                                 @if($certificate->isWebinarCertificate())
-                                    <span>Доповідач: {{ $certificate->webinar->teacher?->full_name ?? 'Не вказано' }}</span>
+                                    <span>Доповідач: {{ $certificate->webinar->teachers->pluck('full_name')->join(', ') ?: 'Не вказано' }}</span>
                                 @else
-                                    <span>Викладач: {{ $certificate->course->teacher?->full_name ?? 'Не вказано' }}</span>
+                                    <span>Викладач: {{ $certificate->course->teachers->pluck('full_name')->join(', ') ?: 'Не вказано' }}</span>
                                 @endif
                             </div>
                             <div class="flex items-center gap-2">

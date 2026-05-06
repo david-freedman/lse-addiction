@@ -15,7 +15,7 @@ final class EditCourseController
         $course->load([
             'tags',
             'author',
-            'teacher',
+            'teachers',
             'modules' => fn ($q) => $q->orderBy('order')->withCount('lessons'),
         ]);
 

@@ -117,4 +117,16 @@ readonly class StudentProfileViewModel
     {
         return $this->student->hasProfilePhoto();
     }
+
+    public function hasGoogleLinked(): bool
+    {
+        return $this->student->google_id !== null;
+    }
+
+    public function canUnlinkGoogle(): bool
+    {
+        return $this->student->google_id !== null
+            && $this->student->email !== null
+            && $this->student->phone !== null;
+    }
 }

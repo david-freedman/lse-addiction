@@ -9,9 +9,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified.student'])->group(function () {
     Route::get('/my-webinars', GetMyWebinarsController::class)->name('my-webinars');
-    Route::get('/webinars/{webinar:slug}', ShowWebinarController::class)->name('webinar.show');
     Route::post('/webinars/{webinar:slug}/register', RegisterWebinarController::class)->name('webinar.register');
 
-    Route::get('/webinars/{webinar:slug}/quiz', ShowWebinarQuizController::class)->name('webinar.quiz.show');
-    Route::post('/webinars/{webinar:slug}/quiz', SubmitWebinarQuizController::class)->name('webinar.quiz.submit');
+    Route::middleware(['profile.step.completed'])->group(function () {
+        Route::get('/webinars/{webinar:slug}', ShowWebinarController::class)->name('webinar.show');
+
+        Route::get('/webinars/{webinar:slug}/quiz', ShowWebinarQuizController::class)->name('webinar.quiz.show');
+        Route::post('/webinars/{webinar:slug}/quiz', SubmitWebinarQuizController::class)->name('webinar.quiz.submit');
+    });
 });

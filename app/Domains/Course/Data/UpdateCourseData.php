@@ -40,8 +40,8 @@ class UpdateCourseData extends Data
         #[Nullable, Numeric, Min(0), Max(100)]
         public readonly ?int $discount_percentage,
 
-        #[Required, Numeric]
-        public readonly int $teacher_id,
+        #[Required]
+        public readonly array $teacher_ids,
 
         #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png', 'webp']), Max(5120)]
         public readonly ?UploadedFile $banner,
@@ -75,10 +75,10 @@ class UpdateCourseData extends Data
         #[Nullable, StringType, Max(255)]
         public readonly ?string $cert_company_name = null,
 
-        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(2048)]
+        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(10240)]
         public readonly ?UploadedFile $cert_signature = null,
 
-        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(2048)]
+        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(10240)]
         public readonly ?UploadedFile $cert_stamp = null,
 
         #[Nullable, Numeric, Min(1)]
@@ -103,7 +103,8 @@ class UpdateCourseData extends Data
             'registration_ends_at' => array_filter(['nullable', 'date', 'date_format:d.m.Y H:i', 'after_or_equal:registration_starts_at', request('starts_at') ? 'before_or_equal:starts_at' : null]),
             'old_price' => ['nullable', 'numeric', 'min:0', 'gte:price'],
             'discount_percentage' => ['nullable', 'integer', 'min:0', 'max:100'],
-            'teacher_id' => ['required', 'integer', 'exists:teachers,id'],
+            'teacher_ids' => ['required', 'array', 'min:1'],
+            'teacher_ids.*' => ['integer', 'exists:teachers,id'],
             'label' => ['nullable', new Enum(CourseLabel::class)],
             'number' => ['required', 'digits:7', Rule::unique('courses', 'number')->ignore(request()->route('course')?->id)],
             'cert_participant_type' => ['nullable', 'string', 'in:trainer,student'],

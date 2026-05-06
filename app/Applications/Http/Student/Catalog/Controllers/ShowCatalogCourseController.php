@@ -15,7 +15,7 @@ final class ShowCatalogCourseController
             abort(404);
         }
 
-        $course->load(['teacher', 'author', 'tags']);
+        $course->load(['teachers', 'author', 'tags']);
 
         $individualDiscount = null;
         $finalPrice = $course->price;

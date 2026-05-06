@@ -1,6 +1,8 @@
 <?php
 
 use App\Applications\Http\Student\Auth\Controllers\EnrollAndRedirectController;
+use App\Applications\Http\Student\Auth\Controllers\GoogleCallbackController;
+use App\Applications\Http\Student\Auth\Controllers\GoogleRedirectController;
 use App\Applications\Http\Student\Auth\Controllers\LogoutController;
 use App\Applications\Http\Student\Auth\Controllers\ResendLoginCodeController;
 use App\Applications\Http\Student\Auth\Controllers\ResendVerificationCodeController;
@@ -21,6 +23,9 @@ Route::middleware('guest')->group(function () {
     Route::get('verify-login', ShowVerifyLoginController::class)->name('verify-login.show');
     Route::post('verify-login', VerifyLoginController::class)->name('verify-login');
     Route::post('verify-login/resend', ResendLoginCodeController::class)->name('verify-login.resend');
+
+    Route::get('auth/google', GoogleRedirectController::class)->name('auth.google');
+    Route::get('auth/google/callback', GoogleCallbackController::class)->name('auth.google.callback');
 });
 
 Route::middleware('auth')->group(function () {

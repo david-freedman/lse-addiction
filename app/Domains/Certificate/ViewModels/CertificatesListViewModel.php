@@ -20,7 +20,7 @@ readonly class CertificatesListViewModel
 
         $query = Certificate::forStudent($student->id)
             ->visibleToStudent()
-            ->with(['course.teacher', 'webinar.teacher'])
+            ->with(['course.teachers', 'webinar.teachers'])
             ->orderBy('issued_at', 'desc');
 
         if ($search) {

@@ -21,15 +21,17 @@ Route::middleware(['auth', 'verified.student'])->group(function () {
     Route::post('courses/{course}/enroll', EnrollCourseController::class)->name('courses.enroll');
     Route::post('courses/{course}/unenroll', UnenrollCourseController::class)->name('courses.unenroll');
 
-    Route::get('courses/{course}/modules/{module}', ShowModuleController::class)->name('modules.show');
+    Route::middleware(['profile.step.completed'])->group(function () {
+        Route::get('courses/{course}/modules/{module}', ShowModuleController::class)->name('modules.show');
 
-    Route::get('courses/{course}/lessons/{lesson}', ShowLessonController::class)->name('lessons.show');
-    Route::post('courses/{course}/lessons/{lesson}/complete', CompleteLessonController::class)->name('lessons.complete');
-    Route::post('courses/{course}/lessons/{lesson}/notes', SaveLessonNoteController::class)->name('lessons.notes.save');
-    Route::post('courses/{course}/lessons/{lesson}/comments', StoreCommentController::class)->name('lessons.comments.store');
-    Route::get('courses/{course}/lessons/{lesson}/dicom', StreamDicomController::class)->name('lessons.dicom');
+        Route::get('courses/{course}/lessons/{lesson}', ShowLessonController::class)->name('lessons.show');
+        Route::post('courses/{course}/lessons/{lesson}/complete', CompleteLessonController::class)->name('lessons.complete');
+        Route::post('courses/{course}/lessons/{lesson}/notes', SaveLessonNoteController::class)->name('lessons.notes.save');
+        Route::post('courses/{course}/lessons/{lesson}/comments', StoreCommentController::class)->name('lessons.comments.store');
+        Route::get('courses/{course}/lessons/{lesson}/dicom', StreamDicomController::class)->name('lessons.dicom');
 
-    Route::get('courses/{course}/lessons/{lesson}/quiz', ShowQuizController::class)->name('quiz.show');
-    Route::post('courses/{course}/lessons/{lesson}/quiz', SubmitQuizController::class)->name('quiz.submit');
-    Route::post('courses/{course}/lessons/{lesson}/quiz/save-draft', SaveDraftController::class)->name('quiz.save-draft');
+        Route::get('courses/{course}/lessons/{lesson}/quiz', ShowQuizController::class)->name('quiz.show');
+        Route::post('courses/{course}/lessons/{lesson}/quiz', SubmitQuizController::class)->name('quiz.submit');
+        Route::post('courses/{course}/lessons/{lesson}/quiz/save-draft', SaveDraftController::class)->name('quiz.save-draft');
+    });
 });

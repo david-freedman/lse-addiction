@@ -35,8 +35,8 @@ class UpdateWebinarData extends Data
         #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png', 'webp']), Max(5120)]
         public readonly ?UploadedFile $banner,
 
-        #[Required, Numeric]
-        public readonly int $teacher_id,
+        #[Required]
+        public readonly array $teacher_ids,
 
         #[Nullable]
         public readonly ?string $starts_at,
@@ -69,10 +69,10 @@ class UpdateWebinarData extends Data
         #[Nullable, StringType, Max(255)]
         public readonly ?string $cert_company_name = null,
 
-        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(2048)]
+        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(10240)]
         public readonly ?UploadedFile $cert_signature = null,
 
-        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(2048)]
+        #[Nullable, Image, Mimes(['jpeg', 'jpg', 'png']), Max(10240)]
         public readonly ?UploadedFile $cert_stamp = null,
 
         #[Nullable, Numeric, Min(1)]
@@ -103,7 +103,8 @@ class UpdateWebinarData extends Data
         return [
             'number' => ['required', 'digits:7', Rule::unique('webinars', 'number')->ignore(request()->route('webinar')?->id)],
             'status' => ['required', new Enum(WebinarStatus::class)],
-            'teacher_id' => ['required', 'integer', 'exists:teachers,id'],
+            'teacher_ids' => ['required', 'array', 'min:1'],
+            'teacher_ids.*' => ['integer', 'exists:teachers,id'],
             'starts_at' => ['nullable', 'date', 'date_format:d.m.Y H:i'],
             'old_price' => ['nullable', 'numeric', 'min:0', 'gte:price'],
             'recording_url' => ['nullable', 'url', 'max:500', 'required_if:status,recorded'],
