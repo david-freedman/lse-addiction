@@ -420,7 +420,7 @@
                         accept="image/png,image/jpeg,image/jpg"
                         class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('cert_signature') border-error-500 @enderror"
                     >
-                    <p class="mt-1 text-xs text-gray-500">PNG або JPG, до 2 МБ</p>
+                    <p class="mt-1 text-xs text-gray-500">PNG або JPG, до 10 МБ</p>
                     @error('cert_signature')
                         <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
                     @enderror
@@ -435,7 +435,7 @@
                         accept="image/png,image/jpeg,image/jpg"
                         class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white @error('cert_stamp') border-error-500 @enderror"
                     >
-                    <p class="mt-1 text-xs text-gray-500">PNG або JPG, до 2 МБ</p>
+                    <p class="mt-1 text-xs text-gray-500">PNG або JPG, до 10 МБ</p>
                     @error('cert_stamp')
                         <p class="mt-1.5 text-sm text-error-600">{{ $message }}</p>
                     @enderror
